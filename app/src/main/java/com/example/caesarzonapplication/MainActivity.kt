@@ -75,6 +75,7 @@ fun MyApp(){
         floatingActionButton = { MenuFloatingButton() },//spazio per posizionare un componente
         floatingActionButtonPosition = FabPosition.End//specifica dove posizionare il floatingActionButton
     )
+
 }
 
 //Barra di navigazione inferiore
