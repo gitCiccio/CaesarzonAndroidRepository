@@ -40,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
 fun MyApp(){
     Scaffold(//Scaffold è un componente predefinito di layout, fornisce spazi per elementi come TopBar, BottomBar, contenuto, ecc...
         topBar = { AppTopBar() },//spazio per posizionare la topBar
-        bottomBar = { navigationBottomBar() },//spazio per la bottom bar
+        bottomBar = { NavigationBottomBar() },//spazio per la bottom bar
         content = {},//spazio per il contenuto principale
         floatingActionButton = { MenuFloatingButton() },//spazio per posizionare un componente
         floatingActionButtonPosition = FabPosition.End//specifica dove posizionare il floatingActionButton
@@ -80,14 +81,14 @@ fun MyApp(){
 
 //Barra di navigazione inferiore
 @Composable
-fun navigationBottomBar(){
+fun NavigationBottomBar(){
 
     //selectedIndex, variabile che ci permette di cambiare pagine dalla home
     //si tratta di una variabile di cui ci interessa salvare lo stato
     //per salvare lo stato ci basterebbe by remember {  mutableStateOf(0) }
     //Ma c'è il problema della ricomposizione, esempio, se ruoto il telefono perdo lo stato della variabile
     //rememberSaveable questo mi permette di tenere traccia dello stato, ci sono altre soluzioni?Sicuramente, ma questa penso sia più comoda
-    var selectedIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
     //Creazione della bottom bar
     BottomAppBar {//è un componente che rappresenta la barra inferiore
