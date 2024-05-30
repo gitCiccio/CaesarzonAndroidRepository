@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication
 
+import android.graphics.Paint.Align
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -11,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,8 +30,8 @@ import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserAccountActivity(accountInfoViewModel: AccountInfoViewModel) {
-    val accountInfoDataState by accountInfoViewModel.accountInfoData.collectAsState()
+fun UserAccountActivity(/*accountInfoViewModel: AccountInfoViewModel*/ selectedIndex: MutableState<Int>, modifier: Modifier = Modifier) {
+    //val accountInfoDataState by accountInfoViewModel.accountInfoData.collectAsState()
     Scaffold(//Scaffold è un componente predefinito di layout, fornisce spazi per elementi come TopBar, BottomBar, contenuto, ecc...
         topBar = {
             CenterAlignedTopAppBar(title = {
@@ -48,9 +51,9 @@ fun UserAccountActivity(accountInfoViewModel: AccountInfoViewModel) {
                 )
             })
         },
-        bottomBar = { NavigationBottomBar() },//spazio per la bottom bar
+        bottomBar = { NavigationBottomBar(selectedIndex) },//spazio per la bottom bar
         content = {padding ->
-                  Column {
+                  Column(modifier = modifier.padding(padding)) {
                       Text(
                           text = stringResource(id = R.string.userInfo),
                           style = TextStyle(fontSize = Typography.bodyLarge.fontSize),
@@ -58,11 +61,16 @@ fun UserAccountActivity(accountInfoViewModel: AccountInfoViewModel) {
                               .align(Alignment.CenterHorizontally)
                               .padding(10.dp)
                       )
+                      Column(verticalArrangement = Arrangement.Center,
+                          horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "Lu capocchione")
+                      }
+                      /*
                       Text(text= accountInfoDataState.name)
                       Text(text= accountInfoDataState.surname)
                       Text(text= accountInfoDataState.username)
                       Text(text= accountInfoDataState.email)
-
+                       */
                   }
         },
         floatingActionButton = { MenuFloatingButton() },//spazio per posizionare un componente

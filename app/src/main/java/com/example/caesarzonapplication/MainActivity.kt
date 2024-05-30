@@ -12,10 +12,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +27,6 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -40,10 +37,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,11 +49,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
+import kotlin.math.absoluteValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,56 +69,76 @@ class MainActivity : ComponentActivity() {
     }
 }
 //"Bootstrap" della prima pagina android
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")//serve perché non ho gestito l'innerpadding, mi secca
-@Composable//indica che è una funzione composable, produce un albero di elementi, definiti dentro la funzione
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
 fun MyApp(){
-    Scaffold(//Scaffold è un componente predefinito di layout, fornisce spazi per elementi come TopBar, BottomBar, contenuto, ecc...
-        topBar = { AppTopBar() },//spazio per posizionare la topBar
-        bottomBar = { NavigationBottomBar() },//spazio per la bottom bar
-        content = {},//spazio per il contenuto principale
-        floatingActionButton = { MenuFloatingButton() },//spazio per posizionare un componente
-        floatingActionButtonPosition = FabPosition.End//specifica dove posizionare il floatingActionButton
+    var selectedIndex = remember { mutableIntStateOf(0) }
+    Scaffold(
+        topBar = { AppTopBar() },
+        bottomBar = { NavigationBottomBar(selectedIndex) },
+        floatingActionButton = { MenuFloatingButton() },
+        floatingActionButtonPosition = FabPosition.End,
+        content = { padding -> // Aggiungi il parametro padding
+            when (selectedIndex.value) {
+                0 -> {
+                    // Schermata Home
+                    Text("Home Screen", modifier = Modifier.padding(padding)) // Usa il padding
+                }
+                1 -> {
+                    // Schermata Settings
+                    UserAccountActivity(selectedIndex = selectedIndex, modifier = Modifier.padding(padding)) // Passa il padding
+                }
+                2 -> {
+                    // Schermata Shopcart
+                    Text("Shopcart Screen", modifier = Modifier.padding(padding)) // Usa il padding
+                }
+                3 -> {
+                    Text("Impostazioni", modifier = Modifier.padding(padding)) // Usa il padding
+                }
+            }
+        }
     )
-
 }
+
 
 //Barra di navigazione inferiore
 @Composable
-fun NavigationBottomBar(){
+fun NavigationBottomBar(selectedIndex: MutableState<Int>){
 
     //selectedIndex, variabile che ci permette di cambiare pagine dalla home
     //si tratta di una variabile di cui ci interessa salvare lo stato
     //per salvare lo stato ci basterebbe by remember {  mutableStateOf(0) }
     //Ma c'è il problema della ricomposizione, esempio, se ruoto il telefono perdo lo stato della variabile
     //rememberSaveable questo mi permette di tenere traccia dello stato, ci sono altre soluzioni?Sicuramente, ma questa penso sia più comoda
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    // var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
     //Creazione della bottom bar
     BottomAppBar {//è un componente che rappresenta la barra inferiore
 
         //Elementi della barra di navigazione
         NavigationBarItem(
-            selected = selectedIndex == 0,//Indica se l'elemento di navigazione è selezionato
-            onClick = { selectedIndex = 0 },//Funzione che viene eseguita, quando si clicca l'elemento, per ora cambia solo l'indice
-            icon = { Icon(Icons.Filled.Home, contentDescription = null) },//Icona associata all'elemento di navigazione
+            selected = selectedIndex.value == 0,
+            onClick = { selectedIndex.value = 0},
+            icon = {
+            Icon(Icons.Filled.Home, contentDescription = stringResource(R.string.home))
+        })
+
+        NavigationBarItem(
+            selected = selectedIndex.value == 1,
+            onClick = { selectedIndex.value = 1},
+            icon = { Icon(Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.userInfo))}
         )
 
         NavigationBarItem(
-            selected = selectedIndex == 1,
-            onClick = { selectedIndex = 1},
-            icon = { Icon(Icons.Filled.AccountCircle, contentDescription = null)}
+            selected = selectedIndex.value == 2,
+            onClick = { selectedIndex.value = 2},
+            icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = stringResource(R.string.shopcart))}
         )
 
         NavigationBarItem(
-            selected = selectedIndex == 2,
-            onClick = { selectedIndex = 2},
-            icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = null)}
-        )
-
-        NavigationBarItem(
-            selected = selectedIndex == 3,
-            onClick = { selectedIndex = 3},
-            icon = { Icon(Icons.Filled.Menu, contentDescription = null)})
+            selected = selectedIndex.value == 3,
+            onClick = { selectedIndex.value = 3},
+            icon = { Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.settings))})
     }
 }
 
