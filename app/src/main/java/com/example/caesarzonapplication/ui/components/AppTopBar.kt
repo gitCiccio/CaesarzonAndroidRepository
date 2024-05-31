@@ -18,14 +18,14 @@ import androidx.compose.ui.unit.dp
 fun AppTopBar(){
     var textFieldValue by remember { mutableStateOf("")}
 
-    TopAppBar(title = { Text(text = "CaesarzonPocchione") },
+    TopAppBar(title = { Text(text = "Caesarzon") },
         navigationIcon = {
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
                 modifier = Modifier
                     .padding(8.dp),
-                placeholder = { Text(text = "Pugnetta...")}
+                placeholder = { Text(text = "Cerca...")}
             )
         }
     )
