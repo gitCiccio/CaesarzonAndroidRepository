@@ -25,13 +25,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.example.caesarzonapplication.ui.components.MenuFloatingButton
+import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.theme.Typography
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserAccountActivity(/*accountInfoViewModel: AccountInfoViewModel*/ selectedIndex: MutableState<Int>, modifier: Modifier = Modifier) {
-    //val accountInfoDataState by accountInfoViewModel.accountInfoData.collectAsState()
+fun UserAccountActivity(accountInfoViewModel: AccountInfoViewModel, modifier: Modifier = Modifier) {
+    val accountInfoDataState by accountInfoViewModel.accountInfoData.collectAsState()
     Scaffold(//Scaffold è un componente predefinito di layout, fornisce spazi per elementi come TopBar, BottomBar, contenuto, ecc...
         topBar = {
             CenterAlignedTopAppBar(title = {
@@ -51,7 +54,7 @@ fun UserAccountActivity(/*accountInfoViewModel: AccountInfoViewModel*/ selectedI
                 )
             })
         },
-        bottomBar = { NavigationBottomBar(selectedIndex) },//spazio per la bottom bar
+        bottomBar = { NavigationBottomBar(navController = rememberNavController()) },//spazio per la bottom bar
         content = {padding ->
                   Column(modifier = modifier.padding(padding)) {
                       Text(
@@ -63,14 +66,10 @@ fun UserAccountActivity(/*accountInfoViewModel: AccountInfoViewModel*/ selectedI
                       )
                       Column(verticalArrangement = Arrangement.Center,
                           horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "Lu capocchione")
-                      }
-                      /*
-                      Text(text= accountInfoDataState.name)
-                      Text(text= accountInfoDataState.surname)
-                      Text(text= accountInfoDataState.username)
-                      Text(text= accountInfoDataState.email)
-                       */
+                          Text(text= accountInfoDataState.name)
+                          Text(text= accountInfoDataState.surname)
+                          Text(text= accountInfoDataState.username)
+                          Text(text= accountInfoDataState.email)                      }
                   }
         },
         floatingActionButton = { MenuFloatingButton() },//spazio per posizionare un componente

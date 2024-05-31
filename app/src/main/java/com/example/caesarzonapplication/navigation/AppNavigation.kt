@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -23,11 +24,14 @@ fun AppNavigation(){
         topBar = {},
         bottomBar = { NavigationBottomBar(navController)  },
         content = { padding ->
-            NavHost(navController = navController, startDestination = "Home"){
-                composable("Home"){HomeScreen()}
-                composable("ShoppingCart"){ ShoppingCartScreen()}
-                composable("Account"){AccountScreen()}
-                composable("Settings"){SettingsScreen()}
+            NavHost(
+                navController = navController,
+                startDestination = "home"
+            ){
+                composable("home"){HomeScreen()}
+                composable("shopcart"){ ShoppingCartScreen()}
+                composable("userInfo"){AccountScreen()}
+                composable("settings"){SettingsScreen()}
             }
         },
         floatingActionButton = {MenuFloatingButton()},
