@@ -1,8 +1,10 @@
 package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,10 +31,14 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 @Composable
 fun HomeScreen(paddingValues: PaddingValues){
     Scaffold(
-        topBar = { AppTopBar() },
+        topBar = { Column {
+                Spacer(modifier = Modifier.height(24.dp))
+                AppTopBar()
+        } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController())},
         content = { padding ->
             Column (modifier = Modifier.padding(padding)){
+                Spacer(modifier = Modifier.height(32.dp))
                 ProductSection(title ="Offerte speciali", products = sampleProducts)
                 Spacer(modifier = Modifier.height(16.dp))
                 ProductSection(title = "Novità", products = sampleProducts)
