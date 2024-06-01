@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,12 +32,13 @@ fun AppTopBar(){
         modifier = Modifier
             .background(Color(100, 104, 208))
             .padding(10.dp)
-            .height(100.dp), // Distanza dalla barra delle notifiche
+            .height(120.dp), // Distanza dalla barra delle notifiche
         title = {
         TextField(
             value = textFieldValue,
             onValueChange = { textFieldValue = it },
             modifier = Modifier
+                .fillMaxHeight()
                 .padding(10.dp),
             placeholder = { Text(text = "Cerca...")},
             shape = RoundedCornerShape(50),
@@ -51,6 +53,7 @@ fun AppTopBar(){
                 painter = painterResource(id = R.drawable.mini),
                 contentDescription = "Caesarzon",
                 modifier = Modifier
+                    .fillMaxHeight()
                     .height(70.dp)
                     .padding(vertical = 4.dp)
             )
