@@ -27,12 +27,17 @@ import com.example.caesarzonapplication.R
 fun AppTopBar(){
     var textFieldValue by remember { mutableStateOf("")}
 
-    TopAppBar(title = {
+    TopAppBar(
+        modifier = Modifier
+            .background(Color(100, 104, 208))
+            .padding(10.dp)
+            .height(100.dp), // Distanza dalla barra delle notifiche
+        title = {
         TextField(
             value = textFieldValue,
             onValueChange = { textFieldValue = it },
             modifier = Modifier
-                .padding(15.dp),
+                .padding(10.dp),
             placeholder = { Text(text = "Cerca...")},
             shape = RoundedCornerShape(50),
             colors = TextFieldDefaults.colors(
@@ -46,7 +51,7 @@ fun AppTopBar(){
                 painter = painterResource(id = R.drawable.mini),
                 contentDescription = "Caesarzon",
                 modifier = Modifier
-                    .height(60.dp)
+                    .height(70.dp)
                     .padding(vertical = 4.dp)
             )
         },
