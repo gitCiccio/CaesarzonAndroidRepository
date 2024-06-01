@@ -14,7 +14,6 @@ import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.SettingsScreen
 import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
