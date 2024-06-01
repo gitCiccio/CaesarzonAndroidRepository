@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,11 +38,19 @@ fun HomeScreen(paddingValues: PaddingValues){
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController())},
         content = { padding ->
-            Column (modifier = Modifier.padding(padding)){
-                Spacer(modifier = Modifier.height(32.dp))
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(top=20.dp)
+                    .background(Color(247, 170, 76, 255)
+                    )
+            ){
+                Spacer(modifier = Modifier.height(5.dp))
                 ProductSection(title ="Offerte speciali", products = sampleProducts)
                 Spacer(modifier = Modifier.height(16.dp))
                 ProductSection(title = "Novità", products = sampleProducts)
+
             }
         }
     )

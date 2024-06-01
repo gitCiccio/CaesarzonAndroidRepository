@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -37,7 +39,6 @@ fun AppTopBar(){
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(100, 104, 208))
-            .padding(WindowInsets.statusBars.asPaddingValues()) // Distanza dalla barra di stato
     ){
         TopAppBar(
             modifier = Modifier
@@ -63,7 +64,8 @@ fun AppTopBar(){
                     painter = painterResource(id = R.drawable.mini),
                     contentDescription = "Caesarzon",
                     modifier = Modifier
-                        .height(50.dp)
+                        .width(90.dp)
+                        .height(100.dp)
                         .padding(vertical = 4.dp)
                 )
             },
@@ -71,6 +73,7 @@ fun AppTopBar(){
                 containerColor = Color(100,104,208)
             )
         )
+        Spacer(modifier = Modifier.height(30.dp))
     }
 
 }
