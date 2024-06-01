@@ -32,7 +32,7 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 fun HomeScreen(paddingValues: PaddingValues){
     Scaffold(
         topBar = { Column {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(40.dp))
                 AppTopBar()
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController())},

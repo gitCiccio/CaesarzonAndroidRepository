@@ -2,8 +2,14 @@ package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -27,37 +33,44 @@ import com.example.caesarzonapplication.R
 fun AppTopBar(){
     var textFieldValue by remember { mutableStateOf("")}
 
-    TopAppBar(
+    Column(
         modifier = Modifier
+            .fillMaxWidth()
             .background(Color(100, 104, 208))
-            .padding(10.dp)
-            .height(100.dp), // Distanza dalla barra delle notifiche
-        title = {
-        TextField(
-            value = textFieldValue,
-            onValueChange = { textFieldValue = it },
+            .padding(WindowInsets.statusBars.asPaddingValues()) // Distanza dalla barra di stato
+    ){
+        TopAppBar(
             modifier = Modifier
-                .padding(10.dp),
-            placeholder = { Text(text = "Cerca...")},
-            shape = RoundedCornerShape(50),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.LightGray,
-                focusedTextColor = Color.Black
-            )
-        )
-        },
-        navigationIcon = {
-            Image(
-                painter = painterResource(id = R.drawable.mini),
-                contentDescription = "Caesarzon",
+                .background(Color(100, 104, 208))
+                .height(100.dp), // Distanza dalla barra delle notifiche
+            title = {
+            TextField(
+                value = textFieldValue,
+                onValueChange = { textFieldValue = it },
                 modifier = Modifier
-                    .height(70.dp)
-                    .padding(vertical = 4.dp)
+                    .padding(horizontal = 15.dp)
+                    .height(60.dp),
+                placeholder = { Text(text = "Cerca...")},
+                shape = RoundedCornerShape(50),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.LightGray,
+                    focusedTextColor = Color.Black
+                )
             )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(100,104,208)
+            },
+            navigationIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.mini),
+                    contentDescription = "Caesarzon",
+                    modifier = Modifier
+                        .height(50.dp)
+                        .padding(vertical = 4.dp)
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color(100,104,208)
+            )
         )
-    )
+    }
 
 }
