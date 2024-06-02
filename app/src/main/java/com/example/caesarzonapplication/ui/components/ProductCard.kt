@@ -27,7 +27,8 @@ fun ProductCard(product: Product){
     Card(
         modifier = Modifier
             .padding(end = 8.dp)
-            .width(150.dp),
+            .height(250.dp)
+            .width(200.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ){
         Column{

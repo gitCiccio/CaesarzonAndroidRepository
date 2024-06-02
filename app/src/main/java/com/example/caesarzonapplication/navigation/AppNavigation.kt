@@ -1,10 +1,9 @@
 package com.example.caesarzonapplication.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,7 +28,7 @@ fun AppNavigation(){
                 startDestination = "home"
             ){
                 composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel())}
-                composable("shopcart"){ ShoppingCartScreen(padding)}
+                composable("shopcart"){ ShoppingCartScreen(padding, viewModel())}
                 composable("userInfo"){AccountScreen(padding)}
                 composable("settings"){SettingsScreen(padding)}
             }

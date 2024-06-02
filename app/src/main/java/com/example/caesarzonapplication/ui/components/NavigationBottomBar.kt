@@ -55,6 +55,7 @@ fun NavigationBottomBar(navController: NavHostController){
             icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = stringResource(R.string.shopcart),
                 tint = if (currentDestination?.route == "shopcart") Color(238, 137, 60, 255) else Color.Black)
             }
+
         )
 
         NavigationBarItem(
