@@ -18,14 +18,15 @@ class ProductsViewModel: ViewModel() {
     }
      */
     init {
-        loadSimpleProducts()
+        //loadSimpleProducts()
     }
     fun loadSimpleProducts(){
         _productsInShoppingCart.addAll(
             listOf(
                 Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true),
-                Product("Product 3", R.drawable.logo, 19.99, "Descrizione di Product 3", true)
-            )
+                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true),
+                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true)
+                )
         )
     }
 }
