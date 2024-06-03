@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 fun PaymentManagementSection() {
     var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
     var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
+    var expirationDate by remember { mutableStateOf(TextFieldValue("")) }
     var cvc by remember { mutableStateOf(TextFieldValue("")) }
     var paymentMethods by remember { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
     var showAddPaymentDialog by remember { mutableStateOf(false) }
@@ -90,13 +91,19 @@ fun PaymentManagementSection() {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         TextField(
+                            value = expirationDate,
+                            onValueChange = { expirationDate = it },
+                            label = { Text("Data di Scadenza (MM/AA)") }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
                             value = cvc,
                             onValueChange = { cvc = it },
                             label = { Text("CVC") }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
-                            paymentMethods = paymentMethods + cardNumber.text
+                            paymentMethods = paymentMethods + "${cardNumber.text} (Scadenza: ${expirationDate.text})"
                             showAddPaymentDialog = false
                         }) {
                             Text(text = "Salva")

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
-import com.example.caesarzonapplication.ui.components.ReportsSection
+import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
 
@@ -20,7 +20,7 @@ enum class AccountTab {
     Profilo,
     Pagamenti,
     Ordini,
-    Segnalazioni,
+    Assistenza,
     Resi
 }
 
@@ -36,6 +36,7 @@ fun AccountScreen(padding: PaddingValues) {
     ) {
         Column(
             modifier = Modifier
+                
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -78,7 +79,7 @@ fun AccountScreen(padding: PaddingValues) {
                 AccountTab.Profilo -> UserInfoSection()
                 AccountTab.Pagamenti -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
-                AccountTab.Segnalazioni -> ReportsSection()
+                AccountTab.Assistenza -> SupportSection()
                 AccountTab.Resi -> ReturnsSection()
             }
         }
