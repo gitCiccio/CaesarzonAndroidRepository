@@ -99,7 +99,7 @@ fun UserInfoSection() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = { passwordVisible = !passwordVisible }) {
-                Text(if (passwordVisible) "Nascondi" else "Mostra")
+                Text(softWrap = false, text= if (passwordVisible) "Nascondi" else "Mostra")
             }
         }
 

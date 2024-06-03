@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.ui.screens
 
 import VerticalProductSection
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,20 +39,19 @@ fun ShoppingCartScreen(padding: PaddingValues, shoppingCartViewModel: ProductsVi
                     .fillMaxSize()
                     .padding(padding)
                     .padding(top = 20.dp)
-                    .background(Color(247, 170, 76, 255)),
+                    .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.Top,
             ) {
-                    if(shoppingCartViewModel.productInShoppingCart.isEmpty()){
-                        EmptyShoppingCart()
-                    }else{
-                        VerticalProductSection(title = "I tuoi prodotti", products = shoppingCartViewModel.productInShoppingCart)
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    HorizontalProductSection(title = "Altri prodotti",
-                        products = homeViewModel.products)
+                Text(text = "Il tuo carrello", style = MaterialTheme.typography.headlineLarge)
+                Spacer(modifier = Modifier.height(30.dp))
+                if(shoppingCartViewModel.productInShoppingCart.isEmpty()){
+                    EmptyShoppingCart()
+                }else{
+                    VerticalProductSection(title = "I tuoi prodotti", products = shoppingCartViewModel.productInShoppingCart)
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products)
             }
         }
     )
