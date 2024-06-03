@@ -21,16 +21,16 @@ import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.R
 
 enum class AccountTab {
-    UserInfo,
-    PaymentManagement,
-    OrderManagement,
-    Reports,
-    Returns
+    Profilo,
+    Pagamenti,
+    Ordini,
+    Segnalazioni,
+    Resi
 }
 
 @Composable
 fun AccountScreen(padding: PaddingValues) {
-    var selectedTab by remember { mutableStateOf(AccountTab.UserInfo) }
+    var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
 
     Box(
         modifier = Modifier
@@ -66,7 +66,7 @@ fun AccountScreen(padding: PaddingValues) {
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AccountTab.values().forEach { tab ->
+                AccountTab.entries.forEach { tab ->
                     Tab(
                         text = { Text(text = tab.name) },
                         selected = selectedTab == tab,
@@ -79,11 +79,11 @@ fun AccountScreen(padding: PaddingValues) {
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.UserInfo -> UserInfoSection()
-                AccountTab.PaymentManagement -> PaymentManagementSection()
-                AccountTab.OrderManagement -> OrderManagementSection()
-                AccountTab.Reports -> ReportsSection()
-                AccountTab.Returns -> ReturnsSection()
+                AccountTab.Profilo -> UserInfoSection()
+                AccountTab.Pagamenti -> PaymentManagementSection()
+                AccountTab.Ordini -> OrderManagementSection()
+                AccountTab.Segnalazioni -> ReportsSection()
+                AccountTab.Resi -> ReturnsSection()
             }
         }
     }

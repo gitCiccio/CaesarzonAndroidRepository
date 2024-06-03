@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.caesarzonapplication.R
 
 @Composable
-fun EmptySchoppingCart(){
+fun EmptyShoppingCart(){
     Column(verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "Il carrello è vuoto")
