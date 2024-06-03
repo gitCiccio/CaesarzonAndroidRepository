@@ -9,14 +9,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportsSection() {
+fun SupportSection() {
     var reportText by remember { mutableStateOf(TextFieldValue("")) }
     var expanded by remember { mutableStateOf(false) }
-    var selectedReason by remember { mutableStateOf("Motivo 1") }
-    val reportReasons = listOf("Motivo 1", "Motivo 2", "Motivo 3")
+    var selectedReason by remember { mutableStateOf("Seleziona...") }
+    val reportReasons = listOf("Ordine", "Spedizione", "Resi e rimborsi", "Domande sui prodotti", "Assistenza post-vendita", "Problemi tecnici", "Modifiche dell'account", "Promozione e sconti", "Feedback e suggerimenti", "Assistenza personalizzata")
 
     Column {
-        Text(text = "Invia una segnalazione", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Invia richiesta", style = MaterialTheme.typography.bodyMedium)
         Spacer(modifier = Modifier.height(8.dp))
 
         ExposedDropdownMenuBox(
@@ -26,7 +26,7 @@ fun ReportsSection() {
             TextField(
                 value = selectedReason,
                 onValueChange = {},
-                label = { Text("Motivo della segnalazione") },
+                label = { Text("Motivo") },
                 readOnly = true,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -64,8 +64,8 @@ fun ReportsSection() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { /* Logica per inviare la segnalazione */ }) {
-            Text(text = "Invia segnalazione")
+        Button(onClick = { /* Logica per inviare la richiesta */ }) {
+            Text(text = "Invia richiesta")
         }
     }
 }
