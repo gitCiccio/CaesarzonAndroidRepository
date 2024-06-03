@@ -1,15 +1,19 @@
 package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -52,9 +56,9 @@ fun AccountScreen(padding: PaddingValues) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Utilizziamo il componente TabRow per visualizzare le opzioni delle schede
-            TabRow(
+            ScrollableTabRow(
                 selectedTabIndex = selectedTab.ordinal,
+                edgePadding = 0.dp,
                 indicator = { tabPositions ->
                     TabRowDefaults.Indicator(
                         Modifier.tabIndicatorOffset(tabPositions[selectedTab.ordinal])
@@ -62,7 +66,6 @@ fun AccountScreen(padding: PaddingValues) {
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Iteriamo sulle opzioni delle schede e creiamo una scheda per ognuna di esse
                 AccountTab.values().forEach { tab ->
                     Tab(
                         text = { Text(text = tab.name) },
@@ -75,7 +78,6 @@ fun AccountScreen(padding: PaddingValues) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Contenuto della scheda selezionata
             when (selectedTab) {
                 AccountTab.UserInfo -> UserInfoSection()
                 AccountTab.PaymentManagement -> PaymentManagementSection()
@@ -86,8 +88,6 @@ fun AccountScreen(padding: PaddingValues) {
         }
     }
 }
-
-
 
 @Composable
 fun UserInfoSection() {
@@ -144,19 +144,20 @@ fun UserInfoSection() {
 
 @Composable
 fun PaymentManagementSection() {
-    var cardNumber by remember { mutableStateOf(TextFieldValue("**** **** **** 1234")) }
+    var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
+    var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
+    var cvc by remember { mutableStateOf(TextFieldValue("")) }
+    var paymentMethods by remember { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
     var showAddPaymentDialog by remember { mutableStateOf(false) }
+    var showRemovePaymentDialog by remember { mutableStateOf(false) }
 
     Column {
-        Text(text = "Metodo di pagamento", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Metodi di pagamento", style = MaterialTheme.typography.bodyMedium)
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = cardNumber,
-            onValueChange = { cardNumber = it },
-            label = { Text("Carta di Credito") },
-            enabled = false
-        )
+        paymentMethods.forEach { method ->
+            Text(text = method, modifier = Modifier.padding(8.dp))
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -166,7 +167,7 @@ fun PaymentManagementSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(onClick = { /* Logica per rimuovere metodo di pagamento */ }) {
+        Button(onClick = { showRemovePaymentDialog = true }) {
             Text(text = "Rimuovi metodo di pagamento")
         }
 
@@ -181,19 +182,107 @@ fun PaymentManagementSection() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(Color.White, shape = MaterialTheme.shapes.medium)
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Aggiungi Metodo di Pagamento")
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            Text(
+                                text = "Aggiungi Metodo di Pagamento",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Chiudi",
+                                modifier = Modifier
+                                    .clickable { showAddPaymentDialog = false }
+                            )
+                        }
+                        TextField(
+                            value = cardHolderName,
+                            onValueChange = { cardHolderName = it },
+                            label = { Text("Nome e Cognome del Titolare") }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                         TextField(
                             value = cardNumber,
                             onValueChange = { cardNumber = it },
                             label = { Text("Numero Carta di Credito") }
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = cvc,
+                            onValueChange = { cvc = it },
+                            label = { Text("CVC") }
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { showAddPaymentDialog = false }) {
+                        Button(onClick = {
+                            paymentMethods = paymentMethods + cardNumber.text
+                            showAddPaymentDialog = false
+                        }) {
                             Text(text = "Salva")
+                        }
+                    }
+                }
+            }
+        }
+
+        if (showRemovePaymentDialog) {
+            Dialog(onDismissRequest = { showRemovePaymentDialog = false }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            Text(
+                                text = "Rimuovi Metodo di Pagamento",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Chiudi",
+                                modifier = Modifier
+                                    .clickable { showRemovePaymentDialog = false }
+                            )
+                        }
+                        paymentMethods.forEach { method ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = method, modifier = Modifier.weight(1f))
+                                IconButton(onClick = {
+                                    paymentMethods = paymentMethods - method
+                                }) {
+                                    Icon(
+                                        Icons.Filled.Close,
+                                        contentDescription = "Rimuovi"
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -284,6 +373,7 @@ fun ReturnsSection() {
     val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3") // Dati fittizi
     var showReturnDialog by remember { mutableStateOf(false) }
     var selectedOrder by remember { mutableStateOf("") }
+    var returnReason by remember { mutableStateOf(TextFieldValue("")) }
 
     Column {
         Text(text = "Cronologia ordini per reso", style = MaterialTheme.typography.bodyMedium)
@@ -313,15 +403,36 @@ fun ReturnsSection() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(Color.White, shape = MaterialTheme.shapes.medium)
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Richiesta reso per $selectedOrder")
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            Text(
+                                text = "Richiesta reso per $selectedOrder",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = "Chiudi",
+                                modifier = Modifier
+                                    .clickable { showReturnDialog = false }
+                            )
+                        }
                         TextField(
-                            value = "",
-                            onValueChange = {},
-                            label = { Text("Motivo del reso") }
+                            value = returnReason,
+                            onValueChange = { returnReason = it },
+                            label = { Text("Motivo del reso") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = { showReturnDialog = false }) {
