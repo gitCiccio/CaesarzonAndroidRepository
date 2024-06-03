@@ -34,7 +34,7 @@ fun UserInfoSection() {
             label = { Text("Nome") }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         TextField(
             value = email,
@@ -42,7 +42,7 @@ fun UserInfoSection() {
             label = { Text("Email") }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Box {
             TextField(
@@ -74,24 +74,25 @@ fun UserInfoSection() {
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Row {
             Button(onClick = { showAddAddressDialog = true }, modifier = Modifier.weight(1f)) {
                 Text(text = "Aggiungi indirizzo")
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(15.dp))
 
             Button(onClick = { showRemoveAddressDialog = true }, modifier = Modifier.weight(1f)) {
                 Text(text = "Rimuovi indirizzo")
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
+                modifier = Modifier.width(220.dp),
                 value = if (passwordVisible) TextFieldValue("password123") else TextFieldValue("********"),
                 onValueChange = {},
                 label = { Text("Password") },
@@ -106,7 +107,7 @@ fun UserInfoSection() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
-            Text(text = "Aggiorna Profilo")
+            Text(text = "Modifica password")
         }
     }
 
