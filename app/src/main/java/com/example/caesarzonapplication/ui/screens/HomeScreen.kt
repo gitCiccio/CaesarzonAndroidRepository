@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.ui.components.AppTopBar
+import com.example.caesarzonapplication.ui.components.CategoryGrid
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
@@ -27,18 +29,19 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel){
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController())},
         content = { padding ->
-            Column (
+            LazyColumn (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(top=20.dp)
-                    .background(Color(247, 170, 76, 255)
-                    )
+                    .background(Color.White)
             ){
-                Spacer(modifier = Modifier.height(5.dp))
-                HorizontalProductSection(title ="Offerte speciali", products = homeViewModel.products)
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalProductSection(title = "Novità", products = homeViewModel.products)
+                item{
+                    Column {
+                        CategoryGrid()
+                        HorizontalProductSection(title ="Offerte speciali", products = homeViewModel.products)
+                        HorizontalProductSection(title = "Novità", products = homeViewModel.products)
+                    }
+                }
 
             }
         }

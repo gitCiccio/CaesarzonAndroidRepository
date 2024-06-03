@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
 
-class ProductsVieModel : ViewModel() {
+class ProductsViewModel: ViewModel() {
 
     private val _productsInShoppingCart = mutableStateListOf<Product>()
 
@@ -25,7 +25,7 @@ class ProductsVieModel : ViewModel() {
             listOf(
                 Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true),
                 Product("Product 3", R.drawable.logo, 19.99, "Descrizione di Product 3", true)
-                )
+            )
         )
     }
 }
