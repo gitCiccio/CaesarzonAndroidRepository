@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,8 @@ fun ProductCard(product: Product){
             .width(200.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ){
-        Column{
+        Column(modifier = Modifier
+            .background(Color(247, 177, 76, 255))){
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
