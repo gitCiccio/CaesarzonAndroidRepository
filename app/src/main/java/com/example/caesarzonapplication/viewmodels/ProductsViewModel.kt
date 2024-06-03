@@ -18,7 +18,7 @@ class ProductsViewModel: ViewModel() {
     }
      */
     init {
-        //loadSimpleProducts()
+        loadSimpleProducts()
     }
     fun loadSimpleProducts(){
         _productsInShoppingCart.addAll(
