@@ -3,6 +3,9 @@ package com.example.caesarzonapplication.viewmodels
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class UserViewModel: ViewModel(){
     private val _users = mutableStateListOf<User>()
@@ -24,7 +27,8 @@ class UserViewModel: ViewModel(){
                 User("Pino Cammino",true),
                 User("Tina Patatina",false),
                 User("Giulio Regeni",false),
-                User("Thomas Turbato",false)
+                User("Thomas Turbato",false),
+                User("Monica Camo",false)
             )
         )
     }
@@ -36,7 +40,6 @@ class UserViewModel: ViewModel(){
     }
 
     fun toggleFavorite(user: User){
-        user.copy(user.username, !user.isFavorite)
-        println("Username: "+user.username+" status: "+user.isFavorite.toString())
+        CoroutineScope(Dispatchers.IO).launch { user.isFavorite = !user.isFavorite }
     }
 }
