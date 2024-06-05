@@ -21,6 +21,7 @@ import com.example.caesarzonapplication.ui.components.EmptyShoppingCart
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ProductCard
+import com.example.caesarzonapplication.ui.components.ShoppingCartCard
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 
@@ -46,9 +47,8 @@ fun ShoppingCartScreen(padding: PaddingValues, shoppingCartViewModel: ProductsVi
                         EmptyShoppingCart()
                     }
                 } else {
-                    items(shoppingCartViewModel.productInShoppingCart){ product ->
-                        Spacer(modifier = Modifier.height(20.dp))
-                        ProductCard(product = product)
+                    items(10){ product ->
+                        ShoppingCartCard()
                         Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
