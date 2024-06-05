@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserInfoSection() {
     var name by remember { mutableStateOf(TextFieldValue("John Doe")) }
