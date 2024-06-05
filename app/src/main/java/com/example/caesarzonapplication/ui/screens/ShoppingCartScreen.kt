@@ -47,6 +47,7 @@ fun ShoppingCartScreen(padding: PaddingValues, shoppingCartViewModel: ProductsVi
                     }
                 } else {
                     items(shoppingCartViewModel.productInShoppingCart){ product ->
+                        Spacer(modifier = Modifier.height(20.dp))
                         ProductCard(product = product)
                         Spacer(modifier = Modifier.height(15.dp))
                     }

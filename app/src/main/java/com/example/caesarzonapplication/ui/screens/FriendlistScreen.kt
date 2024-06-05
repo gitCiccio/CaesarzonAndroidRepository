@@ -1,7 +1,7 @@
 package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -99,21 +99,24 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ){
-        Text(text= user.username)
-        IconButton(onClick = {userViewModel.toggleFavorite(user)}) {
-            if(user.isFavorite){
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = null
-                )
-            }else{
-                Icon(
-                    imageVector = Icons.Filled.FavoriteBorder,
-                    contentDescription = null)
-            }
+        Text(text= user.username, modifier = Modifier
+            .padding(12.dp)
+        )
+        var userFavorite by rememberSaveable { mutableStateOf(user.isFavorite) }
+        if(userFavorite){
+            Icon(
+                Icons.Filled.Favorite,
+                contentDescription = null,
+                modifier = Modifier.clickable { userFavorite=false; userViewModel.toggleFavorite(user) }
+            )
+        }else{
+            Icon(
+                Icons.Filled.FavoriteBorder,
+                contentDescription = null,
+                modifier = Modifier.clickable { userFavorite=true; userViewModel.toggleFavorite(user) }
+            )
         }
     }
 }
+
