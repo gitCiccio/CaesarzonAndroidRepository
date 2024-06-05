@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +34,7 @@ import com.example.caesarzonapplication.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(){
-    var textFieldValue by remember { mutableStateOf("")}
+    var textFieldValue by rememberSaveable { mutableStateOf("")}
 
     Column(
         modifier = Modifier
@@ -43,19 +44,21 @@ fun AppTopBar(){
         TopAppBar(
             modifier = Modifier
                 .background(Color(100, 104, 208))
-                .height(100.dp), // Distanza dalla barra delle notifiche
+                .padding(8.dp),// Distanza dalla barra delle notifiche
             title = {
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
                 modifier = Modifier
                     .padding(horizontal = 15.dp)
-                    .height(60.dp),
+                    .height(50.dp),
                 placeholder = { Text(text = "Cerca...")},
                 shape = RoundedCornerShape(50),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.LightGray,
-                    focusedTextColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             },
@@ -65,15 +68,15 @@ fun AppTopBar(){
                     contentDescription = "Caesarzon",
                     modifier = Modifier
                         .width(90.dp)
-                        .height(100.dp)
-                        .padding(vertical = 4.dp)
+                        .height(80.dp)
+                        .padding(vertical = 3.dp)
                 )
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color(100,104,208)
             )
         )
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
 
 }

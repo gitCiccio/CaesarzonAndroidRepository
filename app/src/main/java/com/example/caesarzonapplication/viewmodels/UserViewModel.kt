@@ -36,6 +36,7 @@ class UserViewModel: ViewModel(){
     }
 
     fun toggleFavorite(user: User){
-        user.isFavorite = !user.isFavorite
+        user.copy(user.username, !user.isFavorite)
+        println("Username: "+user.username+" status: "+user.isFavorite.toString())
     }
 }

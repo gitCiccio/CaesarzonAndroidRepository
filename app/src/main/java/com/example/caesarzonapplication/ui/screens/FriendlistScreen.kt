@@ -103,11 +103,17 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(text= user.username)
-        IconButton(onClick = { mutableStateOf(userViewModel.toggleFavorite(user)) }) {
-            Icon(
-                imageVector = if(user.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = null
-            )
+        IconButton(onClick = {userViewModel.toggleFavorite(user)}) {
+            if(user.isFavorite){
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null
+                )
+            }else{
+                Icon(
+                    imageVector = Icons.Filled.FavoriteBorder,
+                    contentDescription = null)
+            }
         }
     }
 }
