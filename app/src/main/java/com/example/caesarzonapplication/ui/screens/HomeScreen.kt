@@ -24,7 +24,7 @@ import com.example.caesarzonapplication.viewmodels.HomeViewModel
 fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel){
     Scaffold(
         topBar = { Column {
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(45.dp))
                 AppTopBar()
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController())},
