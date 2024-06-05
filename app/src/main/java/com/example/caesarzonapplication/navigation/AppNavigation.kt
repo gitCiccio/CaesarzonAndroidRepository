@@ -14,6 +14,7 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.viewmodels.UserViewModel
 
 @Composable
@@ -29,7 +30,7 @@ fun AppNavigation(){
                 startDestination = "home"
             ){
                 composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel())}
-                composable("shopcart"){ ShoppingCartScreen(padding, shoppingCartViewModel = ProductsViewModel(), homeViewModel = HomeViewModel())}
+                composable("shopcart"){ ShoppingCartScreen(padding, shoppingCartViewModel = ShoppingCartViewModel(), homeViewModel = HomeViewModel())}
                 composable("userInfo"){AccountScreen(padding)}
                 composable("friendlist"){ FriendlistScreen(userViewModel = UserViewModel()) }
             }
