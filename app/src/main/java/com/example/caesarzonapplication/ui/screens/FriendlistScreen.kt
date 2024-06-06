@@ -141,7 +141,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                             items(userViewModel.users.filter {
                                 it.username.contains(searchQuery, ignoreCase = true)
                             }) { user ->
-                                UserRow(remember { user }, userViewModel)
+                                UserRow( user, userViewModel)
                             }
                         }
                     UsersTab.Amici ->
@@ -150,10 +150,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .fillMaxSize()
                                 .padding(8.dp)
                         ) {
-                            items(userViewModel.friends.filter {
+                            items(userViewModel.followers.filter {
                                 it.username.contains(searchQuery, ignoreCase = true)
                             }) { user ->
-                                FriendsRow(remember { user }, userViewModel)
+                                FriendsRow(user, userViewModel)
                             }
                         }
                     UsersTab.Preferiti ->
@@ -162,10 +162,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .fillMaxSize()
                                 .padding(8.dp)
                         ) {
-                            items(userViewModel.favorites.filter {
+                            items(userViewModel.friends.filter {
                                 it.username.contains(searchQuery, ignoreCase = true)
                             }) { user ->
-                                UserRow(remember { user }, userViewModel)
+                                FriendsRow( user, userViewModel)
                             }
                         }
                 }
@@ -176,7 +176,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
 
 @Composable
 fun UserRow(user: User, userViewModel: UserViewModel) {
-
+    var isFollower by remember { mutableStateOf(user.isFollower) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -189,21 +189,12 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
                 .padding(12.dp)
                 .weight(1f)
         )
-        var userFavorite by rememberSaveable { mutableStateOf(user.isFavorite) }
-        if (userFavorite) {
-            Icon(
-                imageVector = Icons.Filled.Clear,
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { userFavorite = false; userViewModel.toggleFavorite(user) }
-                    .padding(12.dp)
-            )
-        } else {
+        if (!isFollower) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userFavorite = true; userViewModel.toggleFavorite(user); userViewModel.addFriend(user)}
+                    .clickable { userViewModel.addFollower(user) }
                     .padding(12.dp)
             )
         }
@@ -212,7 +203,7 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
 
 @Composable
 fun FriendsRow(user: User, userViewModel: UserViewModel) {
-
+    var isFriend by remember { mutableStateOf(user.isFriend) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -225,13 +216,18 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
                 .padding(12.dp)
                 .weight(1f)
         )
-        var userFavorite by rememberSaveable { mutableStateOf(user.isFavorite) }
-        if (userFavorite) {
+        Icon(
+            imageVector = Icons.Filled.Clear,
+            contentDescription = null,
+            modifier = Modifier
+                .clickable { userViewModel.removeFollower(user) }
+        )
+        if (isFriend) {
             Icon(
                 imageVector = Icons.Filled.Favorite,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userFavorite = false; userViewModel.toggleFavorite(user) }
+                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = false }
                     .padding(12.dp)
             )
         } else {
@@ -239,7 +235,7 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.FavoriteBorder,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userFavorite = true; userViewModel.toggleFavorite(user) }
+                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = true  }
                     .padding(12.dp)
             )
         }
