@@ -51,15 +51,15 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
 
             Spacer(modifier = Modifier.padding(70.dp))
             Row(modifier = Modifier.padding(top = 8.dp)){
-                IconButton(onClick = { if(quantity>1) quantity-=1 }, modifier = Modifier.width(25.dp)) {
+                IconButton(onClick = { if(product.quantity>1) product.copy((product.quantity-1).toString()) }, modifier = Modifier.width(25.dp)) {
                     Icon(painter = painterResource(id = R.drawable.minus), contentDescription = null)
                 }
 
                 Spacer(modifier = Modifier.padding(8.dp))
-                Text(text = if (quantity<10) "${quantity}" else "10+", fontSize = 40.sp, modifier = Modifier.padding(top= 2.dp))
+                Text(text = if (product.quantity<10) product.quantity.toString() else "10+", fontSize = 40.sp, modifier = Modifier.padding(top= 2.dp))
                 Spacer(modifier = Modifier.padding(8.dp))
 
-                IconButton(onClick = { if(quantity<10) quantity+=1 }, modifier = Modifier.width(25.dp)) {
+                IconButton(onClick = { if(product.quantity<10) product.copy((product.quantity+1).toString()) }, modifier = Modifier.width(25.dp)) {
                     if(quantity<10)
                         Icon(painter = painterResource(id = R.drawable.plus), contentDescription = null)
                 }
