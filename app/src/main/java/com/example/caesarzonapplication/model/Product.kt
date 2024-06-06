@@ -8,5 +8,5 @@ data class Product(
     val price: Double,
     val description: String,
     val isInTheShoppingCart: Boolean,
-    val quantity: Int
+    var quantity: Int
 )

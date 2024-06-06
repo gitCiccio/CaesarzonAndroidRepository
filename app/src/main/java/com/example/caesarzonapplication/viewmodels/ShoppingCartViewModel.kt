@@ -66,6 +66,22 @@ class ShoppingCartViewModel: ViewModel() {
 
     }
 
+    fun incriseProduct(product: Product){
+        val product = _productsInShoppingCart.find { it == product }
+        product?.let {
+            if(it.quantity<10)
+                it.quantity+=1
+        }
+    }
+
+    fun decreaseProduct(product: Product){
+        val product = _productsInShoppingCart.find { it == product }
+        product?.let {
+            if(it.quantity>0)
+                it.quantity-=1
+        }
+    }
+
     fun deleteProduct(name: String){
         println("Prodotto eliminato: "+name)
         _productsInShoppingCart.removeAll{ it.name == name }

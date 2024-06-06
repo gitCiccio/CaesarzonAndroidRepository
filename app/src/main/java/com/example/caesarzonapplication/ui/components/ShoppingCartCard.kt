@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,15 +29,13 @@ import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 @Composable
 fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewModel) {
 
-    var quantity by rememberSaveable { mutableIntStateOf(1) }
-
     Card(modifier = Modifier
         .height(320.dp)
         .width(380.dp)
     ){
         Row {
             Image(painter = painterResource(id =product.imageRes), contentDescription = "foto_del_prodotto",
-                Modifier.size(200.dp))
+                Modifier.size(150.dp).padding(10.dp))
             Text(text = product.name, fontSize = 30.sp, modifier = Modifier.padding(top = 30.dp))
         }
 
@@ -47,11 +46,12 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
                     .height(70.dp)
                     .width(50.dp)) {
                 Icon(painter = painterResource(id = R.drawable.trash_bin), contentDescription = "cancel_product")
+                Text(text = "Cancel", fontSize = 10.sp, modifier = Modifier.padding(top = 70.dp))
             }
 
             Spacer(modifier = Modifier.padding(70.dp))
             Row(modifier = Modifier.padding(top = 8.dp)){
-                IconButton(onClick = { if(product.quantity>1) product.copy((product.quantity-1).toString()) }, modifier = Modifier.width(25.dp)) {
+                IconButton(onClick = { shoppingCartViewModel.decreaseProduct(product) }, modifier = Modifier.width(25.dp)) {
                     Icon(painter = painterResource(id = R.drawable.minus), contentDescription = null)
                 }
 
@@ -59,8 +59,8 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
                 Text(text = if (product.quantity<10) product.quantity.toString() else "10+", fontSize = 40.sp, modifier = Modifier.padding(top= 2.dp))
                 Spacer(modifier = Modifier.padding(8.dp))
 
-                IconButton(onClick = { if(product.quantity<10) product.copy((product.quantity+1).toString()) }, modifier = Modifier.width(25.dp)) {
-                    if(quantity<10)
+                IconButton(onClick = { shoppingCartViewModel.incriseProduct(product) }, modifier = Modifier.width(25.dp)) {
+                    if(product.quantity<10)
                         Icon(painter = painterResource(id = R.drawable.plus), contentDescription = null)
                 }
             }
