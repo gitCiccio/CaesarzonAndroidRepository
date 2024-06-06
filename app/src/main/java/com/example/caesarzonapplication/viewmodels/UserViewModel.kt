@@ -24,11 +24,11 @@ class UserViewModel: ViewModel(){
     private fun loadUsers() {
         _users.addAll(
             listOf(
-                User("Pino Cammino",false, false),
-                User("Tina Patatina",false, false),
-                User("Giulio Regeni",false, false),
-                User("Thomas Turbato",false, false),
-                User("Monica Camo",false, false)
+                User("Pino Cammino",false, false, true),
+                User("Tina Patatina",false, false, true),
+                User("Giulio Regeni",false, false, true),
+                User("Thomas Turbato",false, false, true),
+                User("Monica Camo",false, false, true)
             )
         )
     }
@@ -36,20 +36,30 @@ class UserViewModel: ViewModel(){
     fun addFollower(user: User){
         if(!_followers.contains(user)){
             _followers.add(user)
+            _users.remove(user)
+            user.isFollower = true
+            user.isUser = false
         }
-        user.isFollower = true
+        else{
+            _followers.remove(user)
+            _users.add(user)
+            user.isFollower = false
+            user.isUser = true
+        }
     }
-
+/*
     fun removeFollower(user: User){
         if(_followers.contains(user)){
             _followers.remove(user)
+            _users.add(user)
             user.isFollower = false
-        }
-        if(_friends.contains(user)){
-            _friends.remove(user)
-            user.isFriend = false
+            user.isUser = true
         }
     }
+
+ */
+
+
 
     fun toggleFriendStatus(user: User){
         CoroutineScope(Dispatchers.IO).launch {

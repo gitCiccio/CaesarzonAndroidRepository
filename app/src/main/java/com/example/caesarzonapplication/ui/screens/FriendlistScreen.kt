@@ -220,7 +220,7 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
             imageVector = Icons.Filled.Clear,
             contentDescription = null,
             modifier = Modifier
-                .clickable { userViewModel.removeFollower(user) }
+                .clickable { userViewModel.addFollower(user) }
         )
         if (isFriend) {
             Icon(
