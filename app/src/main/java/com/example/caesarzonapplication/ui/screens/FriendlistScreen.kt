@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -51,8 +52,8 @@ import androidx.compose.runtime.mutableStateListOf
 
 enum class UsersTab {
     Utenti,
-    Amici,
-    Preferiti
+    Seguiti,
+    Amici
 }
 @Composable
 fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
@@ -144,7 +145,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 UserRow( user, userViewModel)
                             }
                         }
-                    UsersTab.Amici ->
+                    UsersTab.Seguiti ->
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -156,7 +157,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 FriendsRow(user, userViewModel)
                             }
                         }
-                    UsersTab.Preferiti ->
+                    UsersTab.Amici ->
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -194,7 +195,15 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.addFollower(user) }
+                    .clickable { userViewModel.addFollower(user); isFollower = true }
+                    .padding(12.dp)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = null,
+                modifier = Modifier
+                    .clickable { userViewModel.removeFollower(user); isFollower = false }
                     .padding(12.dp)
             )
         }
@@ -220,7 +229,7 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
             imageVector = Icons.Filled.Clear,
             contentDescription = null,
             modifier = Modifier
-                .clickable { userViewModel.addFollower(user) }
+                .clickable { userViewModel.removeFollower(user) }
         )
         if (isFriend) {
             Icon(
