@@ -9,4 +9,5 @@ data class Product(
     val description: String,
     val isInTheShoppingCart: Boolean,
     var quantity: Int
+
 )
