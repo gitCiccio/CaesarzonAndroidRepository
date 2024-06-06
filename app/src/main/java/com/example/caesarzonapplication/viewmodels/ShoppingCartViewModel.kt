@@ -1,8 +1,12 @@
 package com.example.caesarzonapplication.viewmodels
 
+import android.media.Image
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.traceEventEnd
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -66,21 +70,39 @@ class ShoppingCartViewModel: ViewModel() {
 
     }
 
-    fun incriseProduct(product: Product){
-        val product = _productsInShoppingCart.find { it == product }
-        product?.let {
-            if(it.quantity<10)
-                it.quantity+=1
-        }
+    fun getProduct(name: String): Product?{
+        return _productsInShoppingCart.find { it.name == name }
     }
 
-    fun decreaseProduct(product: Product){
-        val product = _productsInShoppingCart.find { it == product }
-        product?.let {
-            if(it.quantity>0)
-                it.quantity-=1
-        }
+    fun getImage(name: String): Int {
+        return _productsInShoppingCart.find { it.name == name }?.imageRes ?: 0
     }
+
+
+    fun increaseProduct(product: Product) {
+        val existingProduct = _productsInShoppingCart.find { it.name == product.name }
+        existingProduct?.let {
+            if (it.quantity < 10) {
+                val updatedProduct = it.copy(quantity = it.quantity + 1)
+                val index = _productsInShoppingCart.indexOf(it)
+                _productsInShoppingCart[index] = updatedProduct // Update quantity at the same index
+            }
+        }
+        println("nome " + existingProduct?.name + " quantità: " + existingProduct?.quantity)
+    }
+
+    fun decreaseProduct(product: Product) {
+        val existingProduct = _productsInShoppingCart.find { it.name == product.name }
+        existingProduct?.let {
+            if (it.quantity > 0) {
+                val updatedProduct = it.copy(quantity = it.quantity - 1)
+                val index = _productsInShoppingCart.indexOf(it)
+                _productsInShoppingCart[index] = updatedProduct // Update quantity at the same index
+            }
+        }
+        println("nome " + existingProduct?.name + " quantità: " + existingProduct?.quantity)
+    }
+
 
     fun deleteProduct(name: String){
         println("Prodotto eliminato: "+name)

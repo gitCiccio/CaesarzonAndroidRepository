@@ -26,6 +26,7 @@ import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 
 
+
 @Composable
 fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewModel) {
 
@@ -34,7 +35,7 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
         .width(380.dp)
     ){
         Row {
-            Image(painter = painterResource(id =product.imageRes), contentDescription = "foto_del_prodotto",
+            Image(painter = shoppingCartViewModel.getProduct(name = product.name)?.imageRes?.let { painterResource(id = it) } ?: painterResource(id = R.drawable.ic_launcher_background), contentDescription = "foto_del_prodotto",
                 Modifier.size(150.dp).padding(10.dp))
             Text(text = product.name, fontSize = 30.sp, modifier = Modifier.padding(top = 30.dp))
         }
@@ -56,10 +57,13 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
                 }
 
                 Spacer(modifier = Modifier.padding(8.dp))
-                Text(text = if (product.quantity<10) product.quantity.toString() else "10+", fontSize = 40.sp, modifier = Modifier.padding(top= 2.dp))
+                Text(text = if((shoppingCartViewModel.getProduct(product.name)?.quantity ?: 0) > 10)
+                {"10+"}
+                    else
+                {shoppingCartViewModel.getProduct(product.name)?.quantity.toString()}, fontSize = 40.sp, modifier = Modifier.padding(top= 2.dp))
                 Spacer(modifier = Modifier.padding(8.dp))
 
-                IconButton(onClick = { shoppingCartViewModel.incriseProduct(product) }, modifier = Modifier.width(25.dp)) {
+                IconButton(onClick = { shoppingCartViewModel.increaseProduct(product) }, modifier = Modifier.width(25.dp)) {
                     if(product.quantity<10)
                         Icon(painter = painterResource(id = R.drawable.plus), contentDescription = null)
                 }
