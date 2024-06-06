@@ -11,11 +11,11 @@ class UserViewModel: ViewModel(){
     private val _users = mutableStateListOf<User>()
     val users: List<User> get() = _users
 
+    private val _followers = mutableStateListOf<User>()
+    val followers: List<User> get() = _followers
+
     private val _friends = mutableStateListOf<User>()
     val friends: List<User> get() = _friends
-
-    private val _favorites = mutableStateListOf<User>()
-    val favorites: List<User> get() = _favorites
 
     init {
         loadUsers()
@@ -24,22 +24,43 @@ class UserViewModel: ViewModel(){
     private fun loadUsers() {
         _users.addAll(
             listOf(
-                User("Pino Cammino",true),
-                User("Tina Patatina",false),
-                User("Giulio Regeni",false),
-                User("Thomas Turbato",false),
-                User("Monica Camo",false)
+                User("Pino Cammino",false, false),
+                User("Tina Patatina",false, false),
+                User("Giulio Regeni",false, false),
+                User("Thomas Turbato",false, false),
+                User("Monica Camo",false, false)
             )
         )
     }
 
-    fun addFriend(user: User){
-        if(!_friends.contains(user)){
-            _friends.add(user)
+    fun addFollower(user: User){
+        if(!_followers.contains(user)){
+            _followers.add(user)
+        }
+        user.isFollower = true
+    }
+
+    fun removeFollower(user: User){
+        if(_followers.contains(user)){
+            _followers.remove(user)
+            user.isFollower = false
+        }
+        if(_friends.contains(user)){
+            _friends.remove(user)
+            user.isFriend = false
         }
     }
 
-    fun toggleFavorite(user: User){
-        CoroutineScope(Dispatchers.IO).launch { user.isFavorite = !user.isFavorite }
+    fun toggleFriendStatus(user: User){
+        CoroutineScope(Dispatchers.IO).launch {
+            user.isFriend = !user.isFriend;
+            if(_friends.contains(user)){
+                _friends.remove(user)
+                user.isFriend = false
+            }else{
+                _friends.add(user)
+                user.isFriend = true
+            }
+        }
     }
 }

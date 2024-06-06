@@ -23,9 +23,9 @@ class ProductsViewModel: ViewModel() {
     fun loadSimpleProducts(){
         _productsInShoppingCart.addAll(
             listOf(
-                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true),
-                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true),
-                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true)
+                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true, 30),
+                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true, 30),
+                Product("Product 2", R.drawable.logo, 59.99, "Descrizione di Product 2", true, 30)
                 )
         )
     }
