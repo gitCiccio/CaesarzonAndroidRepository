@@ -27,7 +27,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel){
                 Spacer(modifier = Modifier.height(45.dp))
                 AppTopBar()
         } },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController())},
+        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = true)},
         content = { padding ->
             LazyColumn (
                 modifier = Modifier

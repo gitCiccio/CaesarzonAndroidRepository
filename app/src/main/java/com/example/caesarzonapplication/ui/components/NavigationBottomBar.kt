@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -16,7 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.caesarzonapplication.R
 
 @Composable
-fun NavigationBottomBar(navController: NavHostController){
+fun NavigationBottomBar(navController: NavHostController, logged: Boolean){
     //selectedIndex: MutableState<Int>, dovreppe essere un parametro delle fun
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry.value?.destination
@@ -37,13 +38,14 @@ fun NavigationBottomBar(navController: NavHostController){
             }
         )
 
+
         NavigationBarItem(
-            selected = currentDestination?.route == "userInfo",
-            onClick = { navController.navigate("userInfo") },
-            icon = { Icon(Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.userInfo),
-                tint = if (currentDestination?.route == "userInfo") Color(238, 137, 60, 255) else Color.Black)
-            }
+                selected = currentDestination?.route == "userInfo",
+                onClick = { navController.navigate("userInfo") },
+                icon = { Icon(Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.userInfo),
+                    tint = if (currentDestination?.route == "userInfo") Color(238, 137, 60, 255) else Color.Black) }
         )
+
 
         NavigationBarItem(
             selected = currentDestination?.route == "shopcart",
@@ -63,4 +65,6 @@ fun NavigationBottomBar(navController: NavHostController){
         )
     }
 }
+
+
 

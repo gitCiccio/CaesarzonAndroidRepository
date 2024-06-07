@@ -15,6 +15,7 @@ import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
+import com.example.caesarzonapplication.viewmodels.UserViewModel
 
 enum class AccountTab {
     Profilo,
@@ -25,7 +26,7 @@ enum class AccountTab {
 }
 
 @Composable
-fun AccountScreen(padding: PaddingValues) {
+fun AccountScreen(padding: PaddingValues, userViewModel: UserViewModel) {
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
 
     Box(

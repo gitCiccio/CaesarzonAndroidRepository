@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +46,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.UserViewModel
-import androidx.compose.runtime.mutableStateListOf
 
 
 enum class UsersTab {
@@ -102,7 +100,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                 )
             }
         },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController()) },
+        bottomBar = {
+            val logged = false
+            NavigationBottomBar(navController = rememberNavController(), logged = logged)
+        },
         content = { padding ->
             Column(
                 modifier = Modifier
