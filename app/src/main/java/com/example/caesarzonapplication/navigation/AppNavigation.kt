@@ -50,7 +50,14 @@ fun AppNavigation(){
                 startDestination = "home"
             ){
                 composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel())}
-                composable("shopcart"){ ShoppingCartScreen(padding, shoppingCartViewModel = ShoppingCartViewModel(), homeViewModel = HomeViewModel())}
+                composable("shopcart"){
+                    ShoppingCartScreen(
+                    padding,
+                    shoppingCartViewModel = ShoppingCartViewModel(),
+                    homeViewModel = HomeViewModel(),
+                    navController = navController,
+                    logged = logged)
+                }
                 composable("userInfo"){
                     if(logged){
                         AccountScreen(padding, userViewModel = UserViewModel())
