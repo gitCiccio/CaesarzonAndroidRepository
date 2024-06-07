@@ -24,11 +24,11 @@ class UserViewModel: ViewModel(){
     private fun loadUsers() {
         _users.addAll(
             listOf(
-                User("Pino Cammino",false, false),
-                User("Tina Patatina",false, false),
-                User("Giulio Regeni",false, false),
-                User("Thomas Turbato",false, false),
-                User("Monica Camo",false, false)
+                User("Pino Cammino",false, false, false),
+                User("Tina Patatina",false, false, false),
+                User("Giulio Regeni",false, false, false),
+                User("Thomas Turbato",false, false, false),
+                User("Monica Camo",false, false, false)
             )
         )
     }

@@ -20,9 +20,7 @@ import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ShoppingCartCard
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
-import androidx.compose.runtime.key as key
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +30,7 @@ fun ShoppingCartScreen(padding: PaddingValues, shoppingCartViewModel: ShoppingCa
             Spacer(modifier = Modifier.height(45.dp))
             AppTopBar()
         } },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController()) },
+        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = false) },
         content = { padding ->
             LazyColumn(
                 modifier = Modifier
