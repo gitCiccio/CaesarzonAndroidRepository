@@ -54,12 +54,10 @@ fun ShoppingCartScreen(
         topBar = {
             Column {
                 Spacer(modifier = Modifier.height(45.dp))
-                AppTopBar()
-                Spacer(modifier = Modifier.height(10.dp))
-
+                AppTopBar(navController)
             }
         },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = false) },
+        bottomBar = { NavigationBottomBar(navController, logged = false) },
         content = { padding ->
             if(showLoginDialog) {
                 LoginPopup(
@@ -117,14 +115,11 @@ fun ShoppingCartScreen(
                         }
                     }
                 }
-
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-                if(shoppingCartViewModel.getBuyLaterProducts().isNotEmpty()){
-                    item {
-                        HorizontalProductSection(title = "Prodotti salvati per dopo", products = shoppingCartViewModel.getBuyLaterProducts())
-                    }
+                item {
+                    HorizontalProductSection(title = "Prodotti salvati per dopo", products = homeViewModel.products)
                 }
                 item {
                     HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products)

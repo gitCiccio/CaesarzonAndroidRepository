@@ -26,7 +26,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
     Scaffold(
         topBar = { Column {
                 Spacer(modifier = Modifier.height(45.dp))
-                AppTopBar()
+                AppTopBar(navController)
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = true)},
         content = { padding ->
