@@ -1,9 +1,13 @@
 package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
-import retrofit2.http.Query
+import com.example.caesarzonapplication.model.Review
 
 @Composable
 fun ProductDetailsScreen(query: String) {
@@ -29,12 +33,33 @@ fun ProductDetailsScreen(query: String) {
         quantity = 1
     )
 
+    // Lista fittizia di recensioni
+    val reviews = listOf(
+        Review("User1", "PPPP", "Great product!"),
+        Review("User2", "Pippa", "I love it!"),
+        Review("User3", "BOB", "Not bad.")
+        // Aggiungi altre recensioni se necessario
+    )
+
+    // Stato per tenere traccia dello stato di espansione delle recensioni
+    var isReviewsExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Category section
+        Text(
+            text = "Category: Sample Category", // Replace with actual category
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Product name
         Text(
             text = sampleProduct.name,
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 28.sp),
@@ -75,44 +100,42 @@ fun ProductDetailsScreen(query: String) {
             text = sampleProduct.description,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.align(Alignment.Start)
+                .fillMaxWidth(0.9f)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
-        if (sampleProduct.isInTheShoppingCart) {
+        var isReviewsExpanded by remember { mutableStateOf(false) }
+
+// Sezione recensioni
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isReviewsExpanded = !isReviewsExpanded },
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
-                text = "This product is in your shopping cart.",
-                color = Color.Green,
+                text = "Recensioni",
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
-        } else {
-            Button(
-                onClick = { /* Logic to add to cart */ },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = "Add to Cart")
-            }
+            Icon(
+                imageVector = if (isReviewsExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Espandi/Comprimi Recensioni",
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Button(onClick = { if (sampleProduct.quantity > 1) sampleProduct.quantity-- }) {
-                Text(text = "-")
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(text = sampleProduct.quantity.toString(), style = MaterialTheme.typography.bodyMedium)
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(onClick = { sampleProduct.quantity++ }) {
-                Text(text = "+")
+        if (isReviewsExpanded) {
+            // Se le recensioni sono espandibili, mostra le recensioni
+            Column {
+                reviews.forEach { review ->
+                    Text(
+                        text = "${review.name}: ${review.surname}: ${review.comment}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                    )
+                }
             }
         }
     }
