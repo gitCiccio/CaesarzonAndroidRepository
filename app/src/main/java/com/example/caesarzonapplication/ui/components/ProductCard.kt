@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,13 +21,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.navigation.AppNavigation
+import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ProductCard(product: Product){
+fun ProductCard(product: Product, navController: NavHostController){
 
     Card(
         modifier = Modifier
@@ -43,7 +47,8 @@ fun ProductCard(product: Product){
                 contentDescription = product.name,
                 modifier = Modifier
                     .height(100.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable { navController.navigate("product/${product.name}") },
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
