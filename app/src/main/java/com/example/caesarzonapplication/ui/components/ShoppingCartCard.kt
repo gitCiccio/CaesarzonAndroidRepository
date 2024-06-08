@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
@@ -31,18 +34,23 @@ import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 
 
 @Composable
-fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewModel) {
+fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewModel, navController: NavHostController) {
 
     Card(modifier = Modifier
         .height(280.dp)
         .width(380.dp)
     ){
-        Row {
+        Row(Modifier.clickable { navController.navigate("productDetails/${product.name}")  }) {
             Image(painter = shoppingCartViewModel.getProduct(name = product.name)?.imageRes?.let { painterResource(id = it) } ?: painterResource(id = R.drawable.ic_launcher_background), contentDescription = "foto_del_prodotto",
                 Modifier
                     .size(150.dp)
-                    .padding(10.dp))
-            Text(text = product.name, fontSize = 30.sp, modifier = Modifier.padding(top = 30.dp))
+                    .padding(10.dp)
+                    .clickable { navController.navigate("productDetails/${product.name}")  }
+            )
+            Text(text = product.name, fontSize = 30.sp, modifier = Modifier
+                .padding(top = 30.dp)
+                .clickable { navController.navigate("productDetails/${product.name}")  }
+            )
         }
 
         Row{

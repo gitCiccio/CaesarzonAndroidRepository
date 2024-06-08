@@ -11,17 +11,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
 
 
 @Composable
-fun HorizontalProductSection(title: String, products: List<Product>) {
+fun HorizontalProductSection(title: String, products: List<Product>, navController: NavHostController) {
     Column(modifier = Modifier.padding(16.dp)){
         Text(text=title, style= MaterialTheme.typography.titleLarge, color= MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow {
             items(products){product->
-                ProductCard(product = product)
+                ProductCard(product = product, navController)
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,24 +21,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.navigation.AppNavigation
+import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ProductCard(product: Product){
-
+fun ProductCard(product: Product, navController: NavHostController){
     Card(
         modifier = Modifier
             .padding(end = 8.dp)
             .height(250.dp)
-            .width(200.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        onClick = {}
-    ){
-        Column(modifier = Modifier
-            .background(Color(247, 177, 76, 255))){
+            .width(200.dp)
+            .clickable { navController.navigate("productDetails/${product.name}") },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.background(Color(247, 177, 76, 255))
+        ) {
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
