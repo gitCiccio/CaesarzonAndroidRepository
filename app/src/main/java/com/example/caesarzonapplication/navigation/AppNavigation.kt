@@ -9,15 +9,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.MenuFloatingButton
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
+import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.viewmodels.UserViewModel
@@ -34,9 +37,9 @@ fun AppNavigation(){
         topBar = {},
         bottomBar = { NavigationBottomBar(navController, logged)  },
         content = { padding ->
-            if(showLoginDialog){
+            if (showLoginDialog) {
                 LoginPopup(
-                    onDismiss = {showLoginDialog = false},
+                    onDismiss = { showLoginDialog = false },
                     onLoginSuccess = {
                         logged = true
                         showLoginDialog = false
@@ -48,33 +51,47 @@ fun AppNavigation(){
             NavHost(
                 navController = navController,
                 startDestination = "home"
-            ){
-                composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel(), navController = navController)}
-                composable("shopcart"){
+            ) {
+                composable("home") {
+                    HomeScreen(
+                        padding,
+                        homeViewModel = HomeViewModel(),
+                        navController = navController
+                    )
+                }
+                composable("shopcart") {
                     ShoppingCartScreen(
-                    padding,
-                    shoppingCartViewModel = ShoppingCartViewModel(),
-                    homeViewModel = HomeViewModel(),
-                    navController = navController,
-                    logged = logged)
+                        padding,
+                        shoppingCartViewModel = ShoppingCartViewModel(),
+                        homeViewModel = HomeViewModel(),
+                        navController = navController,
+                        logged = logged
+                    )
                 }
-                composable("userInfo"){
-                    if(logged){
+                composable("userInfo") {
+                    if (logged) {
                         AccountScreen(padding, userViewModel = UserViewModel())
-                    }else{
+                    } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
                         }
                     }
                 }
-                composable("friendlist"){
-                    if(logged){
+                composable("friendlist") {
+                    if (logged) {
                         FriendlistScreen(userViewModel = UserViewModel())
-                    }else{
+                    } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
                         }
                     }
+                }
+                composable(
+                    route = "productDetails/{productName}",
+                    arguments = listOf(navArgument("productName") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val productName = backStackEntry.arguments?.getString("productName")
+                    productName?.let { ProductDetailsScreen(query = it) }
                 }
             }
         },

@@ -39,8 +39,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
                 item{
                     Column {
                         CategoryGrid()
-                        HorizontalProductSection(title ="Offerte speciali", products = homeViewModel.products)
-                        HorizontalProductSection(title = "Novità", products = homeViewModel.products)
+                        HorizontalProductSection(title ="Offerte speciali", products = homeViewModel.products, navController)
+                        HorizontalProductSection(title = "Novità", products = homeViewModel.products, navController)
                     }
                 }
 

@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.ProductsViewModel
-
+/*
 @Composable
 fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewModel, navController: NavHostController){
     val filteredResults = productsViewModel.loadSimpleProducts()
@@ -16,7 +16,12 @@ fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewMode
         topBar = { AppTopBar(navController)},
         bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = false)},
             content = {
+
                 ProductsList(productsViewModel.loadSimpleProducts())
+
+
             }
     )
 }
+
+ */

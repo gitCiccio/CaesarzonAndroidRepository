@@ -31,24 +31,23 @@ import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 @SuppressLint("DefaultLocale")
 @Composable
 fun ProductCard(product: Product, navController: NavHostController){
-
     Card(
         modifier = Modifier
             .padding(end = 8.dp)
             .height(250.dp)
-            .width(200.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        onClick = {}
-    ){
-        Column(modifier = Modifier
-            .background(Color(247, 177, 76, 255))){
+            .width(200.dp)
+            .clickable { navController.navigate("productDetails/${product.name}") },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.background(Color(247, 177, 76, 255))
+        ) {
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
                 modifier = Modifier
                     .height(100.dp)
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("product/${product.name}") },
+                    .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
