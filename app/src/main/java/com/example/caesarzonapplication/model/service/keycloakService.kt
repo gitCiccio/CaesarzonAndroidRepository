@@ -52,7 +52,7 @@ class KeycloakService {
         }
 
         fun getData(username: String, password: String, accessToken: String){
-            val manageURL = URL("http://25.25.161.198:8090/user-api/user")
+            val manageURL = URL("http://160.97.90.201:8090/user-api/user")
 
             val connection = manageURL.openConnection() as HttpURLConnection
 
