@@ -1,7 +1,5 @@
 package com.example.caesarzonapplication.model
 
-import android.media.Image
-
 data class Product(
     val name: String,
     val imageRes: Int,
@@ -9,5 +7,4 @@ data class Product(
     val description: String,
     val isInTheShoppingCart: Boolean,
     var quantity: Int
-
 )
