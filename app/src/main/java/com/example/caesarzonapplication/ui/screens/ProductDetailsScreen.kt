@@ -19,8 +19,9 @@ import retrofit2.http.Query
 
 @Composable
 fun ProductDetailsScreen(query: String) {
+    // Supponendo che tu abbia un modo per ottenere il prodotto dal nome
     val sampleProduct = Product(
-        name = "Sample Product",
+        name = query, // Usa il nome del prodotto dal parametro
         imageRes = R.drawable.logo, // Poi aggiungere per ricavarla dal db
         price = 29.99,
         description = "This is a sample product description.",

@@ -79,7 +79,7 @@ fun ShoppingCartScreen(
                     }
                 } else {
                     items(shoppingCartViewModel.productInShoppingCart) { it ->
-                        ShoppingCartCard(it, shoppingCartViewModel)
+                        ShoppingCartCard(it, shoppingCartViewModel, navController)
                         Spacer(modifier = Modifier.height(30.dp))
                     }
                     item {
@@ -119,10 +119,10 @@ fun ShoppingCartScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
                 item {
-                    HorizontalProductSection(title = "Prodotti salvati per dopo", products = homeViewModel.products)
+                    HorizontalProductSection(title = "Prodotti salvati per dopo", products = homeViewModel.products, navController)
                 }
                 item {
-                    HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products)
+                    HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products, navController)
                 }
             }
         }
