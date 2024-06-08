@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 class ShoppingCartViewModel: ViewModel() {
     private val _productsInShoppingCart = mutableStateListOf<Product>()
 
+    private var _buyLaterProducts = mutableStateListOf<Product>()
+
     val productInShoppingCart: SnapshotStateList<Product> get() = _productsInShoppingCart
 
     init{
@@ -38,6 +40,16 @@ class ShoppingCartViewModel: ViewModel() {
             )
         }
     }
+
+    fun addLaterProduct(product: Product){
+        println("aggiunto")
+        _buyLaterProducts.add(product)
+    }
+
+    fun getBuyLaterProducts(): List<Product>{
+        return _buyLaterProducts
+    }
+
 
     /*
     GEMINI esempio
@@ -108,4 +120,5 @@ class ShoppingCartViewModel: ViewModel() {
         println("Prodotto eliminato: "+name)
         _productsInShoppingCart.removeAll{ it.name == name }
     }
+
 }

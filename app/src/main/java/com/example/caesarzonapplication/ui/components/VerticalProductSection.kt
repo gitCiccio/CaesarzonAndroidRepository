@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.ui.components.ProductCard
 
@@ -20,7 +21,7 @@ fun VerticalProductSection(title: String, products: List<Product>){
     Spacer(modifier = Modifier.height(15.dp))
     LazyColumn {
             items(products){ product ->
-                ProductCard(product = product)
+                ProductCard(product = product, navHostController = rememberNavController())
                 Spacer(modifier = Modifier.height(15.dp))
             }
     }
