@@ -5,7 +5,6 @@ data class User (
     var isFollower: Boolean,
     var isFriend: Boolean,
     var isLogged: Boolean,
-    val access_token: String,
-    val refresh_token: String
+    var token: TokenResponse? = null
 
 )
