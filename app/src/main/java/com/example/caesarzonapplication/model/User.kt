@@ -1,10 +1,13 @@
 package com.example.caesarzonapplication.model
 
-data class User (
-    val username: String,
-    var isFollower: Boolean,
-    var isFriend: Boolean,
-    var isLogged: Boolean,
-    var token: TokenResponse? = null
+import androidx.compose.runtime.MutableState
 
+
+class User(
+    var id: String? = null,
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var username: String? = null,
+    var phoneNumber: String? = null,
+    var email: String? = null
 )

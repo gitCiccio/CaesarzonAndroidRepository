@@ -47,7 +47,7 @@ import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.UserViewModel
 
-
+/*
 enum class UsersTab {
     Utenti,
     Seguiti,
@@ -141,7 +141,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.users.filter {
-                                it.username.contains(searchQuery, ignoreCase = true)
+                                it.username?.contains(searchQuery, ignoreCase = true) ?:
                             }) { user ->
                                 UserRow( user, userViewModel)
                             }
@@ -153,7 +153,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.followers.filter {
-                                it.username.contains(searchQuery, ignoreCase = true)
+                                it.username?.contains(searchQuery, ignoreCase = true) ?:
                             }) { user ->
                                 FriendsRow(user, userViewModel)
                             }
@@ -165,7 +165,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.friends.filter {
-                                it.username.contains(searchQuery, ignoreCase = true)
+                                it.username?.contains(searchQuery, ignoreCase = true) ?:
                             }) { user ->
                                 FriendsRow( user, userViewModel)
                             }
@@ -252,5 +252,5 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
     }
 }
 
-
+*/
 
