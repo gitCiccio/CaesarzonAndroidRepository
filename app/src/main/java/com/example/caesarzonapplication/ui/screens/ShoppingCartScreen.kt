@@ -54,10 +54,10 @@ fun ShoppingCartScreen(
         topBar = {
             Column {
                 Spacer(modifier = Modifier.height(45.dp))
-                AppTopBar()
+                AppTopBar(navController)
             }
         },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = false) },
+        bottomBar = { NavigationBottomBar(navController, logged = false) },
         content = { padding ->
             if(showLoginDialog) {
                 LoginPopup(
@@ -115,7 +115,6 @@ fun ShoppingCartScreen(
                         }
                     }
                 }
-
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }

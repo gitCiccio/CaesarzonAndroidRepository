@@ -49,7 +49,7 @@ fun AppNavigation(){
                 navController = navController,
                 startDestination = "home"
             ){
-                composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel())}
+                composable("home"){HomeScreen(padding, homeViewModel = HomeViewModel(), navController = navController)}
                 composable("shopcart"){
                     ShoppingCartScreen(
                     padding,

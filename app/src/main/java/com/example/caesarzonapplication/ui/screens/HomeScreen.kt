@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.CategoryGrid
@@ -21,11 +22,11 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel){
+fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController){
     Scaffold(
         topBar = { Column {
                 Spacer(modifier = Modifier.height(45.dp))
-                AppTopBar()
+                AppTopBar(navController)
         } },
         bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = true)},
         content = { padding ->
