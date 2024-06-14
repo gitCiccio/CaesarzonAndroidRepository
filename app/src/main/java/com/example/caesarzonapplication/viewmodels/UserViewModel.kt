@@ -2,11 +2,14 @@ package com.example.caesarzonapplication.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.session.MediaSession
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.caesarzonapplication.model.TokenResponse
 import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.model.dto.FollowerDTO
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
+import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -28,6 +31,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class UserViewModel: ViewModel() {
 
+    private val keycloakService: KeycloakService = KeycloakService()
 
     private var _users = mutableStateListOf<UserSearchDTO>()
     //User inviati da aldo, quando li cerco
@@ -39,32 +43,28 @@ class UserViewModel: ViewModel() {
     private val _newFollowersAndFriends = mutableListOf<FollowerDTO>()
     val newFollowersAndFriends: List<FollowerDTO> get() = _newFollowersAndFriends
     //Lista degli amici che mi gestisco dopo che ho i follower
-    private val _friends = mutableStateListOf<User>()
-    val friends: List<User> get() = _friends
+    private val _friends = mutableStateListOf<FollowerDTO>()
+    val friends: List<FollowerDTO> get() = _friends
 
     init {
         //loadFollowersAndFriends()
     }
 
-
+    //Aggiunta del follower ok
     fun addFollower(follower: FollowerDTO){
-        if(!_followers.contains(user)){
-            _followers.add(user)
-            _newFollowersAndFriends.add(user.copy(id = user.id,userUsername1 = user.userUsername1, userUsername2 =  user.userUsername2, friendStatus = false))
+        if(!_followers.contains(follower)){
+            _followers.add(follower)
+            _newFollowersAndFriends.add(follower.copy(id = follower.id,userUsername1 = follower.userUsername1, userUsername2 =  follower.userUsername2, friendStatus = false))
         }
     }
 
+
     fun removeFollower(follower: FollowerDTO){
-        if(_followers.contains(user) || _newFollowersAndFriends.containsKey(user.username)){
-            _followers.remove(user)
-            user.isFollower = false
-            _newFollowersAndFriends.remove(user.username)
+        if(_followers.contains(follower) || _newFollowersAndFriends.contains(follower)){
+            _followers.remove(follower)
+            _newFollowersAndFriends.remove(follower)
         }
-        if(_friends.contains(user) || _newFollowersAndFriends.containsKey(user.username)){
-            _friends.remove(user)
-            user.isFriend = false
-            _newFollowersAndFriends.remove(user.username)
-        }
+        //Da capire se devo gestire anche se amico
     }
 
     fun toggleFriendStatus(user: User){
@@ -79,7 +79,37 @@ class UserViewModel: ViewModel() {
             _newFollowersAndFriends[user.username] = true
         }
     }
+    fun getUserData() {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+        val connection = manageURL.openConnection() as HttpURLConnection
 
+        try{
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer "+keycloakService.myToken?.accessToken)
+            val responseCode = connection.responseCode
+            println("Response Code: $responseCode")
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                val inputStream = connection.inputStream
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                val response = StringBuilder()
+                var line: String?
+
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
+                }
+
+                println("Response Code: $responseCode")
+                println("Response Body: $response")
+            } else {
+                println("Error: ${connection.responseMessage}")
+            }
+        }finally {
+
+            connection.disconnect()
+        }
+    }
+
+            //Questa funzione è ok
     @OptIn(ExperimentalEncodingApi::class)
     fun searchUsers(username: String) {
         _users.clear()
@@ -158,32 +188,9 @@ class UserViewModel: ViewModel() {
 
 
                         if(friendStatus) {
-                            _friends.add(
-                                User()
-                                    .copy(
-                                        "",
-                                        "",
-                                        "",
-                                        username,
-                                        "",
-                                        "",
-                                        true,
-                                        true
-                                    )
-                            )
+                            //Aggiungere amici
                         }
-                        _followers.add(
-                            User()
-                                .copy(
-                                    "",
-                                    "",
-                                    "",
-                                    username,
-                                    "",
-                                    "",
-                                    true
-                                )
-                        )
+                        //Aggiungere follower
                     }
                 }else{
                     println("Error: ${connection.responseMessage}")

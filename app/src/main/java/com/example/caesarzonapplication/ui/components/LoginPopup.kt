@@ -37,7 +37,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                               try{
                                   val response = keycloak.getAccessToken(username, password)
                                   if (response!=null){
-                                      println(userViewModel.getUserData(response.accessToken).toString())
+                                      println(userViewModel.getUserData().toString())
                                       onLoginSuccess()
                                   }else{
                                       loginFailed = true

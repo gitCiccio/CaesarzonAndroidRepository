@@ -11,6 +11,7 @@ import java.net.URL
 import java.net.URLEncoder
 
 class KeycloakService {
+        var myToken: TokenResponse? = null
         fun getAccessToken(username: String, password: String): TokenResponse? {
             val url = URL("http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token")
             val connection = url.openConnection() as HttpURLConnection
@@ -47,7 +48,8 @@ class KeycloakService {
             reader.close()
             connection.disconnect()
             val gson = Gson()
-            return gson.fromJson(response.toString(), TokenResponse::class.java)
+            myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
+            return myToken
 
         }
 }
