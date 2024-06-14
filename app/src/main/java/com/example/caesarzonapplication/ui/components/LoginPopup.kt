@@ -12,13 +12,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
-import com.example.caesarzonapplication.model.UserDTO
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.viewmodels.UserViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, userViewModel: UserViewModel){
     var username by rememberSaveable { mutableStateOf("") }
@@ -36,10 +37,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                               try{
                                   val response = keycloak.getAccessToken(username, password)
                                   if (response!=null){
-                                      println(response.accessToken)
-                                      userViewModel.authenticateUser(username,password,response.accessToken)
-                                      val userDTO = UserDTO(username, password, response.accessToken)
-                                      println(userDTO.toString())
+                                      println(userViewModel.getUserData(response.accessToken).toString())
                                       onLoginSuccess()
                                   }else{
                                       loginFailed = true

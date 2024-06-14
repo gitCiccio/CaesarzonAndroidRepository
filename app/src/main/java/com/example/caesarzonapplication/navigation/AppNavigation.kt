@@ -18,6 +18,7 @@ import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.MenuFloatingButton
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.AccountScreen
+import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 //import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
@@ -80,7 +81,7 @@ fun AppNavigation(){
                 }
                 composable("friendlist") {
                     if (logged) {
-                        //FriendlistScreen(userViewModel = UserViewModel())
+                        FriendlistScreen(userViewModel = UserViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true

@@ -3,11 +3,14 @@ package com.example.caesarzonapplication.model
 import androidx.compose.runtime.MutableState
 
 
-class User(
-    var id: String? = null,
-    var firstName: String? = null,
-    var lastName: String? = null,
-    var username: String? = null,
-    var phoneNumber: String? = null,
-    var email: String? = null
+data class User(
+    val id: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    var username: String = "",
+    val phoneNumber: String = "",
+    var email: String = "",
+    var isFollower: Boolean = false,
+    var isFriend: Boolean = false
 )
+

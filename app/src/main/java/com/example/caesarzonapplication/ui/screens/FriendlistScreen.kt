@@ -19,6 +19,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,18 +47,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.viewmodels.UserViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-/*
+
 enum class UsersTab {
     Utenti,
     Seguiti,
     Amici
 }
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
-    var searchQuery by remember {
+    var searchQuery by rememberSaveable {
         mutableStateOf("")
     }
     var selectedTab by remember { mutableStateOf(UsersTab.Utenti) }
@@ -68,7 +77,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = "La tua friendlist",
@@ -98,6 +107,18 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
+                Button(onClick = {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        try {
+                            userViewModel.searchUsers(searchQuery)
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+                    }
+                }
+                ){
+                    Icon(imageVector = Icons.Filled.Search, contentDescription = "search_button")
+                }
             }
         },
         bottomBar = {
@@ -116,7 +137,8 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                     edgePadding = 0.dp,
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedTab.ordinal])
+                            Modifier
+                                .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
                         )
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -141,9 +163,9 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.users.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?:
-                            }) { user ->
-                                UserRow( user, userViewModel)
+                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
+                            }) { userSearchDTO ->
+                                UserRow( userSearchDTO, userViewModel)
                             }
                         }
                     UsersTab.Seguiti ->
@@ -153,7 +175,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.followers.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?:
+                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
                             }) { user ->
                                 FriendsRow(user, userViewModel)
                             }
@@ -165,7 +187,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .padding(8.dp)
                         ) {
                             items(userViewModel.friends.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?:
+                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
                             }) { user ->
                                 FriendsRow( user, userViewModel)
                             }
@@ -177,8 +199,8 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
 }
 
 @Composable
-fun UserRow(user: User, userViewModel: UserViewModel) {
-    var isFollower by remember { mutableStateOf(user.isFollower) }
+fun UserRow(userSearchDTO: UserSearchDTO, userViewModel: UserViewModel) {
+    var isFollower by remember { mutableStateOf(userSearchDTO.follower) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -196,7 +218,7 @@ fun UserRow(user: User, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.addFollower(user); isFollower = true }
+                    .clickable { userViewModel.addFollower(userSearchDTO.username); isFollower = true }
                     .padding(12.dp)
             )
         } else {
@@ -245,12 +267,11 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.FavoriteBorder,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = true  }
+                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = true }
                     .padding(12.dp)
             )
         }
     }
 }
 
-*/
 

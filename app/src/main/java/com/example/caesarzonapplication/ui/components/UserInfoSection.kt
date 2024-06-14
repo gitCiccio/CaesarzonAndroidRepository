@@ -15,11 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
-import com.example.caesarzonapplication.viewmodels.UserViewModel
+import com.example.caesarzonapplication.model.User
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun UserInfoSection(userViewModel: UserViewModel) {
-    var name by rememberSaveable { mutableStateOf(userViewModel.getUsername()) }
+fun UserInfoSection(userViewModel: StateFlow<User>) {
+    var name by rememberSaveable { mutableStateOf(userViewModel.value.username) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }

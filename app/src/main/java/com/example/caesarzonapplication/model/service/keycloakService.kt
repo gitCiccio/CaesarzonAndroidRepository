@@ -50,6 +50,4 @@ class KeycloakService {
             return gson.fromJson(response.toString(), TokenResponse::class.java)
 
         }
-
-
 }

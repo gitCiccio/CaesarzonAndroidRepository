@@ -5,5 +5,5 @@ import com.example.caesarzonapplication.viewmodels.UserViewModel
 
 @Composable
 fun UsersSection(userViewModel: UserViewModel){
-       userViewModel.users
+       //userViewModel.users
 }
