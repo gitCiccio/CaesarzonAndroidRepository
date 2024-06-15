@@ -89,7 +89,8 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White),
+                            .background(Color.White)
+                            .padding(top=50.dp),
                         color = Color.Black,
                     )
                 }
@@ -112,7 +113,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                             unfocusedIndicatorColor = Color.Transparent
                         )
                     )
-                    Button(onClick = {
+                    Button(modifier = Modifier.padding(horizontal = 12.dp),onClick = {
                         GlobalScope.launch(Dispatchers.IO) {
                             try {
                                 //followersAndFriendsViewModel.searchUsers(searchQuery)
@@ -138,7 +139,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .background(Color.White)
             ) {
-                Spacer(modifier = Modifier.height(150.dp))
+                Spacer(modifier = Modifier.height(200.dp))
                 ScrollableTabRow(
                     selectedTabIndex = selectedTab.ordinal,
                     edgePadding = 30.dp,

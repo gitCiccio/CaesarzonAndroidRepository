@@ -33,7 +33,6 @@ class AccountInfoViewModel : ViewModel(){
     val accountInfoData: StateFlow<AccountInfoData> get() = _accountInfoData.asStateFlow()
 
     init {
-        getUserData()
     }
 
     private fun decodeJWT(jwt: String): TokenPayload {
@@ -54,21 +53,16 @@ class AccountInfoViewModel : ViewModel(){
 
     fun getUserData() {
 
+        println("sono nel getUserData")
         val tokenPayload = decodeJWT(KeycloakService.myToken.toString())
-
-        _accountInfoData.value = AccountInfoData(
-            name = tokenPayload.name,
-            surname = tokenPayload.surname,
-            username = tokenPayload.username,
-            email = tokenPayload.email
-        )
 
         val manageURL = URL("http://25.49.50.144:8090/user-api/user")
         val connection = manageURL.openConnection() as HttpURLConnection
 
         try{
             connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", "Bearer "+ KeycloakService.myToken)
+            connection.setRequestProperty("Authorization", "Bearer "+ KeycloakService.myToken?.accessToken)
+            println("Token Payload: ${KeycloakService.myToken?.accessToken}")
             val responseCode = connection.responseCode
             println("Response Code: $responseCode")
 
@@ -84,11 +78,20 @@ class AccountInfoViewModel : ViewModel(){
                 println("Response Code: $responseCode")
                 println("Response Body: $response")
 
+                _accountInfoData.value=
+                    AccountInfoData(
+                        name = tokenPayload.name,
+                        surname = tokenPayload.surname,
+                        username = tokenPayload.username,
+                        email = tokenPayload.email
+                    )
+                println("Account Info: ${_accountInfoData.value.name}")
             }
             else
             {
                 println("Error: ${connection.responseMessage}")
             }
+
         }
         catch (e: Exception){
             e.printStackTrace()

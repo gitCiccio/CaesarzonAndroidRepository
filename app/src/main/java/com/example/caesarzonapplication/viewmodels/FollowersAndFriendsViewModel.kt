@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.viewmodels
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
@@ -16,12 +17,13 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
+import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 //TODO capire come gestire la logica delle liste con i nuovi dati
 class FollowersAndFriendsViewModel: ViewModel() {
 
-    private val keycloakService: KeycloakService = KeycloakService()
+    val keycloak = KeycloakService()
 
     private var _users = mutableStateListOf<UserSearchDTO>()
     //User inviati da aldo, quando li cerco
@@ -40,9 +42,7 @@ class FollowersAndFriendsViewModel: ViewModel() {
 
 
     init {
-        loadMyFakeUsers()
-        loadFakeFollowers()
-        loadFakeFriends()
+        loadFollowersAndFriends(0, false)
     }
 
     //Aggiunta del follower ok
@@ -60,6 +60,8 @@ class FollowersAndFriendsViewModel: ViewModel() {
             println("Aggiunto follower")
         }
     }
+
+
 
     fun removeFollower(follower: FollowerDTO) {
         // Update the state of the user
@@ -110,9 +112,39 @@ class FollowersAndFriendsViewModel: ViewModel() {
     }
 
 
+    /*fun getUserData() {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+        val connection = manageURL.openConnection() as HttpURLConnection
+
+        try{
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer "+keycloakService.myToken?.accessToken)
+            val responseCode = connection.responseCode
+            println("Response Code: $responseCode")
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                val inputStream = connection.inputStream
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                val response = StringBuilder()
+                var line: String?
+
+                while (reader.readLine().also { line = it } != null) {
+                    response.append(line)
+                }
+
+                println("Response Code: $responseCode")
+                println("Response Body: $response")
+            } else {
+                println("Error: ${connection.responseMessage}")
+            }
+        }finally {
+
+            connection.disconnect()
+        }
+    }*/
+
             //Questa funzione è ok
     @OptIn(ExperimentalEncodingApi::class)
-    /*fun searchUsers(username: String) {
+    fun searchUsers(username: String) {
         _users.clear()
         if(username.isEmpty()) return
         val manageURL = URL("http://25.49.50.144:8090/search-api/search/users?username="+username)
@@ -143,10 +175,10 @@ class FollowersAndFriendsViewModel: ViewModel() {
 
                     val profilePicBytes = Base64.decode(profilePictureBase64)
 
-                    val profilePicture: Bitmap = BitmapFactory.decodeByteArray(profilePicBytes, 0, profilePicBytes.size)
+                    //val profilePicture: Bitmap = BitmapFactory.decodeByteArray(profilePicBytes, 0, profilePicBytes.size)
                     val userSearchDTO = UserSearchDTO(
                         username,
-                        profilePicture,
+                        "profilePicture",
                         isFriend,
                         follower
                     )
@@ -159,11 +191,30 @@ class FollowersAndFriendsViewModel: ViewModel() {
         }finally {
             connection.disconnect()
         }
-    }*/
+    }
 
-    fun loadFollowersAndFriends(){
+
+    fun saveNewFollowersAndFriendsOnDB(){
         CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user/followers")//FIXME da vedere se l'api è giusta
+            val manageURL = URL("http://25.49.50.144:8090/user-api/followers")//FIXME da vedere se l'api è giusta
+            val connection = manageURL.openConnection() as HttpURLConnection
+
+            try{
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+                connection.setRequestProperty("Authorization", "Bearer "+KeycloakService.myToken)
+                connection.setRequestProperty("Content-Type", "application/json")
+            }catch (e: Exception){
+                println("Errore: $e")
+            }
+        }
+    }
+
+    //TODO GET PEr ottenere la lista di username dei follower, booleana per indicare se un follower è amico o meno e immagine di profilo, sarà una loadDeiFollower
+    fun loadFollowersAndFriends(flw: Int, friend: Boolean){
+        CoroutineScope(Dispatchers.IO).launch {
+            val friendStatus = friend
+            val manageURL = URL("http://25.49.50.144:8090/user-api/followers?flw=$flw&friend=$friendStatus")//FIXME da vedere se l'api è giusta
             val connection = manageURL.openConnection() as HttpURLConnection
 
             try{
@@ -186,12 +237,15 @@ class FollowersAndFriendsViewModel: ViewModel() {
                         val jsonObject = jsonResponse.getJSONObject(i)
                         val username = jsonObject.getString("username")
                         val friendStatus = jsonObject.getBoolean("isFriend")
+                        val profilePictureBase64 = jsonObject.getString("profilePicture")
 
 
                         if(friendStatus) {
-                            //Aggiungere amici
+                            _friends.add(FollowerDTO(UUID.randomUUID(), "myUsername", username,friendStatus))
                         }
-                        //Aggiungere follower
+                        else{
+                            _followers.add(FollowerDTO(UUID.randomUUID(), "myUsername", username,friendStatus))
+                        }
                     }
                 }else{
                     println("Error: ${connection.responseMessage}")
@@ -203,23 +257,11 @@ class FollowersAndFriendsViewModel: ViewModel() {
         }
     }
 
-    fun loardUsers(){
-        /*
-        * public class UserSearchDTO {
-    private String username;
-    private byte[] profilePic;
-}*/
-    }
-    fun saveNewFollowersAndFriendsOnDB(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user/newFollowers")//FIXME da vedere se l'api è giusta
-            //TODO put per
-        }
-    }
-
-    //TODO GET PEr ottenere la lista di username dei follower, booleana per indicare se un follower è amico o meno e immagine di profilo, sarà una loadDeiFollower
     //TODO PUT per modificare lo stato di un follower, amico o non amico, passiamo username
+
+
     //TODO POST per aggiungere un follower, passiamo username
+
     //TODO DELETE per rimuovere un follower, passiamo username
 
     //TODO Fake medotdhs
