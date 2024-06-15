@@ -27,7 +27,7 @@ enum class AccountTab {
 }
 
 @Composable
-fun AccountScreen(padding: PaddingValues, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
+fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewModel) {
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
 
     Box(
@@ -78,7 +78,7 @@ fun AccountScreen(padding: PaddingValues, followersAndFriendsViewModel: Follower
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel = AccountInfoViewModel())
+                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel)
                 AccountTab.Pagamenti -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
                 AccountTab.Assistenza -> SupportSection()

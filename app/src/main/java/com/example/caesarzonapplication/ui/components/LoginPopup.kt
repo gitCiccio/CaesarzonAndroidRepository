@@ -26,7 +26,6 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var loginFailed by rememberSaveable { mutableStateOf(false) }
-    val keycloak = KeycloakService()
 
     AlertDialog(
           onDismissRequest = onDismiss,
@@ -35,10 +34,12 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                       onClick = {
                           GlobalScope.launch(Dispatchers.IO){
                               try{
-                                  val response = keycloak.getAccessToken(username, password)
-                                  onLoginSuccess()
-                                  if (response!=null){
-                                      println(accountInfoViewModel.getUserData().toString())
+                                   KeycloakService().getAccessToken(username, password)
+                                  if (KeycloakService.myToken != null){
+                                      onLoginSuccess()
+                                      println("Access token: "+ KeycloakService.myToken)
+                                      accountInfoViewModel.getUserData()
+                                      println("Cognome utente loggato: "+ accountInfoViewModel.accountInfoData.value.surname)
                                   }else{
                                       loginFailed = true
                                   }
