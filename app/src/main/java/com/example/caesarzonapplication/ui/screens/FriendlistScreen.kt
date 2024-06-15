@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,32 +93,37 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         color = Color.Black,
                     )
                 }
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    placeholder = { Text(text = "Cerca...") },
-                    shape = RoundedCornerShape(50),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.LightGray,
-                        focusedTextColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                Row (modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween){
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier
+                            .padding(8.dp),
+                        placeholder = { Text(text = "Cerca...") },
+                        shape = RoundedCornerShape(50),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.LightGray,
+                            focusedTextColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
                     )
-                )
-                Button(onClick = {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        try {
-                            //followersAndFriendsViewModel.searchUsers(searchQuery)
-                        } catch (e: Exception) {
-                            println(e.message)
+                    Button(onClick = {
+                        GlobalScope.launch(Dispatchers.IO) {
+                            try {
+                                //followersAndFriendsViewModel.searchUsers(searchQuery)
+                            } catch (e: Exception) {
+                                println(e.message)
+                            }
                         }
                     }
-                }
-                ){
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "search_button")
+                    ){
+                        Icon(imageVector = Icons.Filled.Search, contentDescription = "search_button")
+                    }
                 }
             }
         },
@@ -129,12 +135,13 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .background(Color.White)
             ) {
+                Spacer(modifier = Modifier.height(150.dp))
                 ScrollableTabRow(
                     selectedTabIndex = selectedTab.ordinal,
-                    edgePadding = 0.dp,
+                    edgePadding = 30.dp,
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
                             Modifier
@@ -226,7 +233,7 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFrien
                 imageVector = Icons.Filled.Check,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { isFollower = false}
+                    .clickable { isFollower = false }
                     .padding(12.dp)
             )
         }
