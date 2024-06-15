@@ -31,6 +31,7 @@ import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ShoppingCartCard
+import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
@@ -59,7 +60,7 @@ fun ShoppingCartScreen(
                     onDismiss = { showLoginDialog = false },
                     onLoginSuccess = { showLoginDialog = false;},
                     navController = navController,
-                    followersAndFriendsViewModel = FollowersAndFriendsViewModel()
+                    accountInfoViewModel = AccountInfoViewModel()
                 )
             }
             LazyColumn(

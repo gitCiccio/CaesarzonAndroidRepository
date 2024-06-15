@@ -3,6 +3,6 @@ package com.example.caesarzonapplication.model
 import com.google.gson.annotations.SerializedName
 
 data class TokenResponse(
-     val accessToken: String,
-     val refreshToken: String
+     @SerializedName("access_token") val accessToken: String,
+     @SerializedName("refresh_token") val refreshToken: String
 )
