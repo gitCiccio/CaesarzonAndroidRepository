@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +22,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, followersAndFriendsViewModel: FollowersAndFriendsViewModel){
+fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, accountInfoViewModel: AccountInfoViewModel){
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var loginFailed by rememberSaveable { mutableStateOf(false) }
     val keycloak = KeycloakService()
-    //val tokenViewModel: TokenViewModel = viewModel()
 
     AlertDialog(
           onDismissRequest = onDismiss,
@@ -38,7 +38,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                                   val response = keycloak.getAccessToken(username, password)
                                   onLoginSuccess()
                                   if (response!=null){
-                                      println(followersAndFriendsViewModel.getUserData().toString())
+                                      println(accountInfoViewModel.getUserData().toString())
                                   }else{
                                       loginFailed = true
                                   }
@@ -63,7 +63,8 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                       value = password,
                       onValueChange = {password = it},
                       label = { Text(text = "Password") },
-                      visualTransformation = PasswordVisualTransformation())
+                      visualTransformation = PasswordVisualTransformation()
+                  )
               }
           }
       )

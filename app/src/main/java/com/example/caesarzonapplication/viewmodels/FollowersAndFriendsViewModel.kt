@@ -61,8 +61,6 @@ class FollowersAndFriendsViewModel: ViewModel() {
         }
     }
 
-
-
     fun removeFollower(follower: FollowerDTO) {
         // Update the state of the user
         _users.find { it.username == follower.userUsername2 }?.let {
@@ -111,36 +109,6 @@ class FollowersAndFriendsViewModel: ViewModel() {
         }
     }
 
-
-    fun getUserData() {
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
-        val connection = manageURL.openConnection() as HttpURLConnection
-
-        try{
-            connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", "Bearer "+keycloakService.myToken?.accessToken)
-            val responseCode = connection.responseCode
-            println("Response Code: $responseCode")
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                val inputStream = connection.inputStream
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val response = StringBuilder()
-                var line: String?
-
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
-                }
-
-                println("Response Code: $responseCode")
-                println("Response Body: $response")
-            } else {
-                println("Error: ${connection.responseMessage}")
-            }
-        }finally {
-
-            connection.disconnect()
-        }
-    }
 
             //Questa funzione è ok
     @OptIn(ExperimentalEncodingApi::class)
