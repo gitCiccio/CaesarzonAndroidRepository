@@ -15,6 +15,7 @@ import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
+import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 
 enum class AccountTab {
@@ -77,7 +78,7 @@ fun AccountScreen(padding: PaddingValues, followersAndFriendsViewModel: Follower
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection()
+                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel = AccountInfoViewModel())
                 AccountTab.Pagamenti -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
                 AccountTab.Assistenza -> SupportSection()
