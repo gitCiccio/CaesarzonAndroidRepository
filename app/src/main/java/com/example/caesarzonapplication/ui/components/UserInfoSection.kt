@@ -19,8 +19,8 @@ import com.example.caesarzonapplication.model.User
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun UserInfoSection(userViewModel: StateFlow<User>) {
-    var name by rememberSaveable { mutableStateOf(userViewModel.value.username) }
+fun UserInfoSection() {
+    var name by rememberSaveable { mutableStateOf("") }
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }

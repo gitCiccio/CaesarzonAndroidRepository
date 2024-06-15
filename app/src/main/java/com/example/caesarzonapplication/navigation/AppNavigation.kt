@@ -24,13 +24,13 @@ import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
-import com.example.caesarzonapplication.viewmodels.UserViewModel
+import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 
 
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
-    var logged by rememberSaveable { mutableStateOf(false) }
+    var logged by rememberSaveable { mutableStateOf(true) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
 
 
@@ -46,7 +46,7 @@ fun AppNavigation(){
                         showLoginDialog = false
                     },
                     navController = navController,
-                    userViewModel = UserViewModel()
+                    followersAndFriendsViewModel = FollowersAndFriendsViewModel()
                 )
             }
 
@@ -72,7 +72,7 @@ fun AppNavigation(){
                 }
                 composable("userInfo") {
                     if (logged) {
-                        AccountScreen(padding, userViewModel = UserViewModel())
+                        AccountScreen(padding, followersAndFriendsViewModel = FollowersAndFriendsViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
@@ -81,7 +81,7 @@ fun AppNavigation(){
                 }
                 composable("friendlist") {
                     if (logged) {
-                        FriendlistScreen(userViewModel = UserViewModel())
+                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true

@@ -15,7 +15,7 @@ import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
-import com.example.caesarzonapplication.viewmodels.UserViewModel
+import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 
 enum class AccountTab {
     Profilo,
@@ -26,7 +26,7 @@ enum class AccountTab {
 }
 
 @Composable
-fun AccountScreen(padding: PaddingValues, userViewModel: UserViewModel) {
+fun AccountScreen(padding: PaddingValues, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
 
     Box(
@@ -77,7 +77,7 @@ fun AccountScreen(padding: PaddingValues, userViewModel: UserViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection(userViewModel.userInfoData)
+                AccountTab.Profilo -> UserInfoSection()
                 AccountTab.Pagamenti -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
                 AccountTab.Assistenza -> SupportSection()
