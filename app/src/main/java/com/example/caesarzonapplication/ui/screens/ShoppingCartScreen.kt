@@ -39,6 +39,7 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ShoppingCartCard
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.viewmodels.UserViewModel
 
 @Composable
 fun ShoppingCartScreen(
@@ -63,7 +64,8 @@ fun ShoppingCartScreen(
                 LoginPopup(
                     onDismiss = { showLoginDialog = false },
                     onLoginSuccess = { showLoginDialog = false;},
-                    navController = navController
+                    navController = navController,
+                    userViewModel = UserViewModel()
                 )
             }
             LazyColumn(

@@ -8,18 +8,21 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
+import com.example.caesarzonapplication.model.User
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun UserInfoSection() {
-    var name by remember { mutableStateOf(TextFieldValue("John Doe")) }
-    var email by remember { mutableStateOf(TextFieldValue("johndoe@example.com")) }
-    var addresses by remember { mutableStateOf(listOf("Main St 123, Anytown, 12345, Province, Region")) }
+fun UserInfoSection(userViewModel: StateFlow<User>) {
+    var name by rememberSaveable { mutableStateOf(userViewModel.value.username) }
+    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by remember { mutableStateOf(false) }
     var showRemoveAddressDialog by remember { mutableStateOf(false) }

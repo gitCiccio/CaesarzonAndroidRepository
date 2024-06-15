@@ -50,38 +50,4 @@ class KeycloakService {
             return gson.fromJson(response.toString(), TokenResponse::class.java)
 
         }
-
-        fun getData(username: String, password: String, accessToken: String){
-            val manageURL = URL("http://160.97.90.201:8090/user-api/user")
-
-            val connection = manageURL.openConnection() as HttpURLConnection
-
-            try{
-                connection.requestMethod = "GET"
-
-                connection.setRequestProperty("Authorization", "Bearer "+accessToken)
-                val responseCode = connection.responseCode
-                val body = connection.responseMessage
-                if(responseCode == HttpURLConnection.HTTP_OK){
-                    val inputStream = connection.inputStream
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    val response = StringBuilder()
-                    var line: String?
-
-                    while (reader.readLine().also { line = it } != null) {
-                        response.append(line)
-                    }
-
-                    println("Response Code: $responseCode")
-                    println("Response Body: $response")
-                } else {
-                    println("Error: ${connection.responseMessage}")
-                }
-            }finally {
-                connection.disconnect()
-            }
-
-        }
-
-
 }
