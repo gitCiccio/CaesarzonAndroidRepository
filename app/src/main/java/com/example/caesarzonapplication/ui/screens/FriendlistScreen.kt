@@ -46,10 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.dto.FollowerDTO
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
-import com.example.caesarzonapplication.viewmodels.UserViewModel
+import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -63,7 +63,7 @@ enum class UsersTab {
 }
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
+fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel= viewModel()) {
     var searchQuery by rememberSaveable {
         mutableStateOf("")
     }
@@ -110,7 +110,7 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                 Button(onClick = {
                     GlobalScope.launch(Dispatchers.IO) {
                         try {
-                            userViewModel.searchUsers(searchQuery)
+                            //followersAndFriendsViewModel.searchUsers(searchQuery)
                         } catch (e: Exception) {
                             println(e.message)
                         }
@@ -162,10 +162,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .fillMaxSize()
                                 .padding(8.dp)
                         ) {
-                            items(userViewModel.users.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
+                            items(followersAndFriendsViewModel.users.filter {
+                                it.username.contains(searchQuery, ignoreCase = true) ?: false
                             }) { userSearchDTO ->
-                                UserRow( userSearchDTO, userViewModel)
+                                UserRow(userSearchDTO, followersAndFriendsViewModel)
                             }
                         }
                     UsersTab.Seguiti ->
@@ -174,10 +174,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .fillMaxSize()
                                 .padding(8.dp)
                         ) {
-                            items(userViewModel.followers.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
+                            items(followersAndFriendsViewModel.followers.filter {
+                                it.userUsername2.contains(searchQuery, ignoreCase = true)
                             }) { user ->
-                                FriendsRow(user, userViewModel)
+                                FriendsRow(user, followersAndFriendsViewModel)
                             }
                         }
                     UsersTab.Amici ->
@@ -186,10 +186,10 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
                                 .fillMaxSize()
                                 .padding(8.dp)
                         ) {
-                            items(userViewModel.friends.filter {
-                                it.username?.contains(searchQuery, ignoreCase = true) ?: false
+                            items(followersAndFriendsViewModel.friends.filter {
+                                it.userUsername2.contains(searchQuery, ignoreCase = true)
                             }) { user ->
-                                FriendsRow( user, userViewModel)
+                                FriendsRow(user, followersAndFriendsViewModel)
                             }
                         }
                 }
@@ -199,8 +199,8 @@ fun FriendlistScreen(userViewModel: UserViewModel= viewModel()) {
 }
 
 @Composable
-fun UserRow(userSearchDTO: UserSearchDTO, userViewModel: UserViewModel) {
-    var isFollower by remember { mutableStateOf(userSearchDTO.follower) }
+fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
+    var isFollower by rememberSaveable { mutableStateOf(user.follower) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -218,7 +218,7 @@ fun UserRow(userSearchDTO: UserSearchDTO, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.addFollower(userSearchDTO.username); isFollower = true }
+                    .clickable { followersAndFriendsViewModel.addFollower(user); isFollower = true }
                     .padding(12.dp)
             )
         } else {
@@ -226,7 +226,7 @@ fun UserRow(userSearchDTO: UserSearchDTO, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.Check,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.removeFollower(user); isFollower = false }
+                    .clickable { isFollower = false}
                     .padding(12.dp)
             )
         }
@@ -234,8 +234,8 @@ fun UserRow(userSearchDTO: UserSearchDTO, userViewModel: UserViewModel) {
 }
 
 @Composable
-fun FriendsRow(user: User, userViewModel: UserViewModel) {
-    var isFriend by remember { mutableStateOf(user.isFriend) }
+fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
+    var isFriend by rememberSaveable { mutableStateOf(user.friendStatus) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -243,7 +243,7 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(
-            text = user.username,
+            text = user.userUsername2,
             modifier = Modifier
                 .padding(12.dp)
                 .weight(1f)
@@ -252,14 +252,17 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
             imageVector = Icons.Filled.Clear,
             contentDescription = null,
             modifier = Modifier
-                .clickable { userViewModel.removeFollower(user) }
+                .clickable { followersAndFriendsViewModel.removeFollower(user);}
         )
         if (isFriend) {
             Icon(
                 imageVector = Icons.Filled.Favorite,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = false }
+                    .clickable {
+                        followersAndFriendsViewModel.toggleFriendStatus(user); isFriend =
+                        true
+                    }
                     .padding(12.dp)
             )
         } else {
@@ -267,7 +270,10 @@ fun FriendsRow(user: User, userViewModel: UserViewModel) {
                 imageVector = Icons.Filled.FavoriteBorder,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { userViewModel.toggleFriendStatus(user); isFriend = true }
+                    .clickable {
+                        followersAndFriendsViewModel.toggleFriendStatus(user); user.friendStatus =
+                        false
+                    }
                     .padding(12.dp)
             )
         }

@@ -1,35 +1,25 @@
 package com.example.caesarzonapplication.viewmodels
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.session.MediaSession
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
-import com.example.caesarzonapplication.model.TokenResponse
-import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.FollowerDTO
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.model.service.KeycloakService
-import com.google.gson.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.io.encoding.Base64
+import java.util.UUID
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-
-class UserViewModel: ViewModel() {
+//TODO capire come gestire la logica delle liste con i nuovi dati
+class FollowersAndFriendsViewModel: ViewModel() {
 
     private val keycloakService: KeycloakService = KeycloakService()
 
@@ -37,48 +27,91 @@ class UserViewModel: ViewModel() {
     //User inviati da aldo, quando li cerco
     val users: List<UserSearchDTO> get() = _users
     //FollowerDTO, gli utenti che aldo mi manda al caricamento della pagina
-    private val _followers = mutableStateListOf<FollowerDTO>()
+    private var _followers = mutableStateListOf<FollowerDTO>()
     val followers: List<FollowerDTO> get() = _followers
 
-    private val _newFollowersAndFriends = mutableListOf<FollowerDTO>()
-    val newFollowersAndFriends: List<FollowerDTO> get() = _newFollowersAndFriends
-    //Lista degli amici che mi gestisco dopo che ho i follower
-    private val _friends = mutableStateListOf<FollowerDTO>()
+    private var _friends = mutableStateListOf<FollowerDTO>()
     val friends: List<FollowerDTO> get() = _friends
 
+    private val _newFollowersAndFriends = mutableListOf<FollowerDTO>()
+    //capire come fare
+    private val _deletedFollowersAndFriends = mutableListOf<FollowerDTO>()
+    //Lista degli amici che mi gestisco dopo che ho i follower
+
+
     init {
-        //loadFollowersAndFriends()
+        loadMyFakeUsers()
+        loadFakeFollowers()
+        loadFakeFriends()
     }
 
     //Aggiunta del follower ok
-    fun addFollower(follower: FollowerDTO){
-        if(!_followers.contains(follower)){
-            _followers.add(follower)
-            _newFollowersAndFriends.add(follower.copy(id = follower.id,userUsername1 = follower.userUsername1, userUsername2 =  follower.userUsername2, friendStatus = false))
+    fun addFollower(follower: UserSearchDTO) {
+        // Update the state of the users who become followers
+        _users.find { it.username == follower.username }?.let {
+            it.follower = true
+        }
+
+        // Add to followers if not already present
+        val newFollower = FollowerDTO(UUID.randomUUID(), "myUsername", follower.username, false)
+        if (!_followers.any { it.userUsername2 == follower.username }) {
+            _followers.add(newFollower)
+            _newFollowersAndFriends.add(newFollower)
+            println("Aggiunto follower")
         }
     }
 
 
-    fun removeFollower(follower: FollowerDTO){
-        if(_followers.contains(follower) || _newFollowersAndFriends.contains(follower)){
-            _followers.remove(follower)
-            _newFollowersAndFriends.remove(follower)
+
+    fun removeFollower(follower: FollowerDTO) {
+        // Update the state of the user
+        _users.find { it.username == follower.userUsername2 }?.let {
+            it.follower = false
+        } ?: run {
+            // If user is not found, add a new user with follower status false
+            _users.add(UserSearchDTO(follower.userUsername2, "foto_prolifo", false, false))
         }
-        //Da capire se devo gestire anche se amico
+
+        println("Vuoi eliminare il follower " + follower.userUsername2)
+
+        // Remove follower from the followers list
+        if (_followers.removeIf { it.userUsername2 == follower.userUsername2 }) {
+            println("Follower eliminato da followers")
+        }
+
+        // Remove follower from the friends list
+        if (_friends.removeIf { it.userUsername2 == follower.userUsername2 }) {
+            println("Follower eliminato da friends")
+        }
+
+        // Remove follower from new followers and friends list
+        if (_newFollowersAndFriends.removeIf { it.userUsername2 == follower.userUsername2 }) {
+            println("Follower eliminato da newFollowersAndFriends")
+        }
     }
 
-    fun toggleFriendStatus(user: User){
-        user.isFriend = !user.isFriend;
-        if(_friends.contains(user) || _newFollowersAndFriends.containsKey(user.username) && _newFollowersAndFriends.get(user.username) == true){
-            _newFollowersAndFriends[user.username] = false//cambia i dati da mandare al back
-            _friends.remove(user)//cambia graficamente l'utente dalla lista
-            user.isFriend = false
-        }else{
-            _friends.add(user)
-            user.isFriend = true
-            _newFollowersAndFriends[user.username] = true
+
+    fun toggleFriendStatus(follower: FollowerDTO) {
+        println("FriendStatus prima: " + follower.friendStatus.toString())
+
+        val updatedFollower = follower.copy(friendStatus = !follower.friendStatus)
+
+        println("FriendStatus dopo: " + updatedFollower.friendStatus.toString())
+
+        if (updatedFollower.friendStatus) {
+            if (!_friends.contains(updatedFollower)) {
+                _friends.add(updatedFollower)
+            }
+            _followers.removeAll { it.userUsername2 == updatedFollower.userUsername2 }
+        } else {
+            _friends.removeAll { it.userUsername2 == updatedFollower.userUsername2 }
+            if (!_followers.any { it.userUsername2 == updatedFollower.userUsername2 }) {
+                _followers.add(updatedFollower.copy(friendStatus = false))
+            }
         }
     }
+
+
     fun getUserData() {
         val manageURL = URL("http://25.49.50.144:8090/user-api/user")
         val connection = manageURL.openConnection() as HttpURLConnection
@@ -111,7 +144,7 @@ class UserViewModel: ViewModel() {
 
             //Questa funzione è ok
     @OptIn(ExperimentalEncodingApi::class)
-    fun searchUsers(username: String) {
+    /*fun searchUsers(username: String) {
         _users.clear()
         if(username.isEmpty()) return
         val manageURL = URL("http://25.49.50.144:8090/search-api/search/users?username="+username)
@@ -158,7 +191,7 @@ class UserViewModel: ViewModel() {
         }finally {
             connection.disconnect()
         }
-    }
+    }*/
 
     fun loadFollowersAndFriends(){
         CoroutineScope(Dispatchers.IO).launch {
@@ -221,5 +254,36 @@ class UserViewModel: ViewModel() {
     //TODO POST per aggiungere un follower, passiamo username
     //TODO DELETE per rimuovere un follower, passiamo username
 
+    //TODO Fake medotdhs
+    fun loadMyFakeUsers() {
+        val fakeUsers = listOf(
+            UserSearchDTO("fakeUser1", "Ciao", false, false),
+            UserSearchDTO("fakeUser2", "Ciao", false, false),
+            UserSearchDTO("fakeUser3", "Ciao", false, false),
+            UserSearchDTO("fakeUser4", "Ciao", true, false)
+        )
 
+        _users.addAll(fakeUsers)
+    }
+
+    fun loadFakeFollowers() {
+        // Simulazione di dati fittizi per i follower
+        val fakeFollowers = listOf(
+            FollowerDTO(UUID.randomUUID(), "myUsername", "follower1", false),
+            FollowerDTO(UUID.randomUUID(), "myUsername", "follower2", false),
+            FollowerDTO(UUID.randomUUID(), "myUsername", "follower3", false),
+            FollowerDTO(UUID.randomUUID(), "myUsername", "follower4", false)
+        )
+        _followers.addAll(fakeFollowers)
+    }
+
+    fun loadFakeFriends() {
+        // Simulazione di dati fittizi per gli amici
+        val fakeFriends = listOf(
+            FollowerDTO(UUID.randomUUID(), "myUsername", "friend1", true),
+            FollowerDTO(UUID.randomUUID(), "myUsername", "friend2", true),
+            FollowerDTO(UUID.randomUUID(), "myUsername", "friend3", true)
+        )
+        _friends.addAll(fakeFriends)
+    }
 }
