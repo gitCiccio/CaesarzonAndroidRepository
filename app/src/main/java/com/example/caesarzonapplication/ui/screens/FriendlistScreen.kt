@@ -90,7 +90,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(top=50.dp),
+                            .padding(top = 50.dp),
                         color = Color.Black,
                     )
                 }
@@ -165,40 +165,73 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
 
                 when (selectedTab) {
                     UsersTab.Utenti ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.users.filter {
-                                it.username.contains(searchQuery, ignoreCase = true) ?: false
-                            }) { userSearchDTO ->
-                                UserRow(userSearchDTO, followersAndFriendsViewModel)
-                            }
+                        if(followersAndFriendsViewModel.users.isNotEmpty()){
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                ) {
+                                    items(followersAndFriendsViewModel.users.filter {
+                                        it.username.contains(searchQuery, ignoreCase = true) ?: false
+                                    }) { userSearchDTO ->
+                                        UserRow(userSearchDTO, followersAndFriendsViewModel)
+                                    }
+
+                                }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono utenti")
                         }
                     UsersTab.Seguiti ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.followers.filter {
-                                it.userUsername2.contains(searchQuery, ignoreCase = true)
-                            }) { user ->
-                                FriendsRow(user, followersAndFriendsViewModel)
+                        if(followersAndFriendsViewModel.followers.isNotEmpty()){
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp)
+                            ) {
+                                items(followersAndFriendsViewModel.followers.filter {
+                                    it.username.contains(searchQuery, ignoreCase = true)
+                                }) { user ->
+                                    FriendsRow(user, followersAndFriendsViewModel)
+                                }
                             }
-                        }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono seguiti")                        }
                     UsersTab.Amici ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.friends.filter {
-                                it.userUsername2.contains(searchQuery, ignoreCase = true)
-                            }) { user ->
-                                FriendsRow(user, followersAndFriendsViewModel)
+                        if(followersAndFriendsViewModel.friends.isNotEmpty()){
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp)
+                            ) {
+                                items(followersAndFriendsViewModel.friends.filter {
+                                    it.username.contains(searchQuery, ignoreCase = true)
+                                }) { user ->
+                                    FriendsRow(user, followersAndFriendsViewModel)
+                                }
                             }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono amici")
                         }
                 }
             }
@@ -234,7 +267,6 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFrien
                 imageVector = Icons.Filled.Check,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { isFollower = false }
                     .padding(12.dp)
             )
         }
@@ -242,7 +274,7 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFrien
 }
 
 @Composable
-fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
+fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
     var isFriend by rememberSaveable { mutableStateOf(user.friendStatus) }
     Row (
         modifier = Modifier
@@ -251,7 +283,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(
-            text = user.userUsername2,
+            text = user.username,
             modifier = Modifier
                 .padding(12.dp)
                 .weight(1f)
@@ -260,7 +292,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
             imageVector = Icons.Filled.Clear,
             contentDescription = null,
             modifier = Modifier
-                .clickable { followersAndFriendsViewModel.removeFollower(user);}
+                .clickable { followersAndFriendsViewModel.removeFollower(user)}
         )
         if (isFriend) {
             Icon(
@@ -268,8 +300,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user); isFriend =
-                        true
+                        followersAndFriendsViewModel.toggleFriendStatus(user)
                     }
                     .padding(12.dp)
             )
@@ -279,8 +310,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user); user.friendStatus =
-                        false
+                        followersAndFriendsViewModel.toggleFriendStatus(user)
                     }
                     .padding(12.dp)
             )
