@@ -183,7 +183,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                                 .padding(8.dp)
                         ) {
                             items(followersAndFriendsViewModel.followers.filter {
-                                it.userUsername2.contains(searchQuery, ignoreCase = true)
+                                it.username.contains(searchQuery, ignoreCase = true)
                             }) { user ->
                                 FriendsRow(user, followersAndFriendsViewModel)
                             }
@@ -195,7 +195,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                                 .padding(8.dp)
                         ) {
                             items(followersAndFriendsViewModel.friends.filter {
-                                it.userUsername2.contains(searchQuery, ignoreCase = true)
+                                it.username.contains(searchQuery, ignoreCase = true)
                             }) { user ->
                                 FriendsRow(user, followersAndFriendsViewModel)
                             }
@@ -234,7 +234,6 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFrien
                 imageVector = Icons.Filled.Check,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { isFollower = false }
                     .padding(12.dp)
             )
         }
@@ -242,7 +241,7 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFrien
 }
 
 @Composable
-fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
+fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFriendsViewModel) {
     var isFriend by rememberSaveable { mutableStateOf(user.friendStatus) }
     Row (
         modifier = Modifier
@@ -251,7 +250,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(
-            text = user.userUsername2,
+            text = user.username,
             modifier = Modifier
                 .padding(12.dp)
                 .weight(1f)
@@ -260,7 +259,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
             imageVector = Icons.Filled.Clear,
             contentDescription = null,
             modifier = Modifier
-                .clickable { followersAndFriendsViewModel.removeFollower(user);}
+                .clickable { followersAndFriendsViewModel.removeFollower(user)}
         )
         if (isFriend) {
             Icon(
@@ -268,8 +267,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user); isFriend =
-                        true
+                        followersAndFriendsViewModel.toggleFriendStatus(user)
                     }
                     .padding(12.dp)
             )
@@ -279,8 +277,7 @@ fun FriendsRow(user: FollowerDTO, followersAndFriendsViewModel: FollowersAndFrie
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user); user.friendStatus =
-                        false
+                        followersAndFriendsViewModel.toggleFriendStatus(user)
                     }
                     .padding(12.dp)
             )
