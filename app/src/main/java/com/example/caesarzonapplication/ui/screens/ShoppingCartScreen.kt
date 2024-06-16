@@ -115,8 +115,10 @@ fun ShoppingCartScreen(
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-                item {
-                    HorizontalProductSection(title = "Prodotti salvati per dopo", products = homeViewModel.products, navController)
+                if(shoppingCartViewModel.buyLaterProducts.isNotEmpty()) {
+                    item {
+                        HorizontalProductSection(title = "Prodotti da comprare più tardi", products = shoppingCartViewModel.buyLaterProducts, navController)
+                    }
                 }
                 item {
                     HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products, navController)
