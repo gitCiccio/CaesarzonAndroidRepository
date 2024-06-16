@@ -22,6 +22,8 @@ class ShoppingCartViewModel: ViewModel() {
 
     val productInShoppingCart: SnapshotStateList<Product> get() = _productsInShoppingCart
 
+    val buyLaterProducts: SnapshotStateList<Product> get() = _buyLaterProducts
+
     init{
         loadShoppingCartProduct()
     }
@@ -112,7 +114,6 @@ class ShoppingCartViewModel: ViewModel() {
                 _productsInShoppingCart[index] = updatedProduct // Update quantity at the same index
             }
         }
-        println("nome " + existingProduct?.name + " quantità: " + existingProduct?.quantity)
     }
 
 
