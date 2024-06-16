@@ -90,7 +90,7 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(top=50.dp),
+                            .padding(top = 50.dp),
                         color = Color.Black,
                     )
                 }
@@ -165,40 +165,73 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
 
                 when (selectedTab) {
                     UsersTab.Utenti ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.users.filter {
-                                it.username.contains(searchQuery, ignoreCase = true) ?: false
-                            }) { userSearchDTO ->
-                                UserRow(userSearchDTO, followersAndFriendsViewModel)
-                            }
+                        if(followersAndFriendsViewModel.users.isNotEmpty()){
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp)
+                                ) {
+                                    items(followersAndFriendsViewModel.users.filter {
+                                        it.username.contains(searchQuery, ignoreCase = true) ?: false
+                                    }) { userSearchDTO ->
+                                        UserRow(userSearchDTO, followersAndFriendsViewModel)
+                                    }
+
+                                }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono utenti")
                         }
                     UsersTab.Seguiti ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.followers.filter {
-                                it.username.contains(searchQuery, ignoreCase = true)
-                            }) { user ->
-                                FriendsRow(user, followersAndFriendsViewModel)
+                        if(followersAndFriendsViewModel.followers.isNotEmpty()){
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp)
+                            ) {
+                                items(followersAndFriendsViewModel.followers.filter {
+                                    it.username.contains(searchQuery, ignoreCase = true)
+                                }) { user ->
+                                    FriendsRow(user, followersAndFriendsViewModel)
+                                }
                             }
-                        }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono seguiti")                        }
                     UsersTab.Amici ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            items(followersAndFriendsViewModel.friends.filter {
-                                it.username.contains(searchQuery, ignoreCase = true)
-                            }) { user ->
-                                FriendsRow(user, followersAndFriendsViewModel)
+                        if(followersAndFriendsViewModel.friends.isNotEmpty()){
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp)
+                            ) {
+                                items(followersAndFriendsViewModel.friends.filter {
+                                    it.username.contains(searchQuery, ignoreCase = true)
+                                }) { user ->
+                                    FriendsRow(user, followersAndFriendsViewModel)
+                                }
                             }
+                        }else{
+                            Text(modifier = Modifier
+                                .padding(top = 150.dp)
+                                .padding(horizontal = 80.dp),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ), text = "Non ci sono amici")
                         }
                 }
             }
