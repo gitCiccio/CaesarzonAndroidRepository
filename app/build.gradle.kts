@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -58,9 +59,13 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.okhttp)
+    implementation(libs.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
