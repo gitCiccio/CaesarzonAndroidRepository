@@ -1,12 +1,22 @@
 package com.example.caesarzonapplication.ui.screens
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.R
@@ -17,6 +27,7 @@ import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import java.io.ByteArrayOutputStream
 
 enum class AccountTab {
     Profilo,
@@ -29,6 +40,21 @@ enum class AccountTab {
 @Composable
 fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewModel) {
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
+    val context = LocalContext.current
+
+    // State for holding the loaded profile image
+    val profileImage by accountInfoViewModel.profileImage.collectAsState()
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                val source = ImageDecoder.createSource(context.contentResolver, it)
+                val bitmap = ImageDecoder.decodeBitmap(source)
+                accountInfoViewModel.setProfileImage(bitmap)
+            }
+        }
+    )
 
     Box(
         modifier = Modifier
@@ -38,18 +64,31 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
     ) {
         Column(
             modifier = Modifier
-                
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logoutente),
-                contentDescription = "User Profile",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(16.dp)
-            )
+            if (profileImage != null) {
+                Image(
+                    bitmap = profileImage!!.asImageBitmap(),
+                    contentDescription = "User Profile",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(16.dp)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.logoutente),
+                    contentDescription = "User Profile",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(16.dp)
+                )
+            }
+
+            Button(onClick = { launcher.launch("image/*") }) {
+                Text("Carica Immagine")
+            }
 
             Text(text = "Profilo Utente", style = MaterialTheme.typography.headlineLarge)
 
@@ -65,12 +104,11 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AccountTab.entries.forEach { tab ->
+                AccountTab.values().forEach { tab ->
                     Tab(
                         text = { Text(text = tab.name) },
                         selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        onClick = { selectedTab = tab }
                     )
                 }
             }
@@ -85,5 +123,10 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
                 AccountTab.Resi -> ReturnsSection()
             }
         }
+    }
+
+    // Load profile image from database when AccountScreen is first opened
+    LaunchedEffect(true) {
+        accountInfoViewModel.loadProfileImageFromDatabase()
     }
 }

@@ -4,12 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
@@ -21,7 +23,6 @@ data class AccountInfoData (
     val surname: String = "",
     val username: String = "",
     val email: String = "",
-    val profileImageBase64: String? = null // Aggiungiamo qui l'immagine del profilo
 )
 
 data class TokenPayload(
@@ -35,6 +36,51 @@ class AccountInfoViewModel : ViewModel() {
 
     private val _accountInfoData = MutableStateFlow(AccountInfoData())
     val accountInfoData: StateFlow<AccountInfoData> get() = _accountInfoData.asStateFlow()
+
+    // StateFlow per l'immagine del profilo
+    private val _profileImage = MutableStateFlow<Bitmap?>(null)
+    val profileImage = _profileImage
+
+    // Metodo per impostare l'immagine del profilo
+    fun setProfileImage(bitmap: Bitmap) {
+        viewModelScope.launch {
+            // Salva l'immagine nel database (da implementare)
+            saveProfileImageToDatabase(bitmap)
+
+            // Aggiorna lo stato dell'immagine nel ViewModel
+            _profileImage.value = bitmap
+        }
+    }
+
+    // Metodo per caricare l'immagine del profilo dal database
+    fun loadProfileImageFromDatabase() {
+        viewModelScope.launch {
+            val byteArray = loadProfileImageByteArrayFromDatabase()
+            byteArray?.let {
+                _profileImage.value = byteArrayToBitmap(it)
+            }
+        }
+    }
+
+    // Metodo per salvare l'immagine nel database (da implementare)
+    private suspend fun saveProfileImageToDatabase(bitmap: Bitmap) {
+        // Implementa la logica per salvare l'immagine nel tuo database
+        // Esempio di implementazione: salva `bitmap` come ByteArray
+        // Utilizza una libreria o un approccio adatto al tuo database
+    }
+
+    // Metodo per caricare il ByteArray dell'immagine dal database (da implementare)
+    private suspend fun loadProfileImageByteArrayFromDatabase(): ByteArray? {
+        // Implementa la logica per caricare il ByteArray dell'immagine dal tuo database
+        // Esempio di implementazione: carica il ByteArray salvato precedentemente
+        return null // Sostituisci con la tua logica reale di caricamento
+    }
+
+    // Metodo di utilità per convertire ByteArray in Bitmap
+    private fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
 
     private fun decodeJWT(jwt: String): TokenPayload {
         return try {
@@ -82,9 +128,7 @@ class AccountInfoViewModel : ViewModel() {
                         name = tokenPayload.name,
                         surname = tokenPayload.surname,
                         username = tokenPayload.username,
-                        email = tokenPayload.email,
-                        profileImageBase64 = _accountInfoData.value.profileImageBase64 // Manteniamo l'immagine attuale
-                    )
+                        email = tokenPayload.email,)
                 println("Account Info: ${_accountInfoData.value.name}")
             } else {
                 println("Error: ${connection.responseMessage}")
@@ -95,22 +139,5 @@ class AccountInfoViewModel : ViewModel() {
         } finally {
             connection.disconnect()
         }
-    }
-
-    fun updateProfileImage(bitmap: Bitmap) {
-        val base64 = bitmap.toBase64()
-        _accountInfoData.value = _accountInfoData.value.copy(profileImageBase64 = base64)
-    }
-
-    private fun Bitmap.toBase64(): String {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        this.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
-
-    fun loadProfileImageFromBase64(base64: String): Bitmap {
-        val decodedByteArray = Base64.decode(base64, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.size)
     }
 }
