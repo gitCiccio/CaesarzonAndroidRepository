@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -24,89 +25,92 @@ fun PaymentManagementSection() {
     var showAddPaymentDialog by remember { mutableStateOf(false) }
     var showRemovePaymentDialog by remember { mutableStateOf(false) }
 
-    Column {
-        Text(text = "Metodi di pagamento", style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(8.dp))
+    LazyColumn {
+        item {
+            Text(text = "Metodi di pagamento", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
 
-        paymentMethods.forEach { method ->
-            Text(text = method, modifier = Modifier.padding(8.dp))
-        }
+            paymentMethods.forEach { method ->
+                Text(text = maskCreditCard(method), modifier = Modifier.padding(8.dp))
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { showAddPaymentDialog = true }) {
-            Text(text = "Aggiungi metodo di pagamento")
-        }
+            Button(onClick = { showAddPaymentDialog = true }) {
+                Text(text = "Aggiungi metodo di pagamento")
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Button(onClick = { showRemovePaymentDialog = true }) {
-            Text(text = "Rimuovi metodo di pagamento")
-        }
+            Button(onClick = { showRemovePaymentDialog = true }) {
+                Text(text = "Rimuovi metodo di pagamento")
+            }
 
-        if (showAddPaymentDialog) {
-            Dialog(onDismissRequest = { showAddPaymentDialog = false }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
+            if (showAddPaymentDialog) {
+                Dialog(onDismissRequest = { showAddPaymentDialog = false }) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .fillMaxSize()
                             .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(16.dp)
+                                .background(Color.White, shape = MaterialTheme.shapes.medium)
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = "Aggiungi Metodo di Pagamento",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = "Chiudi",
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .clickable { showAddPaymentDialog = false }
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp)
+                            ) {
+                                Text(
+                                    text = "Aggiungi Metodo di Pagamento",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = "Chiudi",
+                                    modifier = Modifier
+                                        .clickable { showAddPaymentDialog = false }
+                                )
+                            }
+                            TextField(
+                                value = cardHolderName,
+                                onValueChange = { cardHolderName = it },
+                                label = { Text("Nome e Cognome del Titolare") }
                             )
-                        }
-                        TextField(
-                            value = cardHolderName,
-                            onValueChange = { cardHolderName = it },
-                            label = { Text("Nome e Cognome del Titolare") }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        TextField(
-                            value = cardNumber,
-                            onValueChange = { cardNumber = it },
-                            label = { Text("Numero Carta di Credito") }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        TextField(
-                            value = expirationDate,
-                            onValueChange = { expirationDate = it },
-                            label = { Text("Data di Scadenza (MM/AA)") }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        TextField(
-                            value = cvc,
-                            onValueChange = { cvc = it },
-                            label = { Text("CVC") }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
-                            paymentMethods = paymentMethods + "${cardNumber.text} (Scadenza: ${expirationDate.text})"
-                            showAddPaymentDialog = false
-                        }) {
-                            Text(text = "Salva")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = cardNumber,
+                                onValueChange = { cardNumber = it },
+                                label = { Text("Numero Carta di Credito") }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = expirationDate,
+                                onValueChange = { expirationDate = it },
+                                label = { Text("Data di Scadenza (MM/AA)") }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextField(
+                                value = cvc,
+                                onValueChange = { cvc = it },
+                                label = { Text("CVC") }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = {
+                                val maskedCardNumber = maskCreditCard(cardNumber.text)
+                                paymentMethods = paymentMethods + maskedCardNumber
+                                showAddPaymentDialog = false
+                            }) {
+                                Text(text = "Salva")
+                            }
                         }
                     }
                 }
@@ -114,52 +118,54 @@ fun PaymentManagementSection() {
         }
 
         if (showRemovePaymentDialog) {
-            Dialog(onDismissRequest = { showRemovePaymentDialog = false }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
+            item {
+                Dialog(onDismissRequest = { showRemovePaymentDialog = false }) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
+                            .fillMaxSize()
                             .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(16.dp)
+                                .background(Color.White, shape = MaterialTheme.shapes.medium)
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = "Rimuovi Metodo di Pagamento",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Icon(
-                                Icons.Filled.Close,
-                                contentDescription = "Chiudi",
-                                modifier = Modifier
-                                    .clickable { showRemovePaymentDialog = false }
-                            )
-                        }
-                        paymentMethods.forEach { method ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp)
                             ) {
-                                Text(text = method, modifier = Modifier.weight(1f))
-                                IconButton(onClick = {
-                                    paymentMethods = paymentMethods - method
-                                }) {
-                                    Icon(
-                                        Icons.Filled.Close,
-                                        contentDescription = "Rimuovi"
-                                    )
+                                Text(
+                                    text = "Rimuovi Metodo di Pagamento",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = "Chiudi",
+                                    modifier = Modifier
+                                        .clickable { showRemovePaymentDialog = false }
+                                )
+                            }
+                            paymentMethods.forEach { method ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(text = maskCreditCard(method), modifier = Modifier.weight(1f))
+                                    IconButton(onClick = {
+                                        paymentMethods = paymentMethods - method
+                                    }) {
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            contentDescription = "Rimuovi"
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -168,4 +174,19 @@ fun PaymentManagementSection() {
             }
         }
     }
+}
+
+fun maskCreditCard(cardNumber: String): String {
+    // Check if the card number is valid and contains at least 4 digits
+    if (cardNumber.length >= 4) {
+        val lastFourDigits = cardNumber.takeLast(4)
+        val maskedString = buildString {
+            repeat(cardNumber.length - 4) {
+                append('*')
+            }
+            append(" $lastFourDigits")
+        }
+        return maskedString
+    }
+    return cardNumber // Return original if less than 4 digits (should not happen)
 }
