@@ -14,11 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
-fun UserSearchSection(accountInfoViewModel: AccountInfoViewModel) {
+fun UserSearchSection( adminInfoViewModel: AdminInfoViewModel) {
     var searchText by remember { mutableStateOf("") }
-    val users by accountInfoViewModel.searchResults.collectAsState()
+    val users by adminInfoViewModel.searchResults.collectAsState()
 
     Column {
         // Campo di testo per l'inserimento del testo di ricerca
@@ -26,7 +30,7 @@ fun UserSearchSection(accountInfoViewModel: AccountInfoViewModel) {
             value = searchText,
             onValueChange = {
                 searchText = it
-                accountInfoViewModel.searchUsers(searchText) // Esegui la ricerca ogni volta che il testo cambia
+                adminInfoViewModel.searchUsers(searchText) // Esegui la ricerca ogni volta che il testo cambia
             },
             label = { Text("Cerca utenti") },
             modifier = Modifier.fillMaxWidth()
@@ -44,11 +48,20 @@ fun UserSearchSection(accountInfoViewModel: AccountInfoViewModel) {
                 ) {
                     Text(text = user.username)
                     Row {
-                        Button(onClick = { /* Gestisci follow/unfollow */ }) {
-                            Text(text = if (user.isFollower) "Unfollow" else "Follow")
+                        IconButton(onClick = { /* Gestisci utente */ }) {
+                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Logout")
                         }
-                        Button(onClick = { /* Gestisci aggiungi/rimuovi amico */ }) {
-                            Text(text = if (user.isFriend) "Remove Friend" else "Add Friend")
+                        IconButton(onClick = { /* Gestisci carrello */ }) {
+                            Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Carrello")
+                        }
+                        IconButton(onClick = { /* Gestisci preferiti */ }) {
+                            Icon(imageVector = Icons.Default.Favorite, contentDescription = "Cuore")
+                        }
+                        IconButton(onClick = { /* Gestisci indirizzi */ }) {
+                            Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Indirizzi")
+                        }
+                        IconButton(onClick = { /* Gestisci pagamenti */ }) {
+                            Icon(imageVector = Icons.Default.MailOutline, contentDescription = "Carta")
                         }
                     }
                 }

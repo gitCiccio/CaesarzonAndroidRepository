@@ -10,17 +10,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.ui.components.*
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 enum class AdminTab {
-    RICERCA_UTENTI,
-    SEGNALAZIONI,
-    RICHIESTA_SUPPORTO,
-    BAN
+    RicercaUtenti,
+    Segnalazioni,
+    RichiesteSupporto,
+    Ban
 }
 
 @Composable
-fun AdminScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewModel) {
-    var selectedTab by remember { mutableStateOf(AdminTab.RICERCA_UTENTI) }
+fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
+    var selectedTab by remember { mutableStateOf(AdminTab.RicercaUtenti) }
 
     Box(
         modifier = Modifier
@@ -34,9 +35,9 @@ fun AdminScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewMod
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Admin Profilo", style = MaterialTheme.typography.headlineLarge)
+            Text(text = "Admin Area", style = MaterialTheme.typography.headlineLarge)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             ScrollableTabRow(
                 selectedTabIndex = selectedTab.ordinal,
@@ -60,10 +61,10 @@ fun AdminScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewMod
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AdminTab.RICERCA_UTENTI -> UserSearchSection(accountInfoViewModel)
-                AdminTab.SEGNALAZIONI -> ReportsSection(accountInfoViewModel)
-                AdminTab.RICHIESTA_SUPPORTO -> SupportRequestSection(accountInfoViewModel)
-                AdminTab.BAN -> BanSection(accountInfoViewModel)
+                AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel)
+                AdminTab.Segnalazioni -> ReportsSection(adminInfoViewModel)
+                AdminTab.RichiesteSupporto -> SupportRequestSection(adminInfoViewModel)
+                AdminTab.Ban -> BanSection(adminInfoViewModel)
             }
         }
     }

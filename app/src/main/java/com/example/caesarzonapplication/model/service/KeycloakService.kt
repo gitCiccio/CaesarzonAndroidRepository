@@ -17,6 +17,21 @@ class KeycloakService {
         var myToken: TokenResponse? = null
 
         fun searchUsers(query: String): List<User> {
+            // Utenti fittizi
+            val dummyUsers = listOf(
+                User("1", "John", "Doe", "john_doe", "1234567890", "john.doe@example.com", isFollower = true, isFriend = false),
+                User("2", "Jane", "Smith", "jane_smith", "0987654321", "jane.smith@example.com", isFollower = false, isFriend = true),
+                User("3", "Emily", "Johnson", "emily_johnson", "1122334455", "emily.johnson@example.com", isFollower = true, isFriend = true),
+                User("4", "Michael", "Brown", "michael_brown", "6677889900", "michael.brown@example.com", isFollower = false, isFriend = false),
+                User("5", "Sarah", "Williams", "sarah_williams", "5566778899", "sarah.williams@example.com", isFollower = true, isFriend = true)
+            )
+
+            return dummyUsers.filter { it.username.contains(query, ignoreCase = true) }
+        }
+
+
+        /*
+        fun searchUsers(query: String): List<User> {
             val url = URL("http://25.49.50.144:8090/user-api/search?query=$query")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
@@ -39,46 +54,47 @@ class KeycloakService {
                 connection.disconnect()
             }
         }
+         */
     }
 
-    fun getAccessToken(username: String, password: String): TokenResponse? {
-        val url = URL("http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token")
-        val connection = url.openConnection() as HttpURLConnection
+        fun getAccessToken(username: String, password: String): TokenResponse? {
+            val url =
+                URL("http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token")
+            val connection = url.openConnection() as HttpURLConnection
 
-        connection.requestMethod = "POST"
-        connection.doOutput = true
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+            connection.requestMethod = "POST"
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-        val postData =
-            "username=${URLEncoder.encode(username, "UTF-8")}" +
-                    "&password=${URLEncoder.encode(password, "UTF-8")}" +
-                    "&grant_type=password" +
-                    "&client_id=caesar-app"
-        val outputStream = OutputStreamWriter(connection.outputStream)
-        outputStream.write(postData)
-        outputStream.flush()
+            val postData =
+                "username=${URLEncoder.encode(username, "UTF-8")}" +
+                        "&password=${URLEncoder.encode(password, "UTF-8")}" +
+                        "&grant_type=password" +
+                        "&client_id=caesar-app"
+            val outputStream = OutputStreamWriter(connection.outputStream)
+            outputStream.write(postData)
+            outputStream.flush()
 
-        val responseCode = connection.responseCode
-        val inputStream: InputStream = if (responseCode == HttpURLConnection.HTTP_OK) {
-            connection.inputStream
-        } else {
-            connection.errorStream
+            val responseCode = connection.responseCode
+            val inputStream: InputStream = if (responseCode == HttpURLConnection.HTTP_OK) {
+                connection.inputStream
+            } else {
+                connection.errorStream
+            }
+
+            val reader = BufferedReader(
+                InputStreamReader(inputStream)
+            )
+
+            val response = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                response.append(line)
+            }
+            reader.close()
+            connection.disconnect()
+            val gson = Gson()
+            myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
+            return myToken
         }
-
-        val reader = BufferedReader(
-            InputStreamReader(inputStream)
-        )
-
-        val response = StringBuilder()
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            response.append(line)
-        }
-        reader.close()
-        connection.disconnect()
-        val gson = Gson()
-        myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
-        return myToken
-    }
-
 }
