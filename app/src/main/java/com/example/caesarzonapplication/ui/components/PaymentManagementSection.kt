@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
+import com.example.caesarzonapplication.model.utils.CardUtils
 
 @Composable
 fun PaymentManagementSection() {
@@ -24,6 +25,8 @@ fun PaymentManagementSection() {
     var paymentMethods by remember { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
     var showAddPaymentDialog by remember { mutableStateOf(false) }
     var showRemovePaymentDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val cardUtils = CardUtils()
 
     LazyColumn {
         item {
@@ -31,7 +34,7 @@ fun PaymentManagementSection() {
             Spacer(modifier = Modifier.height(8.dp))
 
             paymentMethods.forEach { method ->
-                Text(text = maskCreditCard(method), modifier = Modifier.padding(8.dp))
+                Text(text = cardUtils.maskCreditCard(method), modifier = Modifier.padding(8.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -105,11 +108,24 @@ fun PaymentManagementSection() {
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = {
-                                val maskedCardNumber = maskCreditCard(cardNumber.text)
-                                paymentMethods = paymentMethods + maskedCardNumber
-                                showAddPaymentDialog = false
+                                if (cardUtils.validateCreditCardDetails(cardNumber.text, expirationDate.text, cvc.text)) {
+                                    val maskedCardNumber = cardUtils.maskCreditCard(cardNumber.text)
+                                    paymentMethods = paymentMethods + maskedCardNumber
+                                    showAddPaymentDialog = false
+                                    errorMessage = null
+                                } else {
+                                    errorMessage = "Dati della carta non validi"
+                                }
                             }) {
                                 Text(text = "Salva")
+                            }
+                            if (errorMessage != null) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = errorMessage!!,
+                                    color = Color.Red,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                             }
                         }
                     }
@@ -157,7 +173,7 @@ fun PaymentManagementSection() {
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text(text = maskCreditCard(method), modifier = Modifier.weight(1f))
+                                    Text(text = cardUtils.maskCreditCard(method), modifier = Modifier.weight(1f))
                                     IconButton(onClick = {
                                         paymentMethods = paymentMethods - method
                                     }) {
@@ -174,19 +190,4 @@ fun PaymentManagementSection() {
             }
         }
     }
-}
-
-fun maskCreditCard(cardNumber: String): String {
-    // Check if the card number is valid and contains at least 4 digits
-    if (cardNumber.length >= 4) {
-        val lastFourDigits = cardNumber.takeLast(4)
-        val maskedString = buildString {
-            repeat(cardNumber.length - 4) {
-                append('*')
-            }
-            append(" $lastFourDigits")
-        }
-        return maskedString
-    }
-    return cardNumber // Return original if less than 4 digits (should not happen)
 }

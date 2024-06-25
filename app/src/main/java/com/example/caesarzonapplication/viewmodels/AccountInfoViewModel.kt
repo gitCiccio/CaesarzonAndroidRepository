@@ -5,6 +5,10 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.Ban
+import com.example.caesarzonapplication.model.Report
+import com.example.caesarzonapplication.model.SupportRequest
+import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
