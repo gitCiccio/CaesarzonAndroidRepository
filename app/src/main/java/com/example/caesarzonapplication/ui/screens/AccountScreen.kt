@@ -24,6 +24,7 @@ import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
+import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
@@ -31,7 +32,8 @@ import java.io.ByteArrayOutputStream
 
 enum class AccountTab {
     Profilo,
-    Pagamenti,
+    Indirizzi,
+    Carte,
     Ordini,
     Assistenza,
     Resi
@@ -117,7 +119,8 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
 
             when (selectedTab) {
                 AccountTab.Profilo -> UserInfoSection(accountInfoViewModel)
-                AccountTab.Pagamenti -> PaymentManagementSection()
+                AccountTab.Indirizzi -> UserAddressInfoSection(accountInfoViewModel)
+                AccountTab.Carte -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
                 AccountTab.Assistenza -> SupportSection()
                 AccountTab.Resi -> ReturnsSection()
