@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.model.service
 
 import com.example.caesarzonapplication.model.TokenResponse
+import com.example.caesarzonapplication.model.User
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.InputStream
@@ -14,6 +15,30 @@ class KeycloakService {
 
     companion object {
         var myToken: TokenResponse? = null
+
+        fun searchUsers(query: String): List<User> {
+            val url = URL("http://25.49.50.144:8090/user-api/search?query=$query")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer " + myToken?.accessToken)
+
+            return try {
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = reader.readText()
+                    reader.close()
+                    Gson().fromJson(response, Array<User>::class.java).toList()
+                } else {
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emptyList()
+            } finally {
+                connection.disconnect()
+            }
+        }
     }
 
     fun getAccessToken(username: String, password: String): TokenResponse? {
@@ -55,4 +80,5 @@ class KeycloakService {
         myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
         return myToken
     }
+
 }

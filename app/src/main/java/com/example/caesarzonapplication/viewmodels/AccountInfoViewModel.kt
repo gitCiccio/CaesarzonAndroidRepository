@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -36,6 +37,9 @@ class AccountInfoViewModel : ViewModel() {
 
     private val _accountInfoData = MutableStateFlow(AccountInfoData())
     val accountInfoData: StateFlow<AccountInfoData> get() = _accountInfoData.asStateFlow()
+
+    private val _searchResults = MutableStateFlow<List<User>>(emptyList())
+    val searchResults: StateFlow<List<User>> get() = _searchResults
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
@@ -138,6 +142,18 @@ class AccountInfoViewModel : ViewModel() {
             e.printStackTrace()
         } finally {
             connection.disconnect()
+        }
+    }
+
+    fun searchUsers(query: String) {
+        viewModelScope.launch {
+            try {
+                val users = KeycloakService.searchUsers(query)
+                _searchResults.value = users
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _searchResults.value = emptyList()
+            }
         }
     }
 }
