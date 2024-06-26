@@ -1,19 +1,23 @@
 package com.example.caesarzonapplication.viewmodels
 
+import android.content.ContentValues.TAG
+import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.example.caesarzonapplication.model.Ban
 import com.example.caesarzonapplication.model.Report
 import com.example.caesarzonapplication.model.SupportRequest
 import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.service.KeycloakService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
 class AdminInfoViewModel : ViewModel() {
-    private val _searchResults = MutableStateFlow<List<User>>(emptyList())
-    val searchResults: StateFlow<List<User>> get() = _searchResults
+    private val _searchResults = MutableStateFlow<List<UserDTO>>(emptyList())
+    val searchResults: StateFlow<List<UserDTO>> get() = _searchResults
 
     private val _reports = MutableStateFlow<List<Report>>(emptyList())
     val reports: StateFlow<List<Report>> get() = _reports
@@ -24,23 +28,23 @@ class AdminInfoViewModel : ViewModel() {
     private val _bans = MutableStateFlow<List<Ban>>(emptyList())
     val bans: StateFlow<List<Ban>> get() = _bans
 
+    init {
+        searchUsers("") // Carica tutti gli utenti all'avvio
+        loadSampleData()
+    }
+
+    @OptIn(UnstableApi::class)
     fun searchUsers(query: String) {
         viewModelScope.launch {
             try {
                 val users = KeycloakService.searchUsers(query)
                 _searchResults.value = users
+                androidx.media3.common.util.Log.d(TAG, "searchUsers: Users loaded successfully")
             } catch (e: Exception) {
-                e.printStackTrace()
+                androidx.media3.common.util.Log.e(TAG, "searchUsers: Error loading users", e)
                 _searchResults.value = emptyList()
             }
         }
-    }
-
-    //da cambiare
-
-    // Metodo per simulare il caricamento dei dati
-    init {
-        loadSampleData()
     }
 
     private fun loadSampleData() {

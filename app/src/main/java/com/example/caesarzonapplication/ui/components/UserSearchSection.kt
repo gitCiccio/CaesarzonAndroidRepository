@@ -20,7 +20,7 @@ import androidx.compose.material3.*
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
-fun UserSearchSection( adminInfoViewModel: AdminInfoViewModel) {
+fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
     var searchText by remember { mutableStateOf("") }
     val users by adminInfoViewModel.searchResults.collectAsState()
 
@@ -49,7 +49,7 @@ fun UserSearchSection( adminInfoViewModel: AdminInfoViewModel) {
                     Text(text = user.username)
                     Row {
                         IconButton(onClick = { /* Gestisci utente */ }) {
-                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Logout")
+                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Gestisci utente")
                         }
                         IconButton(onClick = { /* Gestisci carrello */ }) {
                             Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Carrello")
@@ -69,3 +69,4 @@ fun UserSearchSection( adminInfoViewModel: AdminInfoViewModel) {
         }
     }
 }
+
