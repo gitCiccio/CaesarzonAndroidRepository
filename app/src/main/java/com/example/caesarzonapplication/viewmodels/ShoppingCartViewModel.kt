@@ -108,7 +108,7 @@ class ShoppingCartViewModel: ViewModel() {
     fun decreaseProduct(product: Product) {
         val existingProduct = _productsInShoppingCart.find { it.name == product.name }
         existingProduct?.let {
-            if (it.quantity > 0) {
+            if (it.quantity-1 > 0) {
                 val updatedProduct = it.copy(quantity = it.quantity - 1)
                 val index = _productsInShoppingCart.indexOf(it)
                 _productsInShoppingCart[index] = updatedProduct // Update quantity at the same index

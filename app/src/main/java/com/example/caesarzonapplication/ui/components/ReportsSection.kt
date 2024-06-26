@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
-@Composable
+/*@Composable
 fun ReportsSection( adminInfoViewModel: AdminInfoViewModel){
     val reports by adminInfoViewModel.reports.collectAsState()
 
@@ -73,4 +73,4 @@ fun ReportsSection( adminInfoViewModel: AdminInfoViewModel){
             }
         }
     }
-}
+}*/

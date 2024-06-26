@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
-@Composable
+/*@Composable
 fun BanSection( adminInfoViewModel: AdminInfoViewModel) {
-    val bans by adminInfoViewModel.bans.collectAsState()
+    //val bans by adminInfoViewModel.bans
 
     LazyColumn {
         items(bans.size) { index ->
@@ -64,4 +64,4 @@ fun BanSection( adminInfoViewModel: AdminInfoViewModel) {
             }
         }
     }
-}
+}*/

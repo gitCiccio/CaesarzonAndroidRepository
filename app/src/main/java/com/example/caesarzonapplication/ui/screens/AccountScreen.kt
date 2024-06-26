@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
@@ -35,8 +36,8 @@ enum class AccountTab {
     Indirizzi,
     Carte,
     Ordini,
+    Resi,
     Assistenza,
-    Resi
 }
 
 @Composable
@@ -92,7 +93,25 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
                 Text("Carica Immagine")
             }
 
-            Text(text = "Profilo Utente", style = MaterialTheme.typography.headlineLarge)
+            when(selectedTab){
+                AccountTab.Profilo -> {
+                    Text(text = "Il tuo profilo", fontSize = 30.sp)
+                }
+                AccountTab.Carte -> {
+                    Text(text = "Le tue Carte", fontSize = 30.sp)
+                }
+                AccountTab.Ordini -> {
+                    Text(text = "I tuoi ordini", fontSize = 30.sp)
+                }
+                AccountTab.Resi -> {
+                    Text(text = "I tuoi resi", fontSize = 30.sp)
+                }
+                AccountTab.Assistenza -> {
+                    Text(text = "Come possiamo aiutarti?", fontSize = 30.sp)
+                }
+
+                AccountTab.Indirizzi -> TODO()
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -122,8 +141,8 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
                 AccountTab.Indirizzi -> UserAddressInfoSection(accountInfoViewModel)
                 AccountTab.Carte -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
-                AccountTab.Assistenza -> SupportSection()
                 AccountTab.Resi -> ReturnsSection()
+                AccountTab.Assistenza -> SupportSection()
             }
         }
     }
