@@ -21,7 +21,7 @@ import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
+fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
     val user by accountInfoViewModel.accountInfoData.collectAsState()
 
