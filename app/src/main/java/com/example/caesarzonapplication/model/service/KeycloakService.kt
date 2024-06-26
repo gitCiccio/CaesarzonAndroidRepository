@@ -2,8 +2,13 @@ package com.example.caesarzonapplication.model.service
 
 import com.example.caesarzonapplication.model.TokenResponse
 import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.dto.UserDTO
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -16,46 +21,63 @@ class KeycloakService {
     companion object {
         var myToken: TokenResponse? = null
 
-        fun searchUsers(query: String): List<User> {
-            // Utenti fittizi
-            val dummyUsers = listOf(
-                User("1", "John", "Doe", "john_doe", "1234567890", "john.doe@example.com", isFollower = true, isFriend = false),
-                User("2", "Jane", "Smith", "jane_smith", "0987654321", "jane.smith@example.com", isFollower = false, isFriend = true),
-                User("3", "Emily", "Johnson", "emily_johnson", "1122334455", "emily.johnson@example.com", isFollower = true, isFriend = true),
-                User("4", "Michael", "Brown", "michael_brown", "6677889900", "michael.brown@example.com", isFollower = false, isFriend = false),
-                User("5", "Sarah", "Williams", "sarah_williams", "5566778899", "sarah.williams@example.com", isFollower = true, isFriend = true)
-            )
+        suspend fun searchUsers(query: String = ""): List<UserDTO> {
+            return withContext(Dispatchers.IO) {
+                val users = mutableListOf<UserDTO>()
+                val url = URL("http://25.49.50.144:8090/user-api/users")
+                val connection = url.openConnection() as HttpURLConnection
 
-            return dummyUsers.filter { it.username.contains(query, ignoreCase = true) }
-        }
-
-
-        /*
-        fun searchUsers(query: String): List<User> {
-            val url = URL("http://25.49.50.144:8090/user-api/search?query=$query")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", "Bearer " + myToken?.accessToken)
-
-            return try {
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
+                try {
+                    connection.requestMethod = "GET"
+                    connection.setRequestProperty("Authorization", "Bearer " + myToken?.accessToken)
+                    println("Token Payload: ${myToken?.accessToken}")
                     val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                    val response = reader.readText()
+                    val response = StringBuilder()
+                    var line: String?
+
+                    while (reader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
                     reader.close()
-                    Gson().fromJson(response, Array<User>::class.java).toList()
-                } else {
-                    emptyList()
+
+                    println("Response code: ${connection.responseCode}")
+                    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                        val jsonResponse = JSONArray(response.toString())
+                        println("Response body: $jsonResponse")
+                        for (i in 0 until jsonResponse.length()) {
+                            val jsonObject = jsonResponse.getJSONObject(i)
+                            val username = jsonObject.getString("username")
+                            val firstName = jsonObject.getString("firstName")
+                            val lastName = jsonObject.getString("lastName")
+                            val phoneNumber = jsonObject.getString("phoneNumber")
+                            val email = jsonObject.getString("email")
+
+                            val user = UserDTO(
+                                username,
+                                firstName,
+                                lastName,
+                                phoneNumber,
+                                email
+                            )
+                            users.add(user)
+                        }
+                    } else {
+                        println("Error: ${connection.responseMessage}")
+                        // Gestire l'errore, ad esempio lanciando un'eccezione personalizzata
+                        throw IOException("HTTP error code: ${connection.responseCode}")
+                    }
+                } catch (e: IOException) {
+                    println("Exception: ${e.message}")
+                    // Propagare l'eccezione per gestirla nell'ViewModel
+                    throw e
+                } finally {
+                    connection.disconnect()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emptyList()
-            } finally {
-                connection.disconnect()
+                return@withContext users
             }
         }
-         */
     }
+
 
         fun getAccessToken(username: String, password: String): TokenResponse? {
             val url =
@@ -97,4 +119,4 @@ class KeycloakService {
             myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
             return myToken
         }
-}
+    }

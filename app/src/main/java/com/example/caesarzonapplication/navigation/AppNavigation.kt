@@ -33,7 +33,7 @@ import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
-    var logged by rememberSaveable { mutableStateOf(true) }
+    var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     var isAdmin by rememberSaveable { mutableStateOf(true) }
 
