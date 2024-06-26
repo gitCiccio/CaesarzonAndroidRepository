@@ -62,9 +62,9 @@ fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) 
 
             when (selectedTab) {
                 AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel)
-                AdminTab.Segnalazioni -> ReportsSection(adminInfoViewModel)
-                AdminTab.RichiesteSupporto -> SupportRequestSection(adminInfoViewModel)
-                AdminTab.Ban -> BanSection(adminInfoViewModel)
+                AdminTab.Segnalazioni -> TODO()
+                AdminTab.RichiesteSupporto -> TODO()
+                AdminTab.Ban -> TODO()
             }
         }
     }

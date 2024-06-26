@@ -1,67 +1,81 @@
 package com.example.caesarzonapplication.viewmodels
 
-import android.content.ContentValues.TAG
-import androidx.annotation.OptIn
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
 import com.example.caesarzonapplication.model.Ban
 import com.example.caesarzonapplication.model.Report
 import com.example.caesarzonapplication.model.SupportRequest
-import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.UserFindDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+
 class AdminInfoViewModel : ViewModel() {
-    private val _searchResults = MutableStateFlow<List<UserDTO>>(emptyList())
-    val searchResults: StateFlow<List<UserDTO>> get() = _searchResults
 
-    private val _reports = MutableStateFlow<List<Report>>(emptyList())
-    val reports: StateFlow<List<Report>> get() = _reports
+    val client = OkHttpClient()
+    private val _searchResults = mutableStateListOf<UserFindDTO>()
+    val searchResults: List<UserFindDTO> get() = _searchResults
 
-    private val _supportRequests = MutableStateFlow<List<SupportRequest>>(emptyList())
-    val supportRequests: StateFlow<List<SupportRequest>> get() = _supportRequests
+    private val _reports = mutableStateListOf<Report>()
+    val reports: List<Report> get() = _reports
 
-    private val _bans = MutableStateFlow<List<Ban>>(emptyList())
-    val bans: StateFlow<List<Ban>> get() = _bans
+    private val _supportRequests = mutableStateListOf<SupportRequest>()
+    val supportRequests: List<SupportRequest> get() = _supportRequests
+
+    private val _bans = mutableStateListOf<Ban>()
+    val bans: List<Ban> get() = _bans
 
     init {
-        searchUsers("") // Carica tutti gli utenti all'avvio
-        loadSampleData()
+        searchUsers()
     }
 
-    @OptIn(UnstableApi::class)
-    fun searchUsers(query: String) {
-        viewModelScope.launch {
+    fun searchUsers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            println("Sono la funzione di ricerca di tutti gli utenti")
+            val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=1");
+            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try {
-                val users = KeycloakService.searchUsers(query)
-                _searchResults.value = users
-                androidx.media3.common.util.Log.d(TAG, "searchUsers: Users loaded successfully")
-            } catch (e: Exception) {
-                androidx.media3.common.util.Log.e(TAG, "searchUsers: Error loading users", e)
-                _searchResults.value = emptyList()
+                println("Sono nel try")
+                val response = client.newCall(request).execute()
+                println(response.message)
+                if(!response.isSuccessful){
+                    println("Errore nella ricerca degli utenti")
+                    return@launch
+                }
+                val responseBody = response.body?.string()
+                val jsonResponse = JSONArray(responseBody)
+                _searchResults.clear()
+                for (i in 0 until jsonResponse.length()) {
+                    val username = jsonResponse.getJSONObject(i).getString("username")
+                    val profilePictureBase64 = jsonResponse.getJSONObject(i).optString("profilePicture", "")
+                    _searchResults.add(UserFindDTO(username, profilePictureBase64))
+                }
+                println(_searchResults.toString())
+
+
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }
 
-    private fun loadSampleData() {
-        viewModelScope.launch {
-            // Caricamento dati simulato
-            _reports.value = listOf(
-                Report("R001", "User1", "Spam", "2023-06-01", listOf("Action1", "Action2")),
-                Report("R002", "User2", "Abuse", "2023-06-02", listOf("Action1", "Action2"))
-            )
-            _supportRequests.value = listOf(
-                SupportRequest("SR001", "User1", "Technical", "2023-06-01", listOf("Action1", "Action2")),
-                SupportRequest("SR002", "User2", "Billing", "2023-06-02", listOf("Action1", "Action2"))
-            )
-            _bans.value = listOf(
-                Ban("2023-06-01", "User1", "Violation of rules", listOf("Action1", "Action2")),
-                Ban("2023-06-02", "User2", "Spamming", listOf("Action1", "Action2"))
-            )
-        }
-    }
 }

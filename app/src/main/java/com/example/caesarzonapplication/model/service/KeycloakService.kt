@@ -4,7 +4,9 @@ import com.example.caesarzonapplication.model.TokenResponse
 import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.BufferedReader
@@ -18,65 +20,7 @@ import java.net.URLEncoder
 
 class KeycloakService {
 
-    companion object {
-        var myToken: TokenResponse? = null
-
-        suspend fun searchUsers(query: String = ""): List<UserDTO> {
-            return withContext(Dispatchers.IO) {
-                val users = mutableListOf<UserDTO>()
-                val url = URL("http://25.49.50.144:8090/user-api/users")
-                val connection = url.openConnection() as HttpURLConnection
-
-                try {
-                    connection.requestMethod = "GET"
-                    connection.setRequestProperty("Authorization", "Bearer " + myToken?.accessToken)
-                    println("Token Payload: ${myToken?.accessToken}")
-                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                    val response = StringBuilder()
-                    var line: String?
-
-                    while (reader.readLine().also { line = it } != null) {
-                        response.append(line)
-                    }
-                    reader.close()
-
-                    println("Response code: ${connection.responseCode}")
-                    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                        val jsonResponse = JSONArray(response.toString())
-                        println("Response body: $jsonResponse")
-                        for (i in 0 until jsonResponse.length()) {
-                            val jsonObject = jsonResponse.getJSONObject(i)
-                            val username = jsonObject.getString("username")
-                            val firstName = jsonObject.getString("firstName")
-                            val lastName = jsonObject.getString("lastName")
-                            val phoneNumber = jsonObject.getString("phoneNumber")
-                            val email = jsonObject.getString("email")
-
-                            val user = UserDTO(
-                                username,
-                                firstName,
-                                lastName,
-                                phoneNumber,
-                                email
-                            )
-                            users.add(user)
-                        }
-                    } else {
-                        println("Error: ${connection.responseMessage}")
-                        // Gestire l'errore, ad esempio lanciando un'eccezione personalizzata
-                        throw IOException("HTTP error code: ${connection.responseCode}")
-                    }
-                } catch (e: IOException) {
-                    println("Exception: ${e.message}")
-                    // Propagare l'eccezione per gestirla nell'ViewModel
-                    throw e
-                } finally {
-                    connection.disconnect()
-                }
-                return@withContext users
-            }
-        }
-    }
+    companion object { var myToken: TokenResponse? = null}
 
 
         fun getAccessToken(username: String, password: String): TokenResponse? {

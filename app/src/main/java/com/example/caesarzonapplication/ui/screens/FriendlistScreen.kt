@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,13 +95,13 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(top = 50.dp),
+                            .padding(top = 30.dp),
                         color = Color.Black,
                     )
                 }
                 Row (modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
+                    .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween){
                     TextField(
@@ -140,10 +141,10 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp)
                     .background(Color.White)
             ) {
-                Spacer(modifier = Modifier.height(200.dp))
+                Spacer(modifier = Modifier.height(180.dp))
                 ScrollableTabRow(
                     //contentColor = Color(238, 137, 60, 255),
                     selectedTabIndex = selectedTab.ordinal,
@@ -168,8 +169,6 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 when (selectedTab) {
                     UsersTab.Utenti ->
@@ -217,13 +216,14 @@ fun FriendlistScreen(followersAndFriendsViewModel: FollowersAndFriendsViewModel=
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center
-                                ), text = "Non ci sono seguiti")                        }
+                                ), text = "Non ci sono seguiti")
+                        }
                     UsersTab.Amici ->
                         if(followersAndFriendsViewModel.friends.isNotEmpty()){
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(8.dp)
+                                    .padding(8.dp),
                             ) {
                                 items(followersAndFriendsViewModel.friends.filter {
                                     it.username.contains(searchQuery, ignoreCase = true)
@@ -311,7 +311,7 @@ fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFr
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user)
+                        followersAndFriendsViewModel.toggleFriendStatus(user); isFriend = false
                     }
                     .padding(12.dp)
             )
@@ -322,7 +322,7 @@ fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersAndFr
                 contentDescription = null,
                 modifier = Modifier
                     .clickable {
-                        followersAndFriendsViewModel.toggleFriendStatus(user)
+                        followersAndFriendsViewModel.toggleFriendStatus(user); isFriend = true
                     }
                     .padding(12.dp)
             )

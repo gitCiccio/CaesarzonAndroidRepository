@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
-@Composable
+/*@Composable
 fun SupportRequestSection( adminInfoViewModel: AdminInfoViewModel) {
     val supportRequests by adminInfoViewModel.supportRequests.collectAsState()
 
@@ -66,4 +66,4 @@ fun SupportRequestSection( adminInfoViewModel: AdminInfoViewModel) {
             }
         }
     }
-}
+}*/
