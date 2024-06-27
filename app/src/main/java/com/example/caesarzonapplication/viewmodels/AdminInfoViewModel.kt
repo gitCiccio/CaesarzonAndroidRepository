@@ -35,7 +35,7 @@ class AdminInfoViewModel : ViewModel() {
     //Rendere i numeri per le chiamate dinamici
     init {
         searchUsers()
-        serachRepots()
+        searchReports()
         searchSupportRequests()
     }
 
@@ -63,7 +63,7 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
     //dopo che prendi le richieste di supporto, quelle che vengono gestite devono essere eliminate chiamando la delete
-    fun serachRepots(){
+    fun searchReports(){
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = URL("http://25.49.50.144:8090/notify-api/report?num=0");
             val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()

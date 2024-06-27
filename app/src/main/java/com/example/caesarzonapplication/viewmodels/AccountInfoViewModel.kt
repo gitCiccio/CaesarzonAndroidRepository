@@ -2,48 +2,35 @@ package com.example.caesarzonapplication.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.Ban
-import com.example.caesarzonapplication.model.Report
-import com.example.caesarzonapplication.model.SupportRequest
-import com.example.caesarzonapplication.model.User
-import com.example.caesarzonapplication.model.service.KeycloakService
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
+import com.example.caesarzonapplication.model.dto.UserDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.ByteArrayOutputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.IOException
 import java.net.URL
-
-data class AccountInfoData (
-    val name: String = "",
-    val surname: String = "",
-    val username: String = "",
-    val email: String = "",
-)
-
-data class TokenPayload(
-    @SerializedName("name") val name: String,
-    @SerializedName("surname") val surname: String,
-    @SerializedName("username") val username: String,
-    @SerializedName("email") val email: String
-)
 
 class AccountInfoViewModel : ViewModel() {
 
-    private val _accountInfoData = MutableStateFlow(AccountInfoData())
-    val accountInfoData: StateFlow<AccountInfoData> get() = _accountInfoData.asStateFlow()
+    private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
+    var accountInfoData: StateFlow<UserDTO> = _accountInfoData
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
     val profileImage = _profileImage
+    private val client = OkHttpClient()
+
+    init {
+        getUserData()
+    }
 
     // Metodo per impostare l'immagine del profilo
     fun setProfileImage(bitmap: Bitmap) {
@@ -85,63 +72,44 @@ class AccountInfoViewModel : ViewModel() {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-
-    private fun decodeJWT(jwt: String): TokenPayload {
-        return try {
-            val parts = jwt.split(".")
-            if (parts.size == 3) {
-                val payload = String(java.util.Base64.getUrlDecoder().decode(parts[1]))
-                Gson().fromJson(payload, TokenPayload::class.java)
-            } else {
-                TokenPayload("", "", "", "")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            TokenPayload("", "", "", "")
-        }
-    }
-
     fun getUserData() {
-        println("sono nel getUserData")
-        val tokenPayload = decodeJWT(KeycloakService.myToken.toString())
-
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
-        val connection = manageURL.openConnection() as HttpURLConnection
-
-        try {
-            connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", "Bearer " + KeycloakService.myToken?.accessToken)
-            println("Token Payload: ${KeycloakService.myToken?.accessToken}")
-            val responseCode = connection.responseCode
-            println("Response Code: $responseCode")
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val response = StringBuilder()
-                var line: String?
-
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
+        CoroutineScope(Dispatchers.IO).launch {
+            println("Sto prendendo i dati dell'utente")
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user");
+            val request = Request.Builder().url(manageURL)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+            try {
+                val response = client.newCall(request).execute()
+                println(response.message)
+                if (!response.isSuccessful) {
+                    return@launch
                 }
-                println("Response Code: $responseCode")
-                println("Response Body: $response")
+                val responseBody = response.body?.string()
+                val jsonObject = JSONObject(responseBody)
 
-                _accountInfoData.value =
-                    AccountInfoData(
-                        name = tokenPayload.name,
-                        surname = tokenPayload.surname,
-                        username = tokenPayload.username,
-                        email = tokenPayload.email,)
-                println("Account Info: ${_accountInfoData.value.name}")
-            } else {
-                println("Error: ${connection.responseMessage}")
+                val id = jsonObject.optString("id", "")
+                val firstName = jsonObject.optString("firstName", "")
+                val lastName = jsonObject.optString("lastName", "")
+                val username = jsonObject.optString("username", "")
+                val email = jsonObject.optString("email", "")
+                val phoneNumber = jsonObject.optString("phoneNumber", "")
+
+                val userDTO = UserDTO(
+                    id = id,
+                    firstName = firstName,
+                    lastName = lastName,
+                    username = username,
+                    email = email,
+                    phoneNumber = phoneNumber
+                )
+                _accountInfoData.value = userDTO
+                println("Ho preso i dati dell'utente")
+                println(accountInfoData.value.username)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return@launch
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            connection.disconnect()
         }
     }
 }
