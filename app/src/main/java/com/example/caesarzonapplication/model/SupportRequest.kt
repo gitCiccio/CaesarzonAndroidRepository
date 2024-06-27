@@ -5,5 +5,5 @@ data class SupportRequest(
     val user: String,
     val type: String,
     val date: String,
-    val actions: List<String>
+    val actions: String
 )
