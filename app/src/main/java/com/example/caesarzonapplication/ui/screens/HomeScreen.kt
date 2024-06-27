@@ -27,12 +27,13 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.NotificationFloatingButton
 import com.example.caesarzonapplication.ui.components.NotificationsPopup
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
 import kotlin.math.log
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean){
+fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, userNotificationViewModel: UserNotificationViewModel){
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
-    val notifications = listOf("Notifica 1", "Notifica 2", "Notifica 3")
+    val notifications = userNotificationViewModel.userNotifications
     Scaffold(
         topBar = { Column {
                 Spacer(modifier = Modifier.height(45.dp))
