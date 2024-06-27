@@ -22,7 +22,6 @@ enum class AdminTab {
 @Composable
 fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
     var selectedTab by remember { mutableStateOf(AdminTab.RicercaUtenti) }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +48,7 @@ fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) 
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                AdminTab.values().forEach { tab ->
+                AdminTab.entries.forEach { tab ->
                     Tab(
                         text = { Text(text = tab.name) },
                         selected = selectedTab == tab,
