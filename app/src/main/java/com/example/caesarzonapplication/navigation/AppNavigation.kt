@@ -62,7 +62,8 @@ fun AppNavigation(){
                     HomeScreen(
                         padding,
                         homeViewModel = HomeViewModel(),
-                        navController = navController
+                        navController = navController,
+                        logged = logged
                     )
                 }
                 composable("shopcart") {
