@@ -34,6 +34,7 @@ class AdminInfoViewModel : ViewModel() {
     val bans: List<Ban> get() = _bans
     //Rendere i numeri per le chiamate dinamici
     init {
+
         searchUsers()
         searchReports()
         searchSupportRequests()
@@ -62,6 +63,49 @@ class AdminInfoViewModel : ViewModel() {
             }
         }
     }
+
+    fun searchSpecifcUsers(query: String){
+        println("Sono nella funzione per effettuare la ricerca degli utenti")
+        CoroutineScope(Dispatchers.IO).launch {
+            var username = ""
+            val manageURLUsername = URL("http://25.49.50.144:8090/user-api/users/$query")
+            val request = Request.Builder().url(manageURLUsername).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            try{
+                val response = client.newCall(request).execute()
+                if(!response.isSuccessful) {
+                    return@launch
+                }
+
+                val responseBody = response.body?.string()
+
+                try {
+                    val jsonResponse = JSONArray(responseBody)
+                    _searchResults.clear()
+                    for(i in 0 until jsonResponse.length()){
+                        username = jsonResponse.getString(i)
+                        print("Username: $username")
+                        val manageURLProfilePic = URL("http://25.49.50.144:8090/user-api/image/$username")
+                        val responseImage = client.newCall(Request.Builder().url(manageURLProfilePic).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()).execute()
+                        println("Risposta per prendere le immagini ${responseImage.message}")
+                        if(!responseImage.isSuccessful)
+                            return@launch
+                        val responseBodyImage = responseImage.body?.string()
+                        val profilePictureBase64 = responseBodyImage
+                        profilePictureBase64?.let { UserFindDTO(username, it) }
+                            ?.let { _searchResults.add(it) }
+                    }
+                } catch (e: org.json.JSONException) {
+                    println("Errore nel parsing del JSON: ${e.message}")
+                }
+
+
+            } catch (e: IOException){
+                e.printStackTrace()
+            }
+        }
+    }
+
+
     //dopo che prendi le richieste di supporto, quelle che vengono gestite devono essere eliminate chiamando la delete
     fun searchReports(){
         CoroutineScope(Dispatchers.IO).launch {

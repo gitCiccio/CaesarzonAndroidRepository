@@ -17,6 +17,7 @@ import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
@@ -26,21 +27,24 @@ fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
 
     Column {
         // Campo di testo per l'inserimento del testo di ricerca
-        TextField(
-            value = searchText,
-            onValueChange = {
-                searchText = it
-                adminInfoViewModel.searchUsers() // Esegui la ricerca ogni volta che il testo cambia
-            },
-            label = { Text("Cerca utenti") },
-            modifier = Modifier.fillMaxWidth()
+        Row(verticalAlignment = Alignment.CenterVertically){
+            Spacer(modifier = Modifier.width(35.dp))
+            TextField(
+                value = searchText,
+                onValueChange = {
+                    searchText = it
+                },
+                label = { Text("Cerca utenti") },
+                modifier = Modifier
+                    .width(320.dp)
 
-        )
-        IconButton(onClick = { adminInfoViewModel.searchUsers()}) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+            )
+            IconButton(onClick = { adminInfoViewModel.searchSpecifcUsers(searchText)}) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         LazyColumn {
             items(adminInfoViewModel.searchResults) { user ->

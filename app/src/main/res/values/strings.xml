@@ -6,4 +6,5 @@
     <string name="shopcart">ShopCart</string>
     <string name="productpage">ProductPage</string>
     <string name="wishlists">Wishlists</string>
+    <string name="notifications">NotificationsButton</string>
 </resources>
