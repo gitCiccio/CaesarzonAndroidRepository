@@ -12,6 +12,7 @@ class HomeViewModel : ViewModel(){
     private val _products = mutableStateListOf<Product>()
     val products: List<Product> get() = _products
 
+
     init{
         loadProducts()
     }
