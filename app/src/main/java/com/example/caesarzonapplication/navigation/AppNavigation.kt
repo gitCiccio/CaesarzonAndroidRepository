@@ -28,6 +28,7 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
 
 
 @Composable
@@ -63,7 +64,8 @@ fun AppNavigation(){
                         padding,
                         homeViewModel = HomeViewModel(),
                         navController = navController,
-                        logged = logged
+                        logged = logged,
+                        userNotificationViewModel = UserNotificationViewModel()
                     )
                 }
                 composable("shopcart") {
