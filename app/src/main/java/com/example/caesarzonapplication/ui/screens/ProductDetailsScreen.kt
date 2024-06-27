@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
-import com.example.caesarzonapplication.model.Review
 
 @Composable
 fun ProductDetailsScreen(query: String) {
@@ -34,12 +33,6 @@ fun ProductDetailsScreen(query: String) {
     )
 
     // Lista fittizia di recensioni
-    val reviews = listOf(
-        Review("User1", "PPPP", "Great product!"),
-        Review("User2", "Pippa", "I love it!"),
-        Review("User3", "BOB", "Not bad.")
-        // Aggiungi altre recensioni se necessario
-    )
 
     // Stato per tenere traccia dello stato di espansione delle recensioni
     var isReviewsExpanded by remember { mutableStateOf(false) }
@@ -126,7 +119,7 @@ fun ProductDetailsScreen(query: String) {
             )
         }
 
-        if (isReviewsExpanded) {
+        /*if (isReviewsExpanded) {
             // Se le recensioni sono espandibili, mostra le recensioni
             Column {
                 reviews.forEach { review ->
@@ -137,6 +130,6 @@ fun ProductDetailsScreen(query: String) {
                     )
                 }
             }
-        }
+        }*/
     }
 }
