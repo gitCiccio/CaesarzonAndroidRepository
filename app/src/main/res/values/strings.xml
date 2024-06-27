@@ -5,4 +5,5 @@
     <string name="friendlist">Friendlist</string>
     <string name="shopcart">ShopCart</string>
     <string name="productpage">ProductPage</string>
+    <string name="notifications">NotificationsButton</string>
 </resources>
