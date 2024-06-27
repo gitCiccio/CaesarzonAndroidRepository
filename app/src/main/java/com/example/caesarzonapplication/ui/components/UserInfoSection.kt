@@ -24,8 +24,8 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
     val user by accountInfoViewModel.accountInfoData.collectAsState()
 
-    var name by rememberSaveable { mutableStateOf(user.name) }
-    var surname by rememberSaveable { mutableStateOf(user.surname) }
+    var name by rememberSaveable { mutableStateOf(user.firstName) }
+    var surname by rememberSaveable { mutableStateOf(user.lastName) }
     var email by remember { mutableStateOf(TextFieldValue(user.email)) }
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }
