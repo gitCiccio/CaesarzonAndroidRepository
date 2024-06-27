@@ -27,11 +27,11 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
 fun BanSection( adminInfoViewModel: AdminInfoViewModel) {
-    val bans by adminInfoViewModel.bans.collectAsState()
+    //val bans by adminInfoViewModel.bans
 
     LazyColumn {
-        items(bans.size) { index ->
-            val ban = bans[index]
+        items(adminInfoViewModel.bans.size) { index ->
+            val ban = adminInfoViewModel.bans[index]
             var expanded by remember { mutableStateOf(false) }
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 Row(

@@ -37,9 +37,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                                    KeycloakService().getAccessToken(username, password)
                                   if (KeycloakService.myToken != null){
                                       onLoginSuccess()
-                                      println("Access token: "+ KeycloakService.myToken)
                                       accountInfoViewModel.getUserData()
-                                      println("Cognome utente loggato: "+ accountInfoViewModel.accountInfoData.value.surname)
                                   }else{
                                       loginFailed = true
                                   }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,24 +29,25 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
 fun ReportsSection( adminInfoViewModel: AdminInfoViewModel){
-    val reports by adminInfoViewModel.reports.collectAsState()
 
     LazyColumn {
-        items(reports.size){ index ->
-            val report = reports[index]
+        items(adminInfoViewModel.reports.size){ index ->
+            val report = adminInfoViewModel.reports[index]
             var expanded by remember { mutableStateOf(false) }
 
-            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = report.code)
-                    Text(text = report.reportedUser)
+                    Text(text = report.description)
+                    Text(text = report.usernameUser2)
                     Text(text = report.reason)
-                    Text(text = report.date)
+                    Text(text = report.reportDate)
                     Row {
                         IconButton(onClick = { /* Gestisci accetta segnalazione */ }) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -74,3 +76,4 @@ fun ReportsSection( adminInfoViewModel: AdminInfoViewModel){
         }
     }
 }
+

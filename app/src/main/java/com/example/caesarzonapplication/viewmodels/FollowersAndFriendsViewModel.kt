@@ -341,7 +341,16 @@ class FollowersAndFriendsViewModel: ViewModel() {
                 UserSearchDTO("fakeUser9", "Ciao", false, false),
                 UserSearchDTO("fakeUser10", "Ciao", false, false),
                 UserSearchDTO("fakeUser11", "Ciao", false, false),
-                UserSearchDTO("fakeUser12", "Ciao", false, false)
+                UserSearchDTO("fakeUser12", "Ciao", false, false),
+                UserSearchDTO("fakeUser13", "Ciao", false, false),
+                UserSearchDTO("fakeUser14", "Ciao", false, false),
+                UserSearchDTO("fakeUser15", "Ciao", false, false),
+                UserSearchDTO("fakeUser16", "Ciao", false, false),
+                UserSearchDTO("fakeUser17", "Ciao", false, false),
+                UserSearchDTO("fakeUser18", "Ciao", false, false),
+                UserSearchDTO("fakeUser19", "Ciao", false, false),
+                UserSearchDTO("fakeUser20", "Ciao", false, false),
+                UserSearchDTO("fakeUser21", "Ciao", false, false)
             )
 
             _users.addAll(fakeUsers)

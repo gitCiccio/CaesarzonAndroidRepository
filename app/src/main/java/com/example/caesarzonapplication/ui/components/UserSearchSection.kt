@@ -22,7 +22,7 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 @Composable
 fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
     var searchText by remember { mutableStateOf("") }
-    val users by adminInfoViewModel.searchResults.collectAsState()
+
 
     Column {
         // Campo di testo per l'inserimento del testo di ricerca
@@ -30,16 +30,20 @@ fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
             value = searchText,
             onValueChange = {
                 searchText = it
-                adminInfoViewModel.searchUsers(searchText) // Esegui la ricerca ogni volta che il testo cambia
+                adminInfoViewModel.searchUsers() // Esegui la ricerca ogni volta che il testo cambia
             },
             label = { Text("Cerca utenti") },
             modifier = Modifier.fillMaxWidth()
+
         )
+        IconButton(onClick = { adminInfoViewModel.searchUsers()}) {
+            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
-            items(users) { user ->
+            items(adminInfoViewModel.searchResults) { user ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

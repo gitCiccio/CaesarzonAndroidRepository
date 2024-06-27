@@ -28,11 +28,10 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
 fun SupportRequestSection( adminInfoViewModel: AdminInfoViewModel) {
-    val supportRequests by adminInfoViewModel.supportRequests.collectAsState()
 
     LazyColumn {
-        items(supportRequests.size){ index ->
-            val request = supportRequests[index]
+        items(adminInfoViewModel.supportRequests.size){ index ->
+            val request = adminInfoViewModel.supportRequests[index]
             var expanded by remember { mutableStateOf(false) }
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 Row (
@@ -41,10 +40,10 @@ fun SupportRequestSection( adminInfoViewModel: AdminInfoViewModel) {
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    Text(text = request.code)
-                    Text(text = request.user)
+                    Text(text = request.subject)
+                    Text(text = request.username)
                     Text(text = request.type)
-                    Text(text = request.date)
+                    Text(text = request.localDate)
                     Row {
                         IconButton(onClick = { /* Gestisci rispondi */ }) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
