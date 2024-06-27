@@ -31,10 +31,10 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
     var selectedAddress by remember { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by remember { mutableStateOf(false) }
     var showRemoveAddressDialog by remember { mutableStateOf(false) }
-    var passwordVisible by remember { mutableStateOf(false) }
     var addressDropdownExpanded by remember { mutableStateOf(false) }
 
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
         TextField(
             value = name,
             onValueChange = { name = it },
@@ -69,13 +69,12 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     Icon(Icons.Filled.ArrowDropDown, contentDescription = "Drop-down arrow")
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .clickable { addressDropdownExpanded = true }
             )
             DropdownMenu(
                 expanded = addressDropdownExpanded,
                 onDismissRequest = { addressDropdownExpanded = false },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.width(280.dp)
             ) {
                 addresses.forEach { address ->
                     DropdownMenuItem(
@@ -92,38 +91,11 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         Spacer(modifier = Modifier.height(15.dp))
 
         Row {
-            Button(onClick = { showAddAddressDialog = true }, modifier = Modifier.weight(1f)) {
-                Text(text = "Aggiungi indirizzo")
-            }
-
-            Spacer(modifier = Modifier.width(15.dp))
-
-            Button(onClick = { showRemoveAddressDialog = true }, modifier = Modifier.weight(1f)) {
-                Text(text = "Rimuovi indirizzo")
+            Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
+                Text(text = "Modifica i tuoi dati")
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                modifier = Modifier.width(220.dp),
-                value = if (passwordVisible) TextFieldValue("password123") else TextFieldValue("********"),
-                onValueChange = {},
-                label = { Text("Password") },
-                enabled = false
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { passwordVisible = !passwordVisible }) {
-                Text(softWrap = false, text= if (passwordVisible) "Nascondi" else "Mostra")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
-            Text(text = "Modifica password")
-        }
     }
 
     if (showAddAddressDialog) {
@@ -160,12 +132,12 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                 .clickable { showAddAddressDialog = false }
                         )
                     }
-                    var street by remember { mutableStateOf(TextFieldValue("")) }
-                    var houseNumber by remember { mutableStateOf(TextFieldValue("")) }
-                    var city by remember { mutableStateOf(TextFieldValue("")) }
-                    var zipCode by remember { mutableStateOf(TextFieldValue("")) }
-                    var province by remember { mutableStateOf(TextFieldValue("")) }
-                    var region by remember { mutableStateOf(TextFieldValue("")) }
+                    var street by rememberSaveable { mutableStateOf(TextFieldValue("Via Ina Casa")) }
+                    var houseNumber by rememberSaveable { mutableStateOf(TextFieldValue("N° 81")) }
+                    var city by rememberSaveable { mutableStateOf(TextFieldValue("Luzzi")) }
+                    var zipCode by rememberSaveable { mutableStateOf(TextFieldValue("87040")) }
+                    var province by rememberSaveable { mutableStateOf(TextFieldValue("Cosenza")) }
+                    var region by rememberSaveable { mutableStateOf(TextFieldValue("Calabria")) }
 
                     TextField(
                         value = street,
