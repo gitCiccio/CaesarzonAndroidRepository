@@ -24,20 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
-enum class AdminTab {
+enum class AdminTab{
     Informazioni,
     Ban
 }
 
+
 @Composable
-fun AdminScreen(
-    padding: PaddingValues,
-    adminInfoViewModel: AdminInfoViewModel,
-) {
+
+fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
     var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
