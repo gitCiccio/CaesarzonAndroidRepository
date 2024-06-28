@@ -1,27 +1,26 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.model.User
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
+
 @Composable
-fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
+fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel, navHostController: NavHostController) {
     var searchText by remember { mutableStateOf("") }
 
 
@@ -51,26 +50,13 @@ fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable { navHostController.navigate("userpage") },
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = user.username)
                     Row {
-                        IconButton(onClick = { /* Gestisci utente */ }) {
-                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Gestisci utente")
-                        }
-                        IconButton(onClick = { /* Gestisci carrello */ }) {
-                            Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "Carrello")
-                        }
-                        IconButton(onClick = { /* Gestisci preferiti */ }) {
-                            Icon(imageVector = Icons.Default.Favorite, contentDescription = "Cuore")
-                        }
-                        IconButton(onClick = { /* Gestisci indirizzi */ }) {
-                            Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Indirizzi")
-                        }
-                        IconButton(onClick = { /* Gestisci pagamenti */ }) {
-                            Icon(imageVector = Icons.Default.MailOutline, contentDescription = "Carta")
-                        }
+                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Gestisci utente")
                     }
                 }
             }

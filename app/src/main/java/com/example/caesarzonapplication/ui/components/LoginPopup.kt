@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -33,7 +34,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, accountInfoViewModel: AccountInfoViewModel){
+fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController){
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
@@ -81,8 +82,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                                           errorMessage = "Username o password errati."
                                       }
                                   } else {
-                                      errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."
-                                  }
+                                      errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."}
                               }catch (e: Exception){
                                   e.printStackTrace()
                                   errorMessage = "Errore durante il login. Contatta l'assistenza per ricevere supporto su questo errore."
