@@ -13,15 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.SupportRequest
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
-@Preview
 @Composable
-fun SupportRequestScreen() {
+fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: androidx.navigation.NavHostController) {
     Scaffold(
         topBar = {
             Column {
@@ -46,9 +45,8 @@ fun SupportRequestScreen() {
                     )
                 }
             }
-        },//nel corpo, inserire tutte la lista di richieste di supporto
-        content = {padding -> SupportRequest(AdminInfoViewModel(), padding)},
-        bottomBar = {}
+        },
+        content = { padding -> SupportRequest(adminInfoViewModel, padding) },
+        bottomBar = {NavigationBottomBar(navController, logged = false) }
     )
-
 }
