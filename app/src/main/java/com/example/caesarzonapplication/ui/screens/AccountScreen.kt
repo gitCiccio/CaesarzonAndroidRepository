@@ -1,10 +1,6 @@
 package com.example.caesarzonapplication.ui.screens
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -12,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -28,8 +23,6 @@ import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
-import java.io.ByteArrayOutputStream
 
 enum class AccountTab {
     Profilo,
@@ -137,7 +130,7 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel)
+                AccountTab.Profilo -> UserInfoSection()
                 AccountTab.Indirizzi -> UserAddressInfoSection(accountInfoViewModel)
                 AccountTab.Carte -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()

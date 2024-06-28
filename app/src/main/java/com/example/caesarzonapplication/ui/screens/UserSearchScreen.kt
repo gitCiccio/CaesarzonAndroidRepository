@@ -20,7 +20,7 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 
 @Composable
-fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
+fun UserSearchScreen(adminInfoViewModel: AdminInfoViewModel) {
     var searchText by remember { mutableStateOf("") }
 
 

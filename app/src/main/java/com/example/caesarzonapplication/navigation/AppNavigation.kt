@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.navigation
 
+
 import ShoppingCartScreen
 import UserSearchScreen
 import androidx.compose.material3.Scaffold
@@ -20,20 +21,9 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
-//import com.example.caesarzonapplication.ui.screens.FriendlistScreen
-import com.example.caesarzonapplication.ui.screens.HomeScreen
-import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
-import com.example.caesarzonapplication.ui.screens.ReportsScreen
-import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
-import com.example.caesarzonapplication.ui.screens.UserPageScreen
-import com.example.caesarzonapplication.ui.screens.WishlistScreen
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
-import com.example.caesarzonapplication.viewmodels.WishlistViewModel
-import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
+
+import com.example.caesarzonapplication.ui.screens.*
+import com.example.caesarzonapplication.viewmodels.*
 
 
 @Composable
@@ -132,13 +122,13 @@ fun AppNavigation(){
                     UserPageScreen(navController = navController)
                 }
                 composable("searchUser") {
-                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel(), navHostController = navController)
+                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("reports") {
                     ReportsScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("supportRequest") {
-                    SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel())
+                    SupportRequestScreen()
                 }
             }
         },

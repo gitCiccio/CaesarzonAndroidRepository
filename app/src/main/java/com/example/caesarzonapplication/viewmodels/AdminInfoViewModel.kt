@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.Ban
 import com.example.caesarzonapplication.model.dto.ReportDTO
@@ -30,7 +31,7 @@ class AdminInfoViewModel : ViewModel() {
     val reports: List<ReportDTO> get() = _reports
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
-    val supportRequests: List<SupportDTO> get() = _supportRequests
+    lateinit var supportRequests: List<SupportDTO>
 
     private val _bans = mutableStateListOf<Ban>()
     val bans: List<Ban> get() = _bans
@@ -38,9 +39,10 @@ class AdminInfoViewModel : ViewModel() {
 
     //da capire come fare l'init
     init{
-        searchUsers()
-        searchReports()
-        searchSupportRequests()
+        //searchUsers()
+        //searchReports()
+        //searchSupportRequests()
+        loadSupport()
     }
 
      fun searchUsers() {
@@ -163,6 +165,44 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
 
-
+    fun loadSupport(){
+        supportRequests = listOf(
+            SupportDTO(
+                username = "Bug_Man",
+                type = "Technical",
+                subject = "Errore nel caricamento",
+                text = "Errore nel caricamento dei dati",
+                localDate = "2024-06-01"
+            ),
+            SupportDTO(
+                username = "Bug_Man",
+                type = "Technical",
+                subject = "Errore nel caricamento",
+                text = "Errore nel caricamento dei dati",
+                localDate = "2024-06-01"
+            ),
+            SupportDTO(
+                username = "Bug_Man",
+                type = "Technical",
+                subject = "Errore nel caricamento",
+                text = "Errore nel caricamento dei dati",
+                localDate = "2024-06-01"
+            ),
+            SupportDTO(
+                username = "Bug_Man",
+                type = "Technical",
+                subject = "Errore nel caricamento",
+                text = "Errore nel caricamento dei dati",
+                localDate = "2024-06-01"
+            ),
+            SupportDTO(
+                username = "Bug_Man",
+                type = "Technical",
+                subject = "Errore nel caricamento",
+                text = "Errore nel caricamento dei dati",
+                localDate = "2024-06-01"
+            )
+        )
+    }
 
 }
