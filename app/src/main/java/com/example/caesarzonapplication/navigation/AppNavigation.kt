@@ -1,8 +1,8 @@
 package com.example.caesarzonapplication.navigation
 
+
 import ShoppingCartScreen
 import UserSearchScreen
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,33 +17,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
-import com.example.caesarzonapplication.ui.components.MenuFloatingButton
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
-//import com.example.caesarzonapplication.ui.screens.FriendlistScreen
-import com.example.caesarzonapplication.ui.screens.HomeScreen
-import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
-import com.example.caesarzonapplication.ui.screens.ReportsScreen
-import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
-import com.example.caesarzonapplication.ui.screens.UserPageScreen
-import com.example.caesarzonapplication.ui.screens.WishlistScreen
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
-import com.example.caesarzonapplication.viewmodels.WishlistViewModel
-import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
+
+import com.example.caesarzonapplication.ui.screens.*
+import com.example.caesarzonapplication.viewmodels.*
 
 
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
-    var logged by rememberSaveable { mutableStateOf(false) }
+    var logged by rememberSaveable { mutableStateOf(true) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val isAdmin by rememberSaveable { mutableStateOf(true) }
 
 
     Scaffold (
@@ -68,6 +56,7 @@ fun AppNavigation(){
                         showLoginDialog = false
                     },
                     navController = navController,
+                    accountInfoViewModel = AccountInfoViewModel()
                 )
             }
 
@@ -103,7 +92,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), navController)
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
@@ -115,7 +104,7 @@ fun AppNavigation(){
                 }
                 composable("friendlist") {
                     if (logged) {
-                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel())
+                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel(), navController)
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
@@ -133,13 +122,13 @@ fun AppNavigation(){
                     UserPageScreen(navController = navController)
                 }
                 composable("searchUser") {
-                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel(), navHostController = navController)
+                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("reports") {
                     ReportsScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("supportRequest") {
-                    SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel())
+                    SupportRequestScreen()
                 }
             }
         },

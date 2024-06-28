@@ -19,16 +19,16 @@ import java.io.IOException
 import java.net.URL
 
 
-object UserData{
-        private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
-        var accountInfoData: StateFlow<UserDTO> = _accountInfoData
-
-        fun updateUserData(newUserData: UserDTO){
-            _accountInfoData.value = newUserData
-        }
-    }
-
 class AccountInfoViewModel : ViewModel() {
+
+    object UserData{
+            private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
+            var accountInfoData: StateFlow<UserDTO> = _accountInfoData
+
+            fun updateUserData(newUserData: UserDTO){
+                _accountInfoData.value = newUserData
+            }
+        }
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
@@ -75,60 +75,42 @@ class AccountInfoViewModel : ViewModel() {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-
-    fun getUserData(): String {
-        var result = "error"
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user");
-            val request = Request.Builder().url(manageURL)
-                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                .build()
-
-            result = withContext(Dispatchers.IO) {
-                try {
-                    val response = client.newCall(request).execute()
-                    if (!response.isSuccessful) {
-                        return@withContext response.message
-                    }
-                    val responseBody = response.body?.string()
-                    val jsonObject = JSONObject(responseBody)
-
-                    try {
-                        val response = client.newCall(request).execute()
-                        println(response.message)
-
-                        if (!response.isSuccessful) {
-                            return@launch
-                        }
-                        val responseBody = response.body?.string()
-                        val jsonObject = JSONObject(responseBody)
-
-                        val id = jsonObject.optString("id", "")
-                        val firstName = jsonObject.optString("firstName", "")
-                        val lastName = jsonObject.optString("lastName", "")
-                        val username = jsonObject.optString("username", "")
-                        val email = jsonObject.optString("email", "")
-                        val phoneNumber = jsonObject.optString("phoneNumber", "")
-
-                        val userDTO = UserDTO(
-                            id = id,
-                            firstName = firstName,
-                            lastName = lastName,
-                            username = username,
-                            email = email,
-                            phoneNumber = phoneNumber
-                        )
-                        UserData.updateUserData(userDTO)
-                        "success"
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        "error"
-                    }
-
+    suspend fun getUserData(): String {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
+        val request = Request.Builder().url(manageURL)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+        return withContext(Dispatchers.IO)  {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext response.message
                 }
+                val responseBody = response.body?.string()
+                val jsonObject = JSONObject(responseBody)
+
+                val id = jsonObject.optString("id", "")
+                val firstName = jsonObject.optString("firstName", "")
+                val lastName = jsonObject.optString("lastName", "")
+                val username = jsonObject.optString("username", "")
+                val email = jsonObject.optString("email", "")
+                val phoneNumber = jsonObject.optString("phoneNumber", "")
+
+                val userDTO = UserDTO(
+                    id = id,
+                    firstName = firstName,
+                    lastName = lastName,
+                    username = username,
+                    email = email,
+                    phoneNumber = phoneNumber
+                )
+                UserData.updateUserData(userDTO)
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error"
             }
-            return result
         }
     }
 }
+

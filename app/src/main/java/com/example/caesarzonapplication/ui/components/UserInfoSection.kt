@@ -15,12 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
-import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
+fun UserInfoSection() {
 
     var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
