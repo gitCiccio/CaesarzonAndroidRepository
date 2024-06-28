@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
@@ -20,17 +21,19 @@ import java.net.URL
 
 class AccountInfoViewModel : ViewModel() {
 
-    private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
-    var accountInfoData: StateFlow<UserDTO> = _accountInfoData
+    object UserData{
+        private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
+        var accountInfoData: StateFlow<UserDTO> = _accountInfoData
+
+        fun updateUserData(newUserData: UserDTO){
+            _accountInfoData.value = newUserData
+        }
+    }
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
     val profileImage = _profileImage
     private val client = OkHttpClient()
-
-    init {
-        getUserData()
-    }
 
     // Metodo per impostare l'immagine del profilo
     fun setProfileImage(bitmap: Bitmap) {
@@ -72,44 +75,45 @@ class AccountInfoViewModel : ViewModel() {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    fun getUserData() {
+    fun getUserData(): String {
+        var result = "error"
         CoroutineScope(Dispatchers.IO).launch {
-            println("Sto prendendo i dati dell'utente")
             val manageURL = URL("http://25.49.50.144:8090/user-api/user");
             val request = Request.Builder().url(manageURL)
                 .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
                 .build()
-            try {
-                val response = client.newCall(request).execute()
-                println(response.message)
-                if (!response.isSuccessful) {
-                    return@launch
+            result = withContext(Dispatchers.IO) {
+                try {
+                    val response = client.newCall(request).execute()
+                    if (!response.isSuccessful) {
+                        return@withContext response.message
+                    }
+                    val responseBody = response.body?.string()
+                    val jsonObject = JSONObject(responseBody)
+
+                    val id = jsonObject.optString("id", "")
+                    val firstName = jsonObject.optString("firstName", "")
+                    val lastName = jsonObject.optString("lastName", "")
+                    val username = jsonObject.optString("username", "")
+                    val email = jsonObject.optString("email", "")
+                    val phoneNumber = jsonObject.optString("phoneNumber", "")
+
+                    val userDTO = UserDTO(
+                        id = id,
+                        firstName = firstName,
+                        lastName = lastName,
+                        username = username,
+                        email = email,
+                        phoneNumber = phoneNumber
+                    )
+                    UserData.updateUserData(userDTO)
+                    "success"
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    "error"
                 }
-                val responseBody = response.body?.string()
-                val jsonObject = JSONObject(responseBody)
-
-                val id = jsonObject.optString("id", "")
-                val firstName = jsonObject.optString("firstName", "")
-                val lastName = jsonObject.optString("lastName", "")
-                val username = jsonObject.optString("username", "")
-                val email = jsonObject.optString("email", "")
-                val phoneNumber = jsonObject.optString("phoneNumber", "")
-
-                val userDTO = UserDTO(
-                    id = id,
-                    firstName = firstName,
-                    lastName = lastName,
-                    username = username,
-                    email = email,
-                    phoneNumber = phoneNumber
-                )
-                _accountInfoData.value = userDTO
-                println("Ho preso i dati dell'utente")
-                println(accountInfoData.value.username)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return@launch
             }
         }
+        return result
     }
 }

@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.model
+package com.example.caesarzonapplication.model.dto
 
 data class UserFindDTO(
     val username: String,

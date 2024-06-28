@@ -3,10 +3,9 @@ package com.example.caesarzonapplication.viewmodels
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.Ban
-import com.example.caesarzonapplication.model.ReportDTO
-import com.example.caesarzonapplication.model.SupportDTO
-import com.example.caesarzonapplication.model.SupportRequest
-import com.example.caesarzonapplication.model.UserFindDTO
+import com.example.caesarzonapplication.model.dto.ReportDTO
+import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.dto.UserFindDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
