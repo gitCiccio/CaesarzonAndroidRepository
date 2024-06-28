@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController){
+fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, accountInfoViewModel: AccountInfoViewModel){
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
@@ -75,7 +75,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                           GlobalScope.launch(Dispatchers.IO){
                               try{
                                   KeycloakService().getAccessToken(username, password)
-                                  if (KeycloakService.myToken != null) {
+                                  if (myToken != null) {
                                       if (accountInfoViewModel.getUserData() == "success") {
                                           onLoginSuccess()
                                       } else {

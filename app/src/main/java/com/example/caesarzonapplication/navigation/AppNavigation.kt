@@ -2,7 +2,6 @@ package com.example.caesarzonapplication.navigation
 
 import ShoppingCartScreen
 import UserSearchScreen
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
-import com.example.caesarzonapplication.ui.components.MenuFloatingButton
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AdminScreen
@@ -68,6 +66,7 @@ fun AppNavigation(){
                         showLoginDialog = false
                     },
                     navController = navController,
+                    accountInfoViewModel = AccountInfoViewModel()
                 )
             }
 
@@ -103,7 +102,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), navController)
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
