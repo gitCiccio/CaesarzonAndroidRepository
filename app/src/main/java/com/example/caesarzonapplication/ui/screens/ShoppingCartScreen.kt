@@ -60,6 +60,7 @@ fun ShoppingCartScreen(
                     onDismiss = { showLoginDialog = false },
                     onLoginSuccess = { showLoginDialog = false;},
                     navController = navController,
+                    accountInfoViewModel = AccountInfoViewModel()
                 )
             }
             LazyColumn(
