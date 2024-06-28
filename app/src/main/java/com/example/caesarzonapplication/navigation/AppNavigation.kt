@@ -92,7 +92,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), accountInfoViewModel = AccountInfoViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }

@@ -21,17 +21,17 @@ class UserNotificationViewModel : ViewModel() {
     val userNotifications: List<UserNotificationDTO> get() = _userNotifications
 
     init{
-        loadUserNotifications()
+        //loadUserNotifications()
     }
 
     fun loadUserNotifications(){
         CoroutineScope(Dispatchers.IO).launch {
-            println("Il mio token: "+ myToken?.accessToken)
+            //println("Il mio token: "+ myToken?.accessToken)
             val manageURL = URL("http://25.49.50.144:8090/notify-api/user/notifications")
             val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer  ${myToken?.accessToken}").build()
             try {
                 val response = client.newCall(request).execute()
-                println("valore della risposta: "+response.message)
+                //println("valore della risposta: "+response.message)
                 if(!response.isSuccessful){
                     return@launch
                 }
