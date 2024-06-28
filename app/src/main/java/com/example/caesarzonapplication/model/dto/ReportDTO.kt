@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.model
+package com.example.caesarzonapplication.model.dto
 
 import java.util.UUID
 
