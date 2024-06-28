@@ -24,11 +24,13 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
+import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.viewmodels.WishlistViewModel
 import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
 
 
@@ -37,7 +39,7 @@ fun AppNavigation(){
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    var isAdmin by rememberSaveable { mutableStateOf(true) }
+    val isAdmin by rememberSaveable { mutableStateOf(false) }
 
 
     Scaffold (
@@ -77,6 +79,13 @@ fun AppNavigation(){
                         logged = logged
                     )
                 }
+                composable("wishlists") {
+                    WishlistScreen(
+                        wishlistViewModel = WishlistViewModel(),
+                        navController = navController,
+                        logged = logged
+                    )
+                }
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
@@ -111,8 +120,6 @@ fun AppNavigation(){
                 }
             }
         },
-        floatingActionButton = {MenuFloatingButton()},
-        floatingActionButtonPosition = FabPosition.End
     )
 
 }
