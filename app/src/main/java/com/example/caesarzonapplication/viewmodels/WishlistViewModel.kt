@@ -20,10 +20,13 @@ class WishlistViewModel: ViewModel(){
     private val client = OkHttpClient()
     private val _wishlists = mutableStateListOf<WishlistDTO>()
     val wishlists: List<WishlistDTO> get() = _wishlists
+    private val products = mutableStateListOf<SingleWishlistProductDTO>()
+    val productsList: List<SingleWishlistProductDTO> get() = products
     val username = AccountInfoViewModel.UserData.accountInfoData.value.username
 
 
     fun loadWishlists(visibility: Int){
+        println("Sto caricando le liste desideri di : $username")
         CoroutineScope(Dispatchers.IO).launch {
             _wishlists.clear()
             val manageURL = URL("http://25.49.50.144:8090/product-api/wishlists?usr=$username&visibility=$visibility");
@@ -31,6 +34,7 @@ class WishlistViewModel: ViewModel(){
             try {
                 val response = client.newCall(request).execute()
                 if(!response.isSuccessful){
+                    println("Errore nella risposta: "+response.message+"  "+response.code)
                     return@launch
                 }
                 val responseBody = response.body?.string()
@@ -49,9 +53,9 @@ class WishlistViewModel: ViewModel(){
     }
 
     fun getWishlistProducts(wishlistId: UUID): List<SingleWishlistProductDTO>? {
+        products.clear()
         for (wishlist in _wishlists) {
             if (wishlist.id == wishlistId) {
-                var products = mutableListOf<SingleWishlistProductDTO>()
                 val manageURL = URL("http://25.25.161.198:8090/product-api/wishlistProducts?wish_id=$wishlistId");
                 val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
                 try {
@@ -59,10 +63,10 @@ class WishlistViewModel: ViewModel(){
                     val responseBody = response.body?.string()
                     val jsonResponse = JSONArray(responseBody)
                     for (i in 0 until jsonResponse.length()) {
-                        val id = jsonResponse.getJSONObject(i).getString("id")
-                        val name = jsonResponse.getJSONObject(i).optString("name", "")
-                        //products.add(SingleWishlistProductDTO(UUID.fromString(id), ))
-                        println("Wishlist name: $name")
+                        val productName = jsonResponse.getJSONObject(i).getString("productName")
+                        val price = jsonResponse.getJSONObject(i).optString("price", "")
+                        products.add(SingleWishlistProductDTO(productName,price.toDouble() ))
+                        println("Product name: $productName")
                     }
                     return products
                 } catch (e: IOException) {
