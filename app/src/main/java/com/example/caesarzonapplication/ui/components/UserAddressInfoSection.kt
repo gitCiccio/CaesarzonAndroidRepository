@@ -17,17 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.caesarzonapplication.model.User
+import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    val user by accountInfoViewModel.accountInfoData.collectAsState()
+    val userData = remember {AccountInfoViewModel.UserData.accountInfoData}.collectAsState()
 
-    var name by remember { mutableStateOf(user.firstName) }
-    var surname by remember { mutableStateOf(user.lastName) }
-    var email by remember { mutableStateOf(TextFieldValue(user.email)) }
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by remember { mutableStateOf(false) }
@@ -42,20 +40,20 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
     ) {
         item {
             TextField(
-                value = name,
-                onValueChange = { name = it },
+                value = userData.value.firstName,
+                onValueChange = { userData.value.firstName = it },
                 label = { Text("Nome") }
             )
             Spacer(modifier = Modifier.height(15.dp))
             TextField(
-                value = surname,
-                onValueChange = { surname = it },
+                value = userData.value.lastName,
+                onValueChange = { userData.value.lastName = it },
                 label = { Text("Cognome") }
             )
             Spacer(modifier = Modifier.height(15.dp))
             TextField(
-                value = email,
-                onValueChange = { email = it },
+                value = userData.value.email,
+                onValueChange = { userData.value.email = it },
                 label = { Text("Email") }
             )
             Spacer(modifier = Modifier.height(15.dp))

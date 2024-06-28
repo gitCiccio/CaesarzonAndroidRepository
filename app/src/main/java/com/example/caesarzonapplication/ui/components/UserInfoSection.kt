@@ -22,11 +22,8 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    val user by accountInfoViewModel.accountInfoData.collectAsState()
+    var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
-    var name by rememberSaveable { mutableStateOf(user.firstName) }
-    var surname by rememberSaveable { mutableStateOf(user.lastName) }
-    var email by remember { mutableStateOf(TextFieldValue(user.email)) }
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by remember { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by remember { mutableStateOf(false) }
@@ -35,25 +32,25 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
+
         TextField(
-            value = name,
-            onValueChange = { name = it },
+            value = user.value.firstName,
+            onValueChange = { user.value.firstName = it },
             label = { Text("Nome") }
         )
-
         Spacer(modifier = Modifier.height(15.dp))
 
         TextField(
-            value = surname,
-            onValueChange = { surname = it },
+            value = user.value.lastName,
+            onValueChange = { user.value.lastName = it },
             label = { Text("Cognome") }
         )
 
         Spacer(modifier = Modifier.height(15.dp))
 
         TextField(
-            value = email,
-            onValueChange = { email = it },
+            value = user.value.email,
+            onValueChange = { user.value.email = it },
             label = { Text("Email") }
         )
 
@@ -95,7 +92,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 Text(text = "Modifica i tuoi dati")
             }
         }
-
     }
 
     if (showAddAddressDialog) {
