@@ -44,10 +44,7 @@ fun ReportsSection( adminInfoViewModel: AdminInfoViewModel){
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = report.description)
-                    Text(text = report.usernameUser2)
-                    Text(text = report.reason)
-                    Text(text = report.reportDate)
+
                     Row {
                         IconButton(onClick = { /* Gestisci accetta segnalazione */ }) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {

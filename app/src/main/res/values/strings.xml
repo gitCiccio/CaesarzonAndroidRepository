@@ -7,4 +7,5 @@
     <string name="productpage">ProductPage</string>
     <string name="wishlists">Wishlists</string>
     <string name="notifications">NotificationsButton</string>
+    <string name="userpage">UserPage</string>
 </resources>
