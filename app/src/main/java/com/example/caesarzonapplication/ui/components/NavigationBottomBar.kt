@@ -2,13 +2,13 @@ package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -18,7 +18,7 @@ import com.example.caesarzonapplication.R
 
 @Composable
 fun NavigationBottomBar(navController: NavHostController, logged: Boolean){
-    //selectedIndex: MutableState<Int>, dovreppe essere un parametro delle fun
+    //selectedIndex: MutableState<Int>, dovrebbe essere un parametro delle fun
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry.value?.destination
 
@@ -38,14 +38,12 @@ fun NavigationBottomBar(navController: NavHostController, logged: Boolean){
             }
         )
 
-
         NavigationBarItem(
                 selected = currentDestination?.route == "userInfo",
                 onClick = { navController.navigate("userInfo") },
                 icon = { Icon(Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.userInfo),
                     tint = if (currentDestination?.route == "userInfo") Color(238, 137, 60, 255) else Color.Black) }
         )
-
 
         NavigationBarItem(
             selected = currentDestination?.route == "shopcart",
@@ -61,6 +59,14 @@ fun NavigationBottomBar(navController: NavHostController, logged: Boolean){
             onClick = { navController.navigate("friendlist")},
             icon = { Icon(Icons.Filled.Favorite, contentDescription = stringResource(R.string.friendlist),
                 tint = if (currentDestination?.route == "friendlist") Color(238, 137, 60, 255) else Color.Black)
+            }
+        )
+
+        NavigationBarItem(
+            selected = currentDestination?.route == "wishlists",
+            onClick = { navController.navigate("wishlists")},
+            icon = { Icon(Icons.Filled.Create, contentDescription = stringResource(R.string.wishlists),
+                tint = if (currentDestination?.route == "wishlists") Color(238, 137, 60, 255) else Color.Black)
             }
         )
     }
