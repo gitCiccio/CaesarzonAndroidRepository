@@ -36,7 +36,6 @@ enum class AdminTab {
 fun AdminScreen(
     padding: PaddingValues,
     adminInfoViewModel: AdminInfoViewModel,
-    accountInfoViewModel: AccountInfoViewModel
 ) {
     var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
     Box(
@@ -77,7 +76,7 @@ fun AdminScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AdminTab.Informazioni -> UserInfoSection(accountInfoViewModel)
+                AdminTab.Informazioni -> UserInfoSection()
                 AdminTab.Ban -> BanSection(adminInfoViewModel)
             }
         }
