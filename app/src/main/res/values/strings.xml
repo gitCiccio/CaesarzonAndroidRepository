@@ -8,4 +8,7 @@
     <string name="wishlists">Wishlists</string>
     <string name="notifications">NotificationsButton</string>
     <string name="userpage">UserPage</string>
+    <string name="searchUser">searchUser</string>
+    <string name="reports">reports</string>
+    <string name="supportRequest">supportRequest</string>
 </resources>
