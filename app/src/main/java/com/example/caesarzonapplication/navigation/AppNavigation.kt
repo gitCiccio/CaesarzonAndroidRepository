@@ -39,9 +39,9 @@ import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
-    var logged by rememberSaveable { mutableStateOf(false) }
+    var logged by rememberSaveable { mutableStateOf(true) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val isAdmin by rememberSaveable { mutableStateOf(true) }
 
 
     Scaffold (
@@ -114,7 +114,7 @@ fun AppNavigation(){
                 }
                 composable("friendlist") {
                     if (logged) {
-                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel())
+                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel(), navController)
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true

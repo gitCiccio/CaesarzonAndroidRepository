@@ -33,11 +33,9 @@ enum class AdminTab {
 }
 
 @Composable
-fun AdminScreen(
-    padding: PaddingValues,
-    adminInfoViewModel: AdminInfoViewModel
-) {
-    var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
+fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
+    var selectedTab by remember { mutableStateOf(AdminTab.RicercaUtenti) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +74,9 @@ fun AdminScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AdminTab.Informazioni -> UserInfoSection(adminInfoViewModel)
+                AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel)
+                AdminTab.Segnalazioni -> ReportsSection(adminInfoViewModel)
+                AdminTab.RichiesteSupporto -> SupportRequestSection(adminInfoViewModel)
                 AdminTab.Ban -> BanSection(adminInfoViewModel)
             }
         }

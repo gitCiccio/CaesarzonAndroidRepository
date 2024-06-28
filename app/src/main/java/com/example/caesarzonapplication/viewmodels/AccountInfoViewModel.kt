@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +18,17 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 
+
 class AccountInfoViewModel : ViewModel() {
 
     object UserData{
-        private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
-        var accountInfoData: StateFlow<UserDTO> = _accountInfoData
+            private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
+            var accountInfoData: StateFlow<UserDTO> = _accountInfoData
 
-        fun updateUserData(newUserData: UserDTO){
-            _accountInfoData.value = newUserData
+            fun updateUserData(newUserData: UserDTO){
+                _accountInfoData.value = newUserData
+            }
         }
-    }
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)

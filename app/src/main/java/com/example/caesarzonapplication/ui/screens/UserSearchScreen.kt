@@ -20,7 +20,7 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 
 @Composable
-fun UserSearchScreen(adminInfoViewModel: AdminInfoViewModel, navHostController: NavHostController) {
+fun UserSearchSection(adminInfoViewModel: AdminInfoViewModel) {
     var searchText by remember { mutableStateOf("") }
 
 
@@ -50,13 +50,14 @@ fun UserSearchScreen(adminInfoViewModel: AdminInfoViewModel, navHostController: 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { navHostController.navigate("userpage") },
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = user.username)
                     Row {
-                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Gestisci utente")
+                        Button(onClick = { /* Handle ban action */ }) {
+                            Text(text = "Banna utente")
+                        }
                     }
                 }
             }
