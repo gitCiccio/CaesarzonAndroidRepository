@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.dto.UserDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +14,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
+import java.io.IOException
+import java.net.URL
 
 
-
-    object UserData{
+object UserData{
         private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
         var accountInfoData: StateFlow<UserDTO> = _accountInfoData
 
@@ -90,40 +94,41 @@ class AccountInfoViewModel : ViewModel() {
                     val responseBody = response.body?.string()
                     val jsonObject = JSONObject(responseBody)
 
-            try {
-                val response = client.newCall(request).execute()
-                println(response.message)
+                    try {
+                        val response = client.newCall(request).execute()
+                        println(response.message)
 
-                if (!response.isSuccessful) {
-                    return@launch
+                        if (!response.isSuccessful) {
+                            return@launch
+                        }
+                        val responseBody = response.body?.string()
+                        val jsonObject = JSONObject(responseBody)
+
+                        val id = jsonObject.optString("id", "")
+                        val firstName = jsonObject.optString("firstName", "")
+                        val lastName = jsonObject.optString("lastName", "")
+                        val username = jsonObject.optString("username", "")
+                        val email = jsonObject.optString("email", "")
+                        val phoneNumber = jsonObject.optString("phoneNumber", "")
+
+                        val userDTO = UserDTO(
+                            id = id,
+                            firstName = firstName,
+                            lastName = lastName,
+                            username = username,
+                            email = email,
+                            phoneNumber = phoneNumber
+                        )
+                        UserData.updateUserData(userDTO)
+                        "success"
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        "error"
+                    }
+
                 }
-                val responseBody = response.body?.string()
-                val jsonObject = JSONObject(responseBody)
-
-                    val id = jsonObject.optString("id", "")
-                    val firstName = jsonObject.optString("firstName", "")
-                    val lastName = jsonObject.optString("lastName", "")
-                    val username = jsonObject.optString("username", "")
-                    val email = jsonObject.optString("email", "")
-                    val phoneNumber = jsonObject.optString("phoneNumber", "")
-
-                    val userDTO = UserDTO(
-                        id = id,
-                        firstName = firstName,
-                        lastName = lastName,
-                        username = username,
-                        email = email,
-                        phoneNumber = phoneNumber
-                    )
-                    UserData.updateUserData(userDTO)
-                    "success"
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    "error"
-                }
-
             }
+            return result
         }
-        return result
     }
 }
