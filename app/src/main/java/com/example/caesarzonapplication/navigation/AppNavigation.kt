@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.navigation
 
 import ShoppingCartScreen
+import UserSearchScreen
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.MenuFloatingButton
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
@@ -23,6 +25,8 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 //import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
+import com.example.caesarzonapplication.ui.screens.ReportsScreen
+import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
@@ -44,7 +48,17 @@ fun AppNavigation(){
 
     Scaffold (
         topBar = {},
-        bottomBar = { NavigationBottomBar(navController, logged)  },
+        bottomBar = {
+            if (logged) {
+                if (isAdmin) {
+                    AdminNavigationBottomBar(navController)
+                } else {
+                    NavigationBottomBar(navController, logged)
+                }
+            } else {
+                NavigationBottomBar(navController, logged)
+            }
+        },
         content = { padding ->
             if (showLoginDialog) {
                 LoginPopup(
@@ -117,6 +131,15 @@ fun AppNavigation(){
                 }
                 composable("userpage"){
                     UserPageScreen(navController = navController)
+                }
+                composable("searchUser") {
+                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel(), navHostController = navController)
+                }
+                composable("reports") {
+                    ReportsScreen(adminInfoViewModel = AdminInfoViewModel())
+                }
+                composable("supportRequest") {
+                    SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
             }
         },

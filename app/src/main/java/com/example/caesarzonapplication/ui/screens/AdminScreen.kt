@@ -1,6 +1,6 @@
 package com.example.caesarzonapplication.ui.screens
 
-import UserSearchSection
+import UserSearchScreen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -13,15 +13,13 @@ import com.example.caesarzonapplication.ui.components.*
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 enum class AdminTab {
-    RicercaUtenti,
-    Segnalazioni,
-    RichiesteSupporto,
+    Informazioni,
     Ban
 }
 
 @Composable
-fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel, navHostController: NavHostController) {
-    var selectedTab by remember { mutableStateOf(AdminTab.RicercaUtenti) }
+fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
+    var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,9 +58,7 @@ fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel, 
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel, navHostController)
-                AdminTab.Segnalazioni -> ReportsSection(adminInfoViewModel)
-                AdminTab.RichiesteSupporto -> SupportRequestSection(adminInfoViewModel)
+                AdminTab.Informazioni -> UserInfoSection(adminInfoViewModel)
                 AdminTab.Ban -> BanSection(adminInfoViewModel)
             }
         }
