@@ -8,8 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.ui.components.*
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 enum class AdminTab {
@@ -20,7 +20,7 @@ enum class AdminTab {
 }
 
 @Composable
-fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
+fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel, navHostController: NavHostController) {
     var selectedTab by remember { mutableStateOf(AdminTab.RicercaUtenti) }
     Box(
         modifier = Modifier
@@ -60,7 +60,7 @@ fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) 
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel)
+                AdminTab.RicercaUtenti -> UserSearchSection(adminInfoViewModel, navHostController)
                 AdminTab.Segnalazioni -> ReportsSection(adminInfoViewModel)
                 AdminTab.RichiesteSupporto -> SupportRequestSection(adminInfoViewModel)
                 AdminTab.Ban -> BanSection(adminInfoViewModel)

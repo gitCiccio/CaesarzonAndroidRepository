@@ -23,6 +23,7 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 //import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
+import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
@@ -53,7 +54,6 @@ fun AppNavigation(){
                         showLoginDialog = false
                     },
                     navController = navController,
-                    accountInfoViewModel = AccountInfoViewModel()
                 )
             }
 
@@ -89,7 +89,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), navController)
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
@@ -114,6 +114,9 @@ fun AppNavigation(){
                 ) { backStackEntry ->
                     val productName = backStackEntry.arguments?.getString("productName")
                     productName?.let { ProductDetailsScreen(query = it) }
+                }
+                composable("userpage"){
+                    UserPageScreen(navController = navController)
                 }
             }
         },
