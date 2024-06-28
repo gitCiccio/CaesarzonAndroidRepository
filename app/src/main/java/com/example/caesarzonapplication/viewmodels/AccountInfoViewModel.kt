@@ -4,8 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.UserDTO
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,15 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.IOException
-import java.net.URL
+
 
 class AccountInfoViewModel : ViewModel() {
-
-    private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
-    var accountInfoData: StateFlow<UserDTO> = _accountInfoData
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
@@ -29,6 +21,12 @@ class AccountInfoViewModel : ViewModel() {
     private val client = OkHttpClient()
 
     init {
+        getUserData()
+    }
+
+
+    init {
+        //loadProfileImageFromDatabase()
         getUserData()
     }
 
@@ -72,6 +70,35 @@ class AccountInfoViewModel : ViewModel() {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
+
+
+    /*private fun decodeJWT(jwt: String): TokenPayload {
+        return try {
+            val parts = jwt.split(".")
+            if (parts.size == 3) {
+                val payload = String(java.util.Base64.getUrlDecoder().decode(parts[1]))
+                Gson().fromJson(payload, TokenPayload::class.java)
+            } else {
+                TokenPayload("", "", "", "")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            TokenPayload("", "", "", "")
+        }
+    }*/
+
+    fun getUserData() {
+        println("sono nel getUserData")
+        //val tokenPayload = decodeJWT(KeycloakService.myToken.toString())
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${KeycloakService.myToken?.accessToken}").build()
+
+            try {
+                val response = client.newCall(request).execute()
+
+
     fun getUserData() {
         CoroutineScope(Dispatchers.IO).launch {
             println("Sto prendendo i dati dell'utente")
@@ -82,10 +109,22 @@ class AccountInfoViewModel : ViewModel() {
             try {
                 val response = client.newCall(request).execute()
                 println(response.message)
+
                 if (!response.isSuccessful) {
                     return@launch
                 }
                 val responseBody = response.body?.string()
+
+                val jsonResponse = Gson().fromJson(responseBody, User::class.java)
+
+                _accountInfoData.value = AccountInfoData(
+                            name = jsonResponse.firstName,
+                            surname = jsonResponse.lastName,
+                            username = jsonResponse.username,
+                            email = jsonResponse.email)
+            } catch (e: Exception) {
+                e.printStackTrace()
+
                 val jsonObject = JSONObject(responseBody)
 
                 val id = jsonObject.optString("id", "")
@@ -109,6 +148,7 @@ class AccountInfoViewModel : ViewModel() {
             } catch (e: IOException) {
                 e.printStackTrace()
                 return@launch
+
             }
         }
     }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, accountInfoViewModel: AccountInfoViewModel){
+fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController){
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var loginFailed by rememberSaveable { mutableStateOf(false) }
@@ -35,9 +36,9 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                           GlobalScope.launch(Dispatchers.IO){
                               try{
                                    KeycloakService().getAccessToken(username, password)
-                                  if (KeycloakService.myToken != null){
+                                  if (myToken != null){
+                                      println("access: "+myToken?.accessToken)
                                       onLoginSuccess()
-                                      accountInfoViewModel.getUserData()
                                   }else{
                                       loginFailed = true
                                   }
