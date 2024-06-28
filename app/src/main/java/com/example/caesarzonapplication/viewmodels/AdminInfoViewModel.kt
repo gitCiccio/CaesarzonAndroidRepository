@@ -1,6 +1,9 @@
 package com.example.caesarzonapplication.viewmodels
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.Ban
 import com.example.caesarzonapplication.model.ReportDTO
@@ -33,8 +36,9 @@ class AdminInfoViewModel : ViewModel() {
     private val _bans = mutableStateListOf<Ban>()
     val bans: List<Ban> get() = _bans
     //Rendere i numeri per le chiamate dinamici
-    init {
 
+    //da capire come fare l'init
+    init{
         searchUsers()
         searchReports()
         searchSupportRequests()
@@ -65,7 +69,6 @@ class AdminInfoViewModel : ViewModel() {
     }
 
     fun searchSpecifcUsers(query: String){
-        println("Sono nella funzione per effettuare la ricerca degli utenti")
         CoroutineScope(Dispatchers.IO).launch {
             var username = ""
             val manageURLUsername = URL("http://25.49.50.144:8090/user-api/users/$query")
@@ -83,10 +86,8 @@ class AdminInfoViewModel : ViewModel() {
                     _searchResults.clear()
                     for(i in 0 until jsonResponse.length()){
                         username = jsonResponse.getString(i)
-                        print("Username: $username")
                         val manageURLProfilePic = URL("http://25.49.50.144:8090/user-api/image/$username")
                         val responseImage = client.newCall(Request.Builder().url(manageURLProfilePic).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()).execute()
-                        println("Risposta per prendere le immagini ${responseImage.message}")
                         if(!responseImage.isSuccessful)
                             return@launch
                         val responseBodyImage = responseImage.body?.string()
@@ -128,8 +129,7 @@ class AdminInfoViewModel : ViewModel() {
                     val reviewId = jsonResponse.getJSONObject(i).getString("reviewId")
                     _reports.add(ReportDTO(reportDate, reason, description, usernameUser1, usernameUser2, UUID.fromString(reviewId)))
                 }
-                for(reports in _reports)
-                    println(reports.usernameUser1+" , "+reports.usernameUser2)
+
 
             }catch (e: IOException){
                 e.printStackTrace()
@@ -139,7 +139,6 @@ class AdminInfoViewModel : ViewModel() {
 
     fun searchSupportRequests(){
         CoroutineScope(Dispatchers.IO).launch {
-            println("Sono nella funzione per effettuare la ricerca del supporto")
             val manageURL = URL("http://25.49.50.144:8090/notify-api/support?num=0");
             val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
@@ -158,8 +157,7 @@ class AdminInfoViewModel : ViewModel() {
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
                     _supportRequests.add(SupportDTO(username, type, subject, text, localDate))
                 }
-                for(support in _supportRequests)
-                    println(support.username)
+
             }catch (e: IOException){
                 e.printStackTrace()
             }

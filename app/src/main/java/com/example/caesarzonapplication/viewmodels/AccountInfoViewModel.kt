@@ -12,10 +12,14 @@ import com.example.caesarzonapplication.model.User
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
@@ -23,10 +27,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 data class AccountInfoData (
-    val name: String = "",
-    val surname: String = "",
-    val username: String = "",
-    val email: String = "",
+    val name: String,
+    val surname: String,
+    val username: String,
+    val email: String
 )
 
 data class TokenPayload(
@@ -38,12 +42,21 @@ data class TokenPayload(
 
 class AccountInfoViewModel : ViewModel() {
 
-    private val _accountInfoData = MutableStateFlow(AccountInfoData())
+    val client = OkHttpClient()
+    private val _accountInfoData = MutableStateFlow(AccountInfoData("", "", "", ""))
+
+
     val accountInfoData: StateFlow<AccountInfoData> get() = _accountInfoData.asStateFlow()
 
     // StateFlow per l'immagine del profilo
     private val _profileImage = MutableStateFlow<Bitmap?>(null)
     val profileImage = _profileImage
+
+
+    init {
+        //loadProfileImageFromDatabase()
+        getUserData()
+    }
 
     // Metodo per impostare l'immagine del profilo
     fun setProfileImage(bitmap: Bitmap) {
@@ -86,7 +99,7 @@ class AccountInfoViewModel : ViewModel() {
     }
 
 
-    private fun decodeJWT(jwt: String): TokenPayload {
+    /*private fun decodeJWT(jwt: String): TokenPayload {
         return try {
             val parts = jwt.split(".")
             if (parts.size == 3) {
@@ -99,49 +112,33 @@ class AccountInfoViewModel : ViewModel() {
             e.printStackTrace()
             TokenPayload("", "", "", "")
         }
-    }
+    }*/
 
     fun getUserData() {
         println("sono nel getUserData")
-        val tokenPayload = decodeJWT(KeycloakService.myToken.toString())
+        //val tokenPayload = decodeJWT(KeycloakService.myToken.toString())
+        CoroutineScope(Dispatchers.IO).launch {
 
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
-        val connection = manageURL.openConnection() as HttpURLConnection
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${KeycloakService.myToken?.accessToken}").build()
 
-        try {
-            connection.requestMethod = "GET"
-            connection.setRequestProperty("Authorization", "Bearer " + KeycloakService.myToken?.accessToken)
-            println("Token Payload: ${KeycloakService.myToken?.accessToken}")
-            val responseCode = connection.responseCode
-            println("Response Code: $responseCode")
+            try {
+                val response = client.newCall(request).execute()
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val response = StringBuilder()
-                var line: String?
-
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
+                if (!response.isSuccessful) {
+                    return@launch
                 }
-                println("Response Code: $responseCode")
-                println("Response Body: $response")
+                val responseBody = response.body?.string()
+                val jsonResponse = Gson().fromJson(responseBody, User::class.java)
 
-                _accountInfoData.value =
-                    AccountInfoData(
-                        name = tokenPayload.name,
-                        surname = tokenPayload.surname,
-                        username = tokenPayload.username,
-                        email = tokenPayload.email,)
-                println("Account Info: ${_accountInfoData.value.name}")
-            } else {
-                println("Error: ${connection.responseMessage}")
+                _accountInfoData.value = AccountInfoData(
+                            name = jsonResponse.firstName,
+                            surname = jsonResponse.lastName,
+                            username = jsonResponse.username,
+                            email = jsonResponse.email)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            connection.disconnect()
         }
     }
 }
