@@ -147,7 +147,7 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel)
+                AccountTab.Profilo -> UserInfoSection()
                 AccountTab.Indirizzi -> UserAddressInfoSection(accountInfoViewModel)
                 AccountTab.Carte -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
