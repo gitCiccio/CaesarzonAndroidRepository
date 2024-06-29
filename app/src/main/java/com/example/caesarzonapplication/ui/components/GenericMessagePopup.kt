@@ -20,11 +20,18 @@ fun GenericMessagePopup(message: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text(
-                    "OK",
-                    style = TextStyle(color = Color.Black, fontSize = 16.sp)
-                )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                TextButton(onClick = { onDismiss() }) {
+                    Text(
+                        "OK",
+                        style = TextStyle(color = Color.Black, fontSize = 16.sp)
+                    )
+                }
             }
         },
         text = {
@@ -37,7 +44,7 @@ fun GenericMessagePopup(message: String, onDismiss: () -> Unit) {
             ) {
                 Text(
                     message,
-                    style = TextStyle(fontSize = 18.sp),
+                    style = TextStyle(fontSize = 20.sp),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
