@@ -60,7 +60,7 @@ fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
                     horizontalArrangement = Arrangement.End
                 ){
                     IconButton(
-                        onClick = { /* Gestisci accetta segnalazione */ },
+                        onClick = { adminInfoViewModel.deleteReport(report, true) },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -72,7 +72,7 @@ fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
                         }
                     }
                     IconButton(
-                        onClick = { adminInfoViewModel.deleteReport(report) },
+                        onClick = { adminInfoViewModel.deleteReport(report, false) },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
