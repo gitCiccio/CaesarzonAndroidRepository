@@ -120,7 +120,7 @@ fun AppNavigation(){
                     arguments = listOf(navArgument("productName") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val productName = backStackEntry.arguments?.getString("productName")
-                    productName?.let { ProductDetailsScreen(query = it) }
+                    productName?.let { ProductDetailsScreen(query = it, navController) }
                 }
                 composable("userpage"){
                     UserPageScreen(navController = navController)
