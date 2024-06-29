@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.ui.screens
 
 
+import ProductActions
 import android.widget.Button
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +26,6 @@ import com.example.caesarzonapplication.ui.components.ProductReviews
 
 @Composable
 fun ProductDetailsScreen(query: String, navController: NavHostController) {
-    var isAddReviewDialogOpen by remember { mutableStateOf(false) }
 
     // Supponendo che tu abbia un modo per ottenere il prodotto dal nome
     val sampleProduct = Product(
@@ -52,25 +52,17 @@ fun ProductDetailsScreen(query: String, navController: NavHostController) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item{
-                    ProductReviews()
+                    ProductActions()
                 }
                 item{
-                    Button(
-                        onClick = { isAddReviewDialogOpen = true},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ){
-                        Text(text = "Aggiungi Recensione")
-                    }
-                    if(isAddReviewDialogOpen){
-                        AddReviewPopup(
-                            onDismiss = { isAddReviewDialogOpen = false },
-                            onAddReview = { /* Aggiungi la nuova recensione */ },
-                            navController = navController
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(30.dp))
                 }
+                item{
+                    ProductReviews(navController)
+                }
+
+
+
             }
         },
         bottomBar = { AdminNavigationBottomBar(navController) }

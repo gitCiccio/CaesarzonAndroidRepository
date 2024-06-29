@@ -32,6 +32,8 @@ import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewMod
 fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
 
     var expanded by remember { mutableStateOf(false) }
+    var popupMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -59,7 +61,11 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
                     horizontalArrangement = Arrangement.End
                 ){
                     IconButton(
-                        onClick = { reportViewModel.deleteReport(report, true) },
+                        onClick = {
+                            reportViewModel.deleteReport(report, true)
+                            popupMessage = "Segnalazione accettata con successo!"
+                            showPopup = true
+                                  },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -71,7 +77,11 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
                         }
                     }
                     IconButton(
-                        onClick = { reportViewModel.deleteReport(report, false) },
+                        onClick = {
+                            reportViewModel.deleteReport(report, false)
+                            popupMessage = "Segnalazione scartata con successo!"
+                            showPopup = true
+                                  },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -108,6 +118,12 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
                         .padding(top = 8.dp)
                 )
             }
+        }
+    }
+
+    if (showPopup) {
+        GenericMessagePopup(message = popupMessage) {
+            showPopup = false
         }
     }
 }
