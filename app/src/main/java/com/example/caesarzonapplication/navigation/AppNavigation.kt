@@ -70,7 +70,8 @@ fun AppNavigation(){
                         homeViewModel = HomeViewModel(),
                         navController = navController,
                         logged = logged,
-                        userNotificationViewModel = UserNotificationViewModel()
+                        userNotificationViewModel = UserNotificationViewModel(),
+                        isAdmin = isAdmin
                     )
                 }
                 composable("shopcart") {
@@ -79,7 +80,8 @@ fun AppNavigation(){
                         shoppingCartViewModel = ShoppingCartViewModel(),
                         homeViewModel = HomeViewModel(),
                         navController = navController,
-                        logged = logged
+                        logged = logged,
+
                     )
                 }
                 composable("wishlists") {

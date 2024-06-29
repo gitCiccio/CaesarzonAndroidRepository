@@ -16,25 +16,25 @@ import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
 @Composable
 fun SupportRequest(adminInfoViewModel: AdminInfoViewModel, padding: PaddingValues) {
-    LazyColumn(
-        contentPadding = padding,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        if(!adminInfoViewModel.supportRequests.isEmpty()) {
+    if(adminInfoViewModel.supportRequests.isNotEmpty()){
+        LazyColumn(
+            contentPadding = padding,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
             items(adminInfoViewModel.supportRequests) { support ->
                 SupportUser(support, adminInfoViewModel)
             }
-        }else{
-            item{Text(
-                modifier = Modifier
-                    .padding(top = 150.dp)
-                    .padding(horizontal = 80.dp),
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ), text = "Non si sono richieste di assistenza"
-            )}
         }
+    }else{
+        Text(
+            modifier = Modifier
+                .padding(top = 150.dp)
+                .padding(horizontal = 80.dp),
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            ), text = "Non si sono richieste di assistenza"
+        )
     }
 }
