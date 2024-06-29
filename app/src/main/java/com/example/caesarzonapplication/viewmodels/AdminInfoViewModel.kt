@@ -24,11 +24,14 @@ import java.util.UUID
 class AdminInfoViewModel : ViewModel() {
 
     val client = OkHttpClient()
+
     private val _searchResults = mutableStateListOf<UserFindDTO>()
     val searchResults: List<UserFindDTO> get() = _searchResults
 
+
     private val _reports = mutableStateListOf<ReportDTO>()
     val reports: List<ReportDTO> get() = _reports
+
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
     val supportRequests: List<SupportDTO> get() = _supportRequests
@@ -38,19 +41,22 @@ class AdminInfoViewModel : ViewModel() {
     //Rendere i numeri per le chiamate dinamici
 
     //da capire come fare l'init
-    init{
+    init {
         //searchUsers()
         //searchReports()
+        //loadSupport()
+        generateFakeReports()
         searchSupportRequests()
     }
 
-     fun searchUsers() {
+    fun searchUsers() {
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=0");
-            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            val request = Request.Builder().url(manageURL)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try {
                 val response = client.newCall(request).execute()
-                if(!response.isSuccessful){
+                if (!response.isSuccessful) {
                     return@launch
                 }
                 val responseBody = response.body?.string()
@@ -58,7 +64,8 @@ class AdminInfoViewModel : ViewModel() {
                 _searchResults.clear()
                 for (i in 0 until jsonResponse.length()) {
                     val username = jsonResponse.getJSONObject(i).getString("username")
-                    val profilePictureBase64 = jsonResponse.getJSONObject(i).optString("profilePicture", "")
+                    val profilePictureBase64 =
+                        jsonResponse.getJSONObject(i).optString("profilePicture", "")
                     _searchResults.add(UserFindDTO(username, profilePictureBase64))
                 }
 
@@ -68,14 +75,15 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
 
-    fun searchSpecifcUsers(query: String){
+    fun searchSpecifcUsers(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
             var username = ""
             val manageURLUsername = URL("http://25.49.50.144:8090/user-api/users/$query")
-            val request = Request.Builder().url(manageURLUsername).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-            try{
+            val request = Request.Builder().url(manageURLUsername)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            try {
                 val response = client.newCall(request).execute()
-                if(!response.isSuccessful) {
+                if (!response.isSuccessful) {
                     return@launch
                 }
 
@@ -84,11 +92,16 @@ class AdminInfoViewModel : ViewModel() {
                 try {
                     val jsonResponse = JSONArray(responseBody)
                     _searchResults.clear()
-                    for(i in 0 until jsonResponse.length()){
+                    for (i in 0 until jsonResponse.length()) {
                         username = jsonResponse.getString(i)
-                        val manageURLProfilePic = URL("http://25.49.50.144:8090/user-api/image/$username")
-                        val responseImage = client.newCall(Request.Builder().url(manageURLProfilePic).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()).execute()
-                        if(!responseImage.isSuccessful)
+                        val manageURLProfilePic =
+                            URL("http://25.49.50.144:8090/user-api/image/$username")
+                        val responseImage = client.newCall(
+                            Request.Builder().url(manageURLProfilePic)
+                                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                                .build()
+                        ).execute()
+                        if (!responseImage.isSuccessful)
                             return@launch
                         val responseBodyImage = responseImage.body?.string()
                         val profilePictureBase64 = responseBodyImage
@@ -100,13 +113,13 @@ class AdminInfoViewModel : ViewModel() {
                 }
 
 
-            } catch (e: IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
     }
 
-
+    /*
     //dopo che prendi le richieste di supporto, quelle che vengono gestite devono essere eliminate chiamando la delete
     fun searchReports(){
         CoroutineScope(Dispatchers.IO).launch {
@@ -137,19 +150,22 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
 
-    fun searchSupportRequests(){
+ */
+
+    fun searchSupportRequests() {
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = URL("http://25.49.50.144:8090/notify-api/support?num=0");
-            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            val request = Request.Builder().url(manageURL)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
-            try{
+            try {
                 val response = client.newCall(request).execute()
-                if(!response.isSuccessful)
+                if (!response.isSuccessful)
                     return@launch
                 val responseBody = response.body?.string()
                 val jsonResponse = JSONArray(responseBody)
                 _supportRequests.clear()
-                for(i in 0 until jsonResponse.length()){
+                for (i in 0 until jsonResponse.length()) {
                     val username = jsonResponse.getJSONObject(i).getString("username")
                     val type = jsonResponse.getJSONObject(i).getString("type")
                     val subject = jsonResponse.getJSONObject(i).getString("subject")
@@ -158,7 +174,7 @@ class AdminInfoViewModel : ViewModel() {
                     _supportRequests.add(SupportDTO(username, type, subject, text, localDate))
                 }
 
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
@@ -170,7 +186,7 @@ class AdminInfoViewModel : ViewModel() {
         println("Eliminato: "+supportDTO.username)
     }
 
-    fun loadSupport(){
+    fun loadSupport() {
         _supportRequests.addAll(listOf(
             SupportDTO(
                 username = "Bug_Man1",
@@ -210,4 +226,53 @@ class AdminInfoViewModel : ViewModel() {
         ))
     }
 
+    fun deleteReport(ReportDTO: ReportDTO){
+        _reports.remove(ReportDTO)
+    }
+
+    fun generateFakeReports() {
+        _reports.addAll(listOf(
+            ReportDTO(
+                reportDate = "2024-06-01",
+                reason = "Inappropriate content",
+                description = "The user posted inappropriate content.",
+                usernameUser1 = "user1",
+                usernameUser2 = "reportedUser1",
+                reviewId = UUID.randomUUID()
+            ),
+            ReportDTO(
+                reportDate = "2024-06-02",
+                reason = "Harassment",
+                description = "The user is harassing others.",
+                usernameUser1 = "user2",
+                usernameUser2 = "reportedUser2",
+                reviewId = UUID.randomUUID()
+            ),
+            ReportDTO(
+                reportDate = "2024-06-03",
+                reason = "Spam",
+                description = "The user is spamming the forum.",
+                usernameUser1 = "user3",
+                usernameUser2 = "reportedUser3",
+                reviewId = UUID.randomUUID()
+            ),
+            ReportDTO(
+                reportDate = "2024-06-03",
+                reason = "Spam",
+                description = "The user is spamming the forum.",
+                usernameUser1 = "user3",
+                usernameUser2 = "reportedUser3",
+                reviewId = UUID.randomUUID()
+            ),
+            ReportDTO(
+                reportDate = "2024-06-03",
+                reason = "Spam",
+                description = "The user is spamming the forum.",
+                usernameUser1 = "user3",
+                usernameUser2 = "reportedUser3",
+                reviewId = UUID.randomUUID()
+            )
+        ))
+
+    }
 }
