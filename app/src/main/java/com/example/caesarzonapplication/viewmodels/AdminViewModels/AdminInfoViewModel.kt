@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
 
@@ -227,8 +228,58 @@ class AdminInfoViewModel : ViewModel() {
     }
 
     fun deleteReport(ReportDTO: ReportDTO){
-        _reports.remove(ReportDTO)
+        val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${ReportDTO.reviewId}&accept=false")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = Request.Builder()
+                .url(manageURL)
+                .delete()
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute()
+                if(!response.isSuccessful){
+                    println("Errore nell'eliminazione del report: ${response.message}")
+                    return@launch
+                }
+                val responseBody = response.body?.string()
+                println("Risposta del server: $responseBody")
+                _reports.remove(ReportDTO)
+            }catch (e: IOException){
+                e.printStackTrace()
+            }
+        }
     }
+
+    fun deleteReviewFromReport(ReportDTO: ReportDTO){
+        val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${ReportDTO.reviewId}&accept=true")
+
+        CoroutineScope(Dispatchers.IO).launch{
+            val request = Request.Builder()
+                .url(manageURL)
+                .delete()
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute()
+                if(!response.isSuccessful){
+                    println("Errore nell'eliminazione del report: ${response.message}")
+                    return@launch
+                }
+                val responseBody = response.body?.string()
+                println("Risposta del server: $responseBody")
+                _reports.remove(ReportDTO)
+                // manca la logica per rimuovere review(implementare review e product per eliminarla)
+
+                }
+            catch (e: IOException){
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     fun generateFakeReports() {
         _reports.addAll(listOf(

@@ -68,7 +68,7 @@ fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Accetta"
                             )
-                            Text(text = "Banna", fontSize = 12.sp)
+                            Text(text = "Accetta", fontSize = 12.sp)
                         }
                     }
                     IconButton(
