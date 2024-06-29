@@ -23,14 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.ReportDTO
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 
 @Composable
-fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
+fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -60,7 +59,7 @@ fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
                     horizontalArrangement = Arrangement.End
                 ){
                     IconButton(
-                        onClick = { adminInfoViewModel.deleteReport(report, true) },
+                        onClick = { reportViewModel.deleteReport(report, true) },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -72,7 +71,7 @@ fun ReportCardTab(report : ReportDTO, adminInfoViewModel: AdminInfoViewModel) {
                         }
                     }
                     IconButton(
-                        onClick = { adminInfoViewModel.deleteReport(report, false) },
+                        onClick = { reportViewModel.deleteReport(report, false) },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {

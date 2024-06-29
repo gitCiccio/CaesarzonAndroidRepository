@@ -17,10 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.SupportRequest
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: androidx.navigation.NavHostController) {
+fun SupportRequestScreen(supportRequestViewModel: SupportRequestViewModel, navController: androidx.navigation.NavHostController) {
     Scaffold(
         topBar = {
             Column {
@@ -46,7 +46,7 @@ fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: 
                 }
             }
         },
-        content = { padding -> SupportRequest(adminInfoViewModel, padding) },
+        content = { padding -> SupportRequest(supportRequestViewModel, padding) },
         bottomBar = {AdminNavigationBottomBar(navController) }
     )
 }
