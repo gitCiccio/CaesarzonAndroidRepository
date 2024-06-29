@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ReportComponent
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 
 
 @Composable
-fun ReportsScreen(adminInfoViewModel: AdminInfoViewModel, navController : NavHostController){
+fun ReportsScreen(reportViewModel: ReportViewModel, navController : NavHostController){
 
     Scaffold(
         topBar = {
@@ -49,7 +49,7 @@ fun ReportsScreen(adminInfoViewModel: AdminInfoViewModel, navController : NavHos
                 }
             }
         },
-        content = {padding -> ReportComponent(adminInfoViewModel, padding) },
+        content = {padding -> ReportComponent(reportViewModel, padding) },
         bottomBar = { NavigationBottomBar(navController = navController, logged = true)}
     )
 
