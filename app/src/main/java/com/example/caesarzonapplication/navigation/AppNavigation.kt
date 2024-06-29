@@ -29,23 +29,16 @@ import com.example.caesarzonapplication.viewmodels.*
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()
-    var logged by rememberSaveable { mutableStateOf(true) }
+    var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(true) }
+    val isAdmin by rememberSaveable { mutableStateOf(false) }
 
 
     Scaffold (
         topBar = {},
         bottomBar = {
-            if (logged) {
-                if (isAdmin) {
-                    AdminNavigationBottomBar(navController)
-                } else {
-                    NavigationBottomBar(navController, logged)
-                }
-            } else {
-                NavigationBottomBar(navController, logged)
-            }
+            if (logged && isAdmin){ AdminNavigationBottomBar(navController)}
+            NavigationBottomBar(navController, logged)
         },
         content = { padding ->
             if (showLoginDialog) {
@@ -83,16 +76,22 @@ fun AppNavigation(){
                     )
                 }
                 composable("wishlists") {
-                    WishlistScreen(
-                        wishlistViewModel = WishlistViewModel(),
-                        navController = navController,
-                        logged = logged
-                    )
+                    if (logged){
+                        WishlistScreen(
+                            wishlistViewModel = WishlistViewModel(),
+                            navController = navController,
+                            logged = logged
+                        )}
+                    else{
+                        LaunchedEffect(Unit) {
+                            showLoginDialog = true
+                        }
+                    }
                 }
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), accountInfoViewModel = AccountInfoViewModel())
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
