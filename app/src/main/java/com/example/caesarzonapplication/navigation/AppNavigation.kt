@@ -2,7 +2,6 @@ package com.example.caesarzonapplication.navigation
 
 
 import ShoppingCartScreen
-import UserSearchScreen
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +23,9 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 
 @Composable
@@ -94,7 +96,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
+                            AdminScreen(padding, banViewModel = BanViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
@@ -124,13 +126,13 @@ fun AppNavigation(){
                     UserPageScreen(navController = navController)
                 }
                 composable("searchUser") {
-                    UserSearchScreen(adminInfoViewModel = AdminInfoViewModel())
+                    UserSearchScreen(SearchUsersViewModel())
                 }
                 composable("reports") {
-                    ReportsScreen(adminInfoViewModel = AdminInfoViewModel(), navController)
+                    ReportsScreen(ReportViewModel(), navController)
                 }
                 composable("supportRequest") {
-                    SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel(), navController)
+                    SupportRequestScreen(SupportRequestViewModel(), navController)
                 }
             }
         },

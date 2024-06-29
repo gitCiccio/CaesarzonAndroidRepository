@@ -12,17 +12,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportRequest(adminInfoViewModel: AdminInfoViewModel, padding: PaddingValues) {
-    if(adminInfoViewModel.supportRequests.isNotEmpty()){
+fun SupportRequest(supportRequestViewModel: SupportRequestViewModel, padding: PaddingValues) {
+    if(supportRequestViewModel.supportRequests.isNotEmpty()){
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier.padding(top = 8.dp)
         ) {
-            items(adminInfoViewModel.supportRequests) { support ->
-                SupportUser(support, adminInfoViewModel)
+            items(supportRequestViewModel.supportRequests) { support ->
+                SupportUser(support, supportRequestViewModel)
             }
         }
     }else{
