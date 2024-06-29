@@ -20,6 +20,7 @@ import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ReportComponent
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
+
 @Composable
 fun ReportsScreen(adminInfoViewModel: AdminInfoViewModel, navController : NavHostController){
 
