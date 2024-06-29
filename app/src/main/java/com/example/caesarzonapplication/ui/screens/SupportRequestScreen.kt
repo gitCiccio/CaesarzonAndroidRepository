@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.ui.components.NavigationBottomBar
+import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.SupportRequest
 import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
 
@@ -47,6 +47,6 @@ fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: 
             }
         },
         content = { padding -> SupportRequest(adminInfoViewModel, padding) },
-        bottomBar = {NavigationBottomBar(navController, logged = false) }
+        bottomBar = {AdminNavigationBottomBar(navController) }
     )
 }
