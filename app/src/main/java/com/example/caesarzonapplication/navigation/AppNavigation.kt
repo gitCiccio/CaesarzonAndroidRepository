@@ -92,7 +92,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel(), accountInfoViewModel = AccountInfoViewModel())
+                            AdminScreen(padding, adminInfoViewModel = AdminInfoViewModel())
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
@@ -125,7 +125,7 @@ fun AppNavigation(){
                     UserSearchScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("reports") {
-                    ReportsScreen(adminInfoViewModel = AdminInfoViewModel())
+                    ReportsScreen(adminInfoViewModel = AdminInfoViewModel(), navController)
                 }
                 composable("supportRequest") {
                     SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel(), navController)
