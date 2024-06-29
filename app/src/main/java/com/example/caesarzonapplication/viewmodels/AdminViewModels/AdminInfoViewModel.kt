@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.viewmodels
 
+import androidx.collection.emptyLongSet
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.Ban
@@ -43,10 +44,9 @@ class AdminInfoViewModel : ViewModel() {
     //da capire come fare l'init
     init {
         //searchUsers()
-        //searchReports()
         //loadSupport()
-        generateFakeReports()
-        searchSupportRequests()
+        searchReports()
+        //searchSupportRequests()
     }
 
     fun searchUsers() {
@@ -119,28 +119,29 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
 
-    /*
+
     //dopo che prendi le richieste di supporto, quelle che vengono gestite devono essere eliminate chiamando la delete
+
     fun searchReports(){
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = URL("http://25.49.50.144:8090/notify-api/report?num=0");
             val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try{
                 val response = client.newCall(request).execute()
-                println("valore della risposta: "+response.message)
                 if(!response.isSuccessful)
                     return@launch
                 val responseBody = response.body?.string()
                 val jsonResponse = JSONArray(responseBody)
                 _reports.clear()
                 for(i in 0 until jsonResponse.length()){
+                    val id = jsonResponse.getJSONObject(i).getString("id")
                     val reportDate = jsonResponse.getJSONObject(i).getString("reportDate")
                     val reason = jsonResponse.getJSONObject(i).getString("reason")
                     val description = jsonResponse.getJSONObject(i).getString("description")
                     val usernameUser1 = jsonResponse.getJSONObject(i).getString("usernameUser1")
                     val usernameUser2 = jsonResponse.getJSONObject(i).getString("usernameUser2")
                     val reviewId = jsonResponse.getJSONObject(i).getString("reviewId")
-                    _reports.add(ReportDTO(reportDate, reason, description, usernameUser1, usernameUser2, UUID.fromString(reviewId)))
+                    _reports.add(ReportDTO(UUID.fromString(id), reportDate, reason, description, usernameUser1, usernameUser2, UUID.fromString(reviewId)))
                 }
 
 
@@ -149,8 +150,6 @@ class AdminInfoViewModel : ViewModel() {
             }
         }
     }
-
- */
 
     fun searchSupportRequests() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -210,8 +209,8 @@ class AdminInfoViewModel : ViewModel() {
 
 
 
-    fun deleteReport(ReportDTO: ReportDTO){
-        val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${ReportDTO.reviewId}&accept=false")
+    fun deleteReport(reportDTO: ReportDTO, decision: Boolean){
+        val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${reportDTO.reviewId}&accept=${decision}")
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = Request.Builder()
@@ -222,91 +221,19 @@ class AdminInfoViewModel : ViewModel() {
 
             try {
                 val response = client.newCall(request).execute()
-                if(!response.isSuccessful){
-                    println("Errore nell'eliminazione del report: ${response.message}")
-                    return@launch
+                response.use {
+                    if (response.isSuccessful) {
+                        _reports.removeIf { it.id == reportDTO.id}
+                        println("Richiesta di supporto eliminata con successo")
+                    } else {
+                        println("Problemi nell'eliminazione della richiesta di supporto: ${response.message}")
+                    }
                 }
-                val responseBody = response.body?.string()
-                println("Risposta del server: $responseBody")
-                _reports.remove(ReportDTO)
+
             }catch (e: IOException){
                 e.printStackTrace()
             }
         }
     }
 
-    fun deleteReviewFromReport(ReportDTO: ReportDTO){
-        val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${ReportDTO.reviewId}&accept=true")
-
-        CoroutineScope(Dispatchers.IO).launch{
-            val request = Request.Builder()
-                .url(manageURL)
-                .delete()
-                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                .build()
-
-            try {
-                val response = client.newCall(request).execute()
-                if(!response.isSuccessful){
-                    println("Errore nell'eliminazione del report: ${response.message}")
-                    return@launch
-                }
-                val responseBody = response.body?.string()
-                println("Risposta del server: $responseBody")
-                _reports.remove(ReportDTO)
-                // manca la logica per rimuovere review(implementare review e product per eliminarla)
-
-                }
-            catch (e: IOException){
-                e.printStackTrace()
-            }
-        }
-    }
-
-
-    fun generateFakeReports() {
-        _reports.addAll(listOf(
-            ReportDTO(
-                reportDate = "2024-06-01",
-                reason = "Inappropriate content",
-                description = "The user posted inappropriate content.",
-                usernameUser1 = "user1",
-                usernameUser2 = "reportedUser1",
-                reviewId = UUID.randomUUID()
-            ),
-            ReportDTO(
-                reportDate = "2024-06-02",
-                reason = "Harassment",
-                description = "The user is harassing others.",
-                usernameUser1 = "user2",
-                usernameUser2 = "reportedUser2",
-                reviewId = UUID.randomUUID()
-            ),
-            ReportDTO(
-                reportDate = "2024-06-03",
-                reason = "Spam",
-                description = "The user is spamming the forum.",
-                usernameUser1 = "user3",
-                usernameUser2 = "reportedUser3",
-                reviewId = UUID.randomUUID()
-            ),
-            ReportDTO(
-                reportDate = "2024-06-03",
-                reason = "Spam",
-                description = "The user is spamming the forum.",
-                usernameUser1 = "user3",
-                usernameUser2 = "reportedUser3",
-                reviewId = UUID.randomUUID()
-            ),
-            ReportDTO(
-                reportDate = "2024-06-03",
-                reason = "Spam",
-                description = "The user is spamming the forum.",
-                usernameUser1 = "user3",
-                usernameUser2 = "reportedUser3",
-                reviewId = UUID.randomUUID()
-            )
-        ))
-
-    }
 }
