@@ -128,7 +128,7 @@ fun AppNavigation(){
                     ReportsScreen(adminInfoViewModel = AdminInfoViewModel())
                 }
                 composable("supportRequest") {
-                    SupportRequestScreen()
+                    SupportRequestScreen(adminInfoViewModel = AdminInfoViewModel(), navController)
                 }
             }
         },

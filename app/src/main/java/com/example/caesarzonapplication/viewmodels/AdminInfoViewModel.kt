@@ -31,7 +31,7 @@ class AdminInfoViewModel : ViewModel() {
     val reports: List<ReportDTO> get() = _reports
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
-    lateinit var supportRequests: List<SupportDTO>
+    val supportRequests: List<SupportDTO> get() = _supportRequests
 
     private val _bans = mutableStateListOf<Ban>()
     val bans: List<Ban> get() = _bans
@@ -165,44 +165,49 @@ class AdminInfoViewModel : ViewModel() {
         }
     }
 
+    fun deleteSupport(supportDTO: SupportDTO){
+        _supportRequests.remove(supportDTO)
+        println("Eliminato: "+supportDTO.username)
+    }
+
     fun loadSupport(){
-        supportRequests = listOf(
+        _supportRequests.addAll(listOf(
             SupportDTO(
-                username = "Bug_Man",
+                username = "Bug_Man1",
                 type = "Technical",
                 subject = "Errore nel caricamento",
                 text = "Errore nel caricamento dei dati",
                 localDate = "2024-06-01"
             ),
             SupportDTO(
-                username = "Bug_Man",
+                username = "Bug_Man2",
                 type = "Technical",
                 subject = "Errore nel caricamento",
                 text = "Errore nel caricamento dei dati",
                 localDate = "2024-06-01"
             ),
             SupportDTO(
-                username = "Bug_Man",
+                username = "Bug_Man3",
                 type = "Technical",
                 subject = "Errore nel caricamento",
                 text = "Errore nel caricamento dei dati",
                 localDate = "2024-06-01"
             ),
             SupportDTO(
-                username = "Bug_Man",
+                username = "Bug_Man4",
                 type = "Technical",
                 subject = "Errore nel caricamento",
                 text = "Errore nel caricamento dei dati",
                 localDate = "2024-06-01"
             ),
             SupportDTO(
-                username = "Bug_Man",
+                username = "Bug_Man5",
                 type = "Technical",
                 subject = "Errore nel caricamento",
                 text = "Errore nel caricamento dei dati",
                 localDate = "2024-06-01"
             )
-        )
+        ))
     }
 
 }
