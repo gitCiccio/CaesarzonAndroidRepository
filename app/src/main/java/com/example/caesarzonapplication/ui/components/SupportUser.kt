@@ -55,8 +55,7 @@ fun SupportUser(supports: SupportDTO, adminInfoViewModel: AdminInfoViewModel){
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    adminInfoViewModel.deleteSupport(supports);
-                    /*adminInfoViewModel.sendNotifcationOfSupport(responseText);*/
+                    adminInfoViewModel.deleteSupport(supports.id, responseText);
                     responseText=""; },
 
                 modifier = Modifier.align(Alignment.CenterHorizontally)

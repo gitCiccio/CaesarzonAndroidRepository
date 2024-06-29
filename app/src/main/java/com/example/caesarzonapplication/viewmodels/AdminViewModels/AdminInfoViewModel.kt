@@ -1,10 +1,6 @@
 package com.example.caesarzonapplication.viewmodels
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.Ban
 import com.example.caesarzonapplication.model.dto.ReportDTO
@@ -14,8 +10,11 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -167,12 +166,13 @@ class AdminInfoViewModel : ViewModel() {
                 val jsonResponse = JSONArray(responseBody)
                 _supportRequests.clear()
                 for (i in 0 until jsonResponse.length()) {
+                    val id = jsonResponse.getJSONObject(i).getString("id")
                     val username = jsonResponse.getJSONObject(i).getString("username")
                     val type = jsonResponse.getJSONObject(i).getString("type")
                     val subject = jsonResponse.getJSONObject(i).getString("subject")
                     val text = jsonResponse.getJSONObject(i).getString("text")
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
-                    _supportRequests.add(SupportDTO(username, type, subject, text, localDate))
+                    _supportRequests.add(SupportDTO(UUID.fromString(id), username, type, subject, text, localDate))
                 }
 
             } catch (e: IOException) {
@@ -182,50 +182,33 @@ class AdminInfoViewModel : ViewModel() {
     }
 
 
-    fun deleteSupport(supportDTO: SupportDTO){
-        _supportRequests.remove(supportDTO)
-        println("Eliminato: "+supportDTO.username)
+    fun deleteSupport(supportDTOId: UUID, explain: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val manageURL = "http://25.49.50.144:8090/notify-api/support?support-id=${supportDTOId}&explain=${explain}"
+            val request = Request.Builder()
+                .url(manageURL)
+                .delete()
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute() // Chiamata sincrona
+
+                response.use {
+                    if (response.isSuccessful) {
+                        _supportRequests.removeIf { it.id == supportDTOId }
+                        println("Richiesta di supporto eliminata con successo")
+                    } else {
+                        println("Problemi nell'eliminazione della richiesta di supporto: ${response.message}")
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
-    fun loadSupport() {
-        _supportRequests.addAll(listOf(
-            SupportDTO(
-                username = "Bug_Man1",
-                type = "Technical",
-                subject = "Errore nel caricamento",
-                text = "Errore nel caricamento dei dati",
-                localDate = "2024-06-01"
-            ),
-            SupportDTO(
-                username = "Bug_Man2",
-                type = "Technical",
-                subject = "Errore nel caricamento",
-                text = "Errore nel caricamento dei dati",
-                localDate = "2024-06-01"
-            ),
-            SupportDTO(
-                username = "Bug_Man3",
-                type = "Technical",
-                subject = "Errore nel caricamento",
-                text = "Errore nel caricamento dei dati",
-                localDate = "2024-06-01"
-            ),
-            SupportDTO(
-                username = "Bug_Man4",
-                type = "Technical",
-                subject = "Errore nel caricamento",
-                text = "Errore nel caricamento dei dati",
-                localDate = "2024-06-01"
-            ),
-            SupportDTO(
-                username = "Bug_Man5",
-                type = "Technical",
-                subject = "Errore nel caricamento",
-                text = "Errore nel caricamento dei dati",
-                localDate = "2024-06-01"
-            )
-        ))
-    }
+
 
     fun deleteReport(ReportDTO: ReportDTO){
         val manageURL = URL("http://25.49.50.144:8090/notify-api/admin/report?review_id=${ReportDTO.reviewId}&accept=false")
