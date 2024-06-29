@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.sharp.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,12 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ReviewDTO
 import java.util.UUID
 
 @Composable
-fun ProductReviews() {
+fun ProductReviews(navController : NavHostController) {
     var isReviewExpanded by remember { mutableStateOf(false) }
+    var isAddReviewDialogOpen by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -136,5 +139,21 @@ fun ProductReviews() {
                 }
             }
         }
+    }
+
+    Button(
+        onClick = { isAddReviewDialogOpen = true},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ){
+        Text(text = "Aggiungi Recensione")
+    }
+    if(isAddReviewDialogOpen){
+        AddReviewPopup(
+            onDismiss = { isAddReviewDialogOpen = false },
+            onAddReview = { /* Aggiungi la nuova recensione */ },
+            navController
+        )
     }
 }

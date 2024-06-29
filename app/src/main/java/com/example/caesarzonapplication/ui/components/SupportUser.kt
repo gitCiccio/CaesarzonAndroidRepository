@@ -27,9 +27,14 @@ import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportReques
 
 @Composable
 fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestViewModel){
-
-
     var responseText by rememberSaveable { mutableStateOf("") }
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+
+    if(showPopup){
+        GenericMessagePopup(message = "Risposta inviata con successo", onDismiss = {showPopup = false})
+    }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,8 +61,10 @@ fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestVi
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    supportRequestViewmModel.deleteSupport(supports.id, responseText);
-                    responseText=""; },
+                    supportRequestViewmModel.deleteSupport(supports.id, responseText)
+                    responseText=""
+                    showPopup = true
+                          },
 
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
