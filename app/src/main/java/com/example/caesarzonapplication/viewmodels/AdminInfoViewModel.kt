@@ -44,9 +44,9 @@ class AdminInfoViewModel : ViewModel() {
     init {
         //searchUsers()
         //searchReports()
-        //searchSupportRequests()
         //loadSupport()
         generateFakeReports()
+        searchSupportRequests()
     }
 
     fun searchUsers() {
@@ -179,6 +179,7 @@ class AdminInfoViewModel : ViewModel() {
             }
         }
     }
+
 
     fun deleteSupport(supportDTO: SupportDTO){
         _supportRequests.remove(supportDTO)
