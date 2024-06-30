@@ -3,7 +3,6 @@ package com.example.caesarzonapplication.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -18,7 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.AvailabilityDTO
-import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.dto.SendAvailabilityDTO
+import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 
 @Composable
@@ -32,7 +32,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
     var primaryColor by rememberSaveable { mutableStateOf("") }
     var secondaryColor by rememberSaveable { mutableStateOf("") }
     var is_cloating by rememberSaveable { mutableStateOf(false) }
-    var availability by rememberSaveable { mutableStateOf(mutableListOf<AvailabilityDTO>()) }
+    var availability by rememberSaveable { mutableStateOf(mutableListOf<SendAvailabilityDTO>()) }
     var sport by rememberSaveable { mutableStateOf("") }
     var lastModified by rememberSaveable { mutableStateOf("") }
 
@@ -173,7 +173,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                                     val qty = quantity.toIntOrNull() ?: 0
                                     if (qty > 0) {
                                         availability = availability.toMutableList().apply {
-                                            add(AvailabilityDTO(amount = qty, size = selectedSize))
+                                            add(SendAvailabilityDTO(amount = qty, size = selectedSize))
                                         }
                                         selectedSize = ""
                                         quantity = ""
@@ -216,8 +216,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                     item {
                         Button(onClick = {
                             adminProductViewModel.addProduct(
-                                ProductDTO(
-                                    id = null,
+                                SendProductDTO(
                                     name = productName,
                                     description = description,
                                     brand = brand,

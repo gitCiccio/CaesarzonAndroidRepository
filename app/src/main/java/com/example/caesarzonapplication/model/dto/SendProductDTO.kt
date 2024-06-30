@@ -1,9 +1,6 @@
 package com.example.caesarzonapplication.model.dto
 
-import java.util.UUID
-
-data class ProductDTO(
-    val id: UUID,
+data class SendProductDTO (
     val name: String,
     val description: String,
     val brand: String,
@@ -13,5 +10,5 @@ data class ProductDTO(
     val secondaryColor: String,
     val is_clothing: Boolean,
     val sport: String,
-    val availabilities: List<AvailabilityDTO>,
+    val availabilities: List<SendAvailabilityDTO>,
 )

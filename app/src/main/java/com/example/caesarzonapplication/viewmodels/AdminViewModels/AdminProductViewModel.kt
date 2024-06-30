@@ -1,6 +1,6 @@
 package com.example.caesarzonapplication.viewmodels.AdminViewModels
 
-import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -12,15 +12,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 class AdminProductViewModel {
 
     val client = OkHttpClient()
     val gson = Gson()
 
-    fun addProduct(productDTO: ProductDTO){
+    fun addProduct(productDTO: SendProductDTO){
         for(availability in productDTO.availabilities)
             println("Taglia: ${availability.size}, Quantità: ${availability.amount}")
 
@@ -53,4 +51,13 @@ class AdminProductViewModel {
             }
         }
     }
+
+    fun updateProduct(){
+        /*TODO*/
+    }
+
+    fun deleteProduct(){
+        /*TODO*/
+    }
+
 }

@@ -28,14 +28,16 @@ fun AppNavigation() {
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val isAdmin by rememberSaveable { mutableStateOf(true) }
 
 
     Scaffold(
         topBar = {},
         bottomBar = {
-            if (logged && isAdmin){ AdminNavigationBottomBar(navController)}
-            NavigationBottomBar(navController, logged)
+            if (logged && isAdmin){
+                AdminNavigationBottomBar(navController)}
+            else
+                NavigationBottomBar(navController, logged)
         },
         content = { padding ->
             if (showLoginDialog) {
