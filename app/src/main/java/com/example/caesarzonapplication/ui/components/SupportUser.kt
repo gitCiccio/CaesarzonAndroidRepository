@@ -23,12 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.SupportDTO
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportUser(supports: SupportDTO, adminInfoViewModel: AdminInfoViewModel){
-
+fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestViewModel){
     var responseText by rememberSaveable { mutableStateOf("") }
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+
+    if(showPopup){
+        GenericMessagePopup(message = "Risposta inviata con successo", onDismiss = {showPopup = false})
+    }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +60,12 @@ fun SupportUser(supports: SupportDTO, adminInfoViewModel: AdminInfoViewModel){
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { adminInfoViewModel.deleteSupport(supports) },
+                onClick = {
+                    supportRequestViewmModel.deleteSupport(supports.id, responseText)
+                    responseText=""
+                    showPopup = true
+                          },
+
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(text = "Invia risposta")

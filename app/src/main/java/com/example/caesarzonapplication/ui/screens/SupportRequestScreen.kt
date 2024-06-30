@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.ui.components.NavigationBottomBar
+import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.SupportRequest
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: androidx.navigation.NavHostController) {
+fun SupportRequestScreen(supportRequestViewModel: SupportRequestViewModel, navController: androidx.navigation.NavHostController) {
     Scaffold(
         topBar = {
             Column {
@@ -46,7 +47,7 @@ fun SupportRequestScreen(adminInfoViewModel: AdminInfoViewModel, navController: 
                 }
             }
         },
-        content = { padding -> SupportRequest(adminInfoViewModel, padding) },
-        bottomBar = {NavigationBottomBar(navController, logged = false) }
+        content = { padding -> SupportRequest(supportRequestViewModel, padding) },
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp)) }
     )
 }

@@ -74,6 +74,7 @@ fun UserPageScreen(navController: NavHostController) {
     Scaffold(
         content = { padding ->
             UserPageContent(padding)
-         }
+        },
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
     )
 }

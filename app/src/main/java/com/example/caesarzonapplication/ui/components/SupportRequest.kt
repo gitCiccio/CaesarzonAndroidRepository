@@ -12,29 +12,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportRequest(adminInfoViewModel: AdminInfoViewModel, padding: PaddingValues) {
-    LazyColumn(
-        contentPadding = padding,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        if(!adminInfoViewModel.supportRequests.isEmpty()) {
-            items(adminInfoViewModel.supportRequests) { support ->
-                SupportUser(support, adminInfoViewModel)
+fun SupportRequest(supportRequestViewModel: SupportRequestViewModel, padding: PaddingValues) {
+    if(supportRequestViewModel.supportRequests.isNotEmpty()){
+        LazyColumn(
+            contentPadding = padding,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            items(supportRequestViewModel.supportRequests) { support ->
+                SupportUser(support, supportRequestViewModel)
             }
-        }else{
-            item{Text(
-                modifier = Modifier
-                    .padding(top = 150.dp)
-                    .padding(horizontal = 80.dp),
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ), text = "Non si sono richieste di assistenza"
-            )}
         }
+    }else{
+        Text(
+            modifier = Modifier
+                .padding(top = 150.dp)
+                .padding(horizontal = 80.dp),
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            ), text = "Non si sono richieste di assistenza"
+        )
     }
 }

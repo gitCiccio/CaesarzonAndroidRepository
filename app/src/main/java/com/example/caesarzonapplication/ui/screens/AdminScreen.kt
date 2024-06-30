@@ -24,17 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
-import com.example.caesarzonapplication.viewmodels.AdminInfoViewModel
+import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 enum class AdminTab{
     Informazioni,
-    Ban
+
 }
 
 
 @Composable
 
-fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) {
+fun AdminScreen(padding: PaddingValues) {
     var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
 
     Box(
@@ -76,7 +76,6 @@ fun AdminScreen(padding: PaddingValues, adminInfoViewModel: AdminInfoViewModel) 
 
             when (selectedTab) {
                 AdminTab.Informazioni -> UserInfoSection()
-                AdminTab.Ban -> BanSection(adminInfoViewModel)
             }
         }
     }

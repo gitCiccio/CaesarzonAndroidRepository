@@ -42,7 +42,7 @@ fun WishlistScreen(
 
     Scaffold(
         topBar = { },
-        bottomBar = { NavigationBottomBar(navController, logged = false)},
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))},
         content = { padding ->
             LazyColumn(
                 modifier = Modifier

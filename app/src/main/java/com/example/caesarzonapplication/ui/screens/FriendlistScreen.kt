@@ -110,10 +110,7 @@ fun FriendlistScreen(
                 }
             }
         },
-        bottomBar = {
-            val logged = false
-            NavigationBottomBar(navController = rememberNavController(), logged = logged)
-        },
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp)) },
         content = { padding ->
             Column(
                 modifier = Modifier

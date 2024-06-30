@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.CategoryGrid
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
@@ -31,7 +32,7 @@ import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
 import kotlin.math.log
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, userNotificationViewModel: UserNotificationViewModel){
+fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, userNotificationViewModel: UserNotificationViewModel, isAdmin: Boolean){
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
     val notifications = userNotificationViewModel.userNotifications
     Scaffold(
@@ -39,7 +40,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
                 Spacer(modifier = Modifier.height(45.dp))
                 AppTopBar(navController)
         } },
-        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = true)},
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))
+        /*if(!isAdmin) NavigationBottomBar(navController = rememberNavController(), logged = true) else AdminNavigationBottomBar(navController = rememberNavController())*/ },
         floatingActionButton = {
             if(logged){
                 NotificationFloatingButton(onClick =  {
