@@ -18,28 +18,27 @@ import com.example.caesarzonapplication.viewmodels.WishlistViewModel
 
 @Composable
 fun WishlistViewForProduct(wishlistViewModel: WishlistViewModel, visibility: Int) {
-    val wishlists = remember { mutableStateListOf<WishlistDTO>() }
+
+    val logged = wishlistViewModel.username.isNotEmpty()
 
     LaunchedEffect(visibility) {
         wishlistViewModel.loadWishlists(visibility)
-        wishlists.clear()
-        wishlists.addAll(wishlistViewModel.wishlists)
     }
 
-    if (wishlists.isEmpty()) {
+    if (!logged) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             contentAlignment = androidx.compose.ui.Alignment.Center
         ) {
-            Text("Non hai creato ancora nessuna lista dei desideri!", style = TextStyle(fontSize = 16.sp))
+            Text("Devi prima effettuare il login per visualizzare le tue liste di desideri!", style = TextStyle(fontSize = 16.sp))
         }
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(wishlists) { wishlist ->
+            items(wishlistViewModel.wishlists) { wishlist ->
                 TextButton(
                     onClick = {
                         wishlistViewModel.addProductToWishlist(wishlist.name, visibility)

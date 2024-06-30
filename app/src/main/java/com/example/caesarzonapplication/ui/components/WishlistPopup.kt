@@ -68,7 +68,7 @@ fun WishlistPopup(wishlistViewModel: WishlistViewModel, onDismiss: () -> Unit) {
             }
                },
         confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
+            Button(onClick = { onDismiss() }) {
                 Text("Annulla", style = TextStyle(color = Color.Black, fontSize = 16.sp))
             }
         }
