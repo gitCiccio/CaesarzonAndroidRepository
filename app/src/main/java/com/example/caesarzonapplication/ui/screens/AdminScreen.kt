@@ -28,13 +28,13 @@ import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 enum class AdminTab{
     Informazioni,
-    Ban
+
 }
 
 
 @Composable
 
-fun AdminScreen(padding: PaddingValues, banViewModel: BanViewModel) {
+fun AdminScreen(padding: PaddingValues) {
     var selectedTab by remember { mutableStateOf(AdminTab.Informazioni) }
 
     Box(
@@ -76,7 +76,6 @@ fun AdminScreen(padding: PaddingValues, banViewModel: BanViewModel) {
 
             when (selectedTab) {
                 AdminTab.Informazioni -> UserInfoSection()
-                AdminTab.Ban -> BanSection(banViewModel)
             }
         }
     }

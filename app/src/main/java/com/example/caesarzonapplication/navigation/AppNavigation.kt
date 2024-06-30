@@ -24,7 +24,7 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 
@@ -96,7 +96,7 @@ fun AppNavigation(){
                 composable("userInfo") {
                     if (logged) {
                         if (isAdmin) {
-                            AdminScreen(padding, banViewModel = BanViewModel())
+                            AdminScreen(padding)
                         } else {
                             AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                         }
@@ -126,7 +126,7 @@ fun AppNavigation(){
                     UserPageScreen(navController = navController)
                 }
                 composable("searchUser") {
-                    UserSearchScreen(SearchUsersViewModel())
+                    UserSearchScreen(SearchAndBanUsersViewModel())
                 }
                 composable("reports") {
                     ReportsScreen(ReportViewModel(), navController)
