@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,11 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var newWishlistName by remember { mutableStateOf("") }
     var productList by remember { mutableStateOf<List<SingleWishlistProductDTO>?>(null) }
+
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+    var showPopupMessage by rememberSaveable { mutableStateOf("") }
+
+    if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
     LaunchedEffect(Unit) {
         wishlistViewModel.loadWishlists(visibility)
@@ -68,28 +74,48 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                 }
                 Button(
                     modifier = Modifier.padding(8.dp),
-                    onClick = { wishlistViewModel.emptyWishlist(wishlist.id) }) {
+                    onClick = {
+                        wishlistViewModel.emptyWishlist(wishlist.id);
+                        showPopupMessage = "Lista svuotata con successo";
+                        showPopup = true
+                    }) {
                     Text(text = "Svuota")
                     Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                 }
                 Button(
                     modifier = Modifier.padding(8.dp),
-                    onClick = { wishlistViewModel.deleteWishlist(wishlist.id) }) {
+                    onClick = {
+                        wishlistViewModel.deleteWishlist(wishlist.id);
+                        showPopupMessage = "Lista eliminata con successo";
+                        showPopup = true
+                    }) {
                     Text(text = "Elimina")
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
+            LaunchedEffect(Unit) {
+                productList ?: wishlistViewModel.getWishlistProducts(wishlist.id)
+            }
             if (selectedWishlistId == wishlist.id && productList != null) {
                 WishlistProductList(
-                    productList ?: emptyList(),
+                    productList,
                     wishlistViewModel,
                     wishlist.id
                 )
             }
             when (visibility) {
-                0 -> Button(onClick = { /*Rendi privata*/ }) { Text(text = "Rendi privata") }
-                1 -> Button(onClick = { /*Rendi pubblica*/ }) { Text(text = "Rendi pubblica") }
-                2 -> Button(onClick = { /*Rendi pubblica*/ }) { Text(text = "Rendi pubblica") }
+                0 ->Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 1) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi privata") }
+                }
+                1 -> Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                }
+                2 -> Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi privata") }
+                }
             }
         }
     }

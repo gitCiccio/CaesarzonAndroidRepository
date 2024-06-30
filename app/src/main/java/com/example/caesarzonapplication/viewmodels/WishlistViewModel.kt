@@ -30,7 +30,6 @@ class WishlistViewModel: ViewModel(){
     val products: List<SingleWishlistProductDTO> get() = _products
     val username = AccountInfoViewModel.UserData.accountInfoData.value.username
 
-
     fun addWishlist(wishlistName: String, visibility: Int){
         var visibilityType = ""
         when (visibility){
@@ -73,9 +72,25 @@ class WishlistViewModel: ViewModel(){
         }
     }
 
-    fun changeWishlistVisibility(wishlistId: UUID, visibility: String){
-
-
+    fun changeWishlistVisibility(wishlistId: UUID, visibility: Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/$wishlistId?visibility=$visibility");
+            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            try {
+                val response = client.newCall(request).execute()
+                if(!response.isSuccessful){
+                    println("Errore nella risposta: "+response.message+"  "+response.code)
+                    return@launch
+                }
+                else{
+                    println("Sto modificando la visibilità della wishlist: $wishlistId "+response.message+"  "+response.code)
+                    loadWishlists(visibility)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return@launch
+            }
+        }
     }
 
     fun addProductToWishlist(wishlistName: String, visibility: Int){
@@ -97,7 +112,7 @@ class WishlistViewModel: ViewModel(){
             .add("visibility", visibilityType)
             .build()
         val request = Request.Builder()
-            .url("http://25.49.50.144:8090/product-api/wishlist/product?$visibility")
+            .url("http://25.49.50.144:8090/product-api/wishlist/product")
             .post(formBody)
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
@@ -143,6 +158,7 @@ class WishlistViewModel: ViewModel(){
     }
 
     suspend fun getWishlistProducts(wishlistId: UUID): List<SingleWishlistProductDTO>? {
+        _products.clear()
         return withContext(Dispatchers.IO) {
             val productsTemp = mutableListOf<SingleWishlistProductDTO>()
             val wishlist = _wishlists.find { it.id == wishlistId }
@@ -170,10 +186,9 @@ class WishlistViewModel: ViewModel(){
                             productsTemp.add(SingleWishlistProductDTO(UUID.fromString(id), productName, price))
                         }
                         withContext(Dispatchers.Main) {
-                            _products.clear()
                             _products.addAll(productsTemp)
                         }
-                        return@withContext _products
+                        return@withContext products
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -182,8 +197,6 @@ class WishlistViewModel: ViewModel(){
             return@withContext null
         }
     }
-
-
 
     fun deleteWishlist(wishlistId: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -210,7 +223,6 @@ class WishlistViewModel: ViewModel(){
             }
         }
     }
-
 
     fun emptyWishlist(wishlistId: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -242,12 +254,11 @@ class WishlistViewModel: ViewModel(){
                     println("Errore nella risposta: "+response.message+"  "+response.code)
                     return@launch
                 }
-                for (product in _products){
-                    if(product.productId == productId){
-                        _products.remove(product)
-                        println("Sto eliminando il prodotto ${product.productName} dalla wishlist: $wishlistId")
-                    }
-                }
+                // Colleziona gli elementi da rimuovere
+                val productsToRemove = _products.filter { it.productId == productId }
+                // Rimuovi gli elementi al di fuori del ciclo
+                _products.removeAll(productsToRemove)
+                println("Sto eliminando il prodotto dalla wishlist: $wishlistId")
             } catch (e: IOException) {
                 e.printStackTrace()
                 return@launch
