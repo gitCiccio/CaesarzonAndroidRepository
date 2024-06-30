@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,10 +29,13 @@ fun GenericMessagePopup(message: String, onDismiss: () -> Unit) {
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                TextButton(onClick = { onDismiss() }) {
+                Button(
+                    onClick = { onDismiss() },
+                    modifier = Modifier.width(120.dp)
+                ) {
                     Text(
                         "OK",
-                        style = TextStyle(color = Color.Black, fontSize = 16.sp)
+                        style = TextStyle(color = Color.White, fontSize = 16.sp)
                     )
                 }
             }
