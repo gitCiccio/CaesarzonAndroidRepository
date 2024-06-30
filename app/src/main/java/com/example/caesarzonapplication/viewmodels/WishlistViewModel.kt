@@ -73,6 +73,11 @@ class WishlistViewModel: ViewModel(){
         }
     }
 
+    fun changeWishlistVisibility(wishlistId: UUID, visibility: String){
+
+
+    }
+
     fun addProductToWishlist(wishlistName: String, visibility: Int){
         var visibilityType = ""
         when (visibility){
