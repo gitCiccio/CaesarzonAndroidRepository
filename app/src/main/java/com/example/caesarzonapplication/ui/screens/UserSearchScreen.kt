@@ -20,7 +20,6 @@ import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
-import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 @Composable
 fun UserSearchScreen(SearchAndBanViewModel: SearchAndBanUsersViewModel) {

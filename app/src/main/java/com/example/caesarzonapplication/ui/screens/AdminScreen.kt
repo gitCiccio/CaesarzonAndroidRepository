@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
-import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 enum class AdminTab{
     Informazioni,

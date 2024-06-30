@@ -17,6 +17,7 @@ import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
@@ -27,14 +28,16 @@ fun AppNavigation() {
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val isAdmin by rememberSaveable { mutableStateOf(true) }
 
 
     Scaffold(
         topBar = {},
         bottomBar = {
-            if (logged && isAdmin){ AdminNavigationBottomBar(navController)}
-            NavigationBottomBar(navController, logged)
+            if (logged && isAdmin){
+                AdminNavigationBottomBar(navController)}
+            else
+                NavigationBottomBar(navController, logged)
         },
         content = { padding ->
             if (showLoginDialog) {
@@ -94,7 +97,7 @@ fun AppNavigation() {
                 }
                 composable("addProduct") {
                     if (isAdmin && logged) {
-                        AddProductScreen()
+                        AddProductScreen(adminProductViewModel = AdminProductViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true

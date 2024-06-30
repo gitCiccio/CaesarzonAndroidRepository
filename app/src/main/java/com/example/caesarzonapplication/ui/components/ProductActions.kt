@@ -13,77 +13,90 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.viewmodels.WishlistViewModel
 
 @Composable
-fun ProductActions() {
+fun ProductActions(productViewModel: AdminProductViewModel) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
+    var isAdmin by rememberSaveable { mutableStateOf(true) }
 
-    if (showPopup) {
-        GenericMessagePopup(message = "Prodotto aggiunto al carrello con successo!", onDismiss = { showPopup = false })
-    }
+    if(!isAdmin){
+        if (showPopup) {
+            GenericMessagePopup(message = "Prodotto aggiunto al carrello con successo!", onDismiss = { showPopup = false })
+        }
 
-    if(showWishlistPopup){
-        WishlistPopup(wishlistViewModel = WishlistViewModel(), onDismiss = {showWishlistPopup = false})
-    }
+        if(showWishlistPopup){
+            WishlistPopup(wishlistViewModel = WishlistViewModel(), onDismiss = {showWishlistPopup = false})
+        }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { /* Azione per acquistare subito */ },
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    "Acquista",
-                    style = TextStyle(fontSize = 14.sp, color = Color.White),
-                    textAlign = TextAlign.Center
-                )
+                Button(
+                    onClick = { /* Azione per acquistare subito */ },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                ) {
+                    Text(
+                        "Acquista",
+                        style = TextStyle(fontSize = 14.sp, color = Color.White),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { showPopup = true },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                ) {
+                    Text(
+                        "Aggiungi al carrello",
+                        style = TextStyle(fontSize = 14.sp, color = Color.White),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { showPopup = true },
+                onClick = { showWishlistPopup = true},
                 modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                    .align(Alignment.CenterHorizontally)
+                    .height(48.dp)
+                    .fillMaxWidth(0.5f)
             ) {
                 Text(
-                    "Aggiungi al carrello",
+                    "Aggiungi alla lista desideri",
                     style = TextStyle(fontSize = 14.sp, color = Color.White),
                     textAlign = TextAlign.Center
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { showWishlistPopup = true},
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .height(48.dp)
-                .fillMaxWidth(0.5f)
-        ) {
-            Text(
-                "Aggiungi alla lista desideri",
-                style = TextStyle(fontSize = 14.sp, color = Color.White),
-                textAlign = TextAlign.Center
-            )
+    }else{
+        Row{
+            Button(onClick = { productViewModel.updateProduct() }) {
+                Text(text = "Modifica")
+            }
+            Button(onClick = { productViewModel.deleteProduct() }) {
+                Text(text = "Elimina")
+            }
         }
     }
 }

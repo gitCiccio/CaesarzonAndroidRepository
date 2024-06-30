@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
+import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
@@ -24,7 +26,7 @@ import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewModel, navController: NavHostController){
     val filteredResults = productsViewModel.loadSimpleProducts()
         //.filter{ it.name.contains(query, ignoreCase = true) }
-    var productList = mutableListOf<Product>()
+    var productList = mutableListOf<ProductSearchDTO>()
 
     Scaffold (
         topBar = { AppTopBar(navController)},
