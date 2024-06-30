@@ -79,7 +79,9 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-            coroutineScope.launch {productList ?: wishlistViewModel.getWishlistProducts(wishlist.id)}
+            LaunchedEffect(Unit) {
+                productList ?: wishlistViewModel.getWishlistProducts(wishlist.id)
+            }
             if (selectedWishlistId == wishlist.id && productList != null) {
                 WishlistProductList(
                     productList,
