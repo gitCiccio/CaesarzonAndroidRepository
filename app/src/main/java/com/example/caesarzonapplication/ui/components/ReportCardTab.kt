@@ -123,8 +123,6 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
     }
 
     if (showPopup) {
-        GenericMessagePopup(message = popupMessage) {
-            showPopup = false
-        }
+        GenericMessagePopup(message = popupMessage, onDismiss = { showPopup = false })
     }
 }
