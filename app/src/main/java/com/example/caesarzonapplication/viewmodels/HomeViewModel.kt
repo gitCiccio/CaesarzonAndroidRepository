@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
+import com.example.caesarzonapplication.model.service.KeycloakService
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel(){
@@ -15,6 +16,7 @@ class HomeViewModel : ViewModel(){
 
     init{
         loadProducts()
+        KeycloakService().getBasicToken()
     }
 
     private fun loadProducts(){
