@@ -113,7 +113,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                   )
                   TextButton(
                       modifier = Modifier.padding(vertical = 10.dp),
-                      onClick = { /*TODO*/ },
+                      onClick = { navController.navigate("register"); onDismiss(); },
                       ) {
                       Text(text = "Non sei registrato? Clicca qui per registrarti")
                   }
