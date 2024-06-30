@@ -1,7 +1,10 @@
 package com.example.caesarzonapplication.ui.components
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
@@ -13,8 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.caesarzonapplication.R
@@ -42,11 +48,16 @@ fun AdminNavigationBottomBar(navController: NavHostController){
         )
 
         NavigationBarItem(
-            selected = currentDestination?.route == "userInfo",
-            onClick = { navController.navigate("userInfo") },
-            icon = { Icon(Icons.Filled.AccountCircle, contentDescription = stringResource(R.string.userInfo),
-                tint = if (currentDestination?.route == "userInfo") Color(238, 137, 60, 255) else Color.Black) }
+            selected = currentDestination?.route == "addProduct",
+            onClick = { navController.navigate("addProduct") },
+            icon = { Icon(modifier = Modifier
+                .width(22.dp)
+                .height(22.dp), painter = painterResource(
+                id = R.drawable.addition
+            ), contentDescription = stringResource(id = R.string.addProduct),
+                tint = if (currentDestination?.route == "addProduct") Color(238, 137, 60, 255) else Color.Black) }
         )
+
 
         NavigationBarItem(
             selected = currentDestination?.route == "searchUser",
@@ -68,7 +79,9 @@ fun AdminNavigationBottomBar(navController: NavHostController){
         NavigationBarItem(
             selected = currentDestination?.route == "supportRequest",
             onClick = { navController.navigate("supportRequest")},
-            icon = { Icon(Icons.Filled.Call, contentDescription = stringResource(R.string.supportRequest),
+            icon = { Icon(modifier = Modifier
+                .width(27.dp)
+                .height(27.dp), painter = painterResource(id = R.drawable.customer_service), contentDescription = stringResource(R.string.supportRequest),
                 tint = if (currentDestination?.route == "supportRequest") Color(238, 137, 60, 255) else Color.Black)
             }
         )

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,14 +17,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
+import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 @Composable
-fun UserSearchScreen(adminInfoViewModel: SearchUsersViewModel) {
+fun UserSearchScreen(SearchAndBanViewModel: SearchAndBanUsersViewModel) {
     val navController = rememberNavController()
-    var searchText by remember { mutableStateOf("") }
+    var searchText by rememberSaveable { mutableStateOf("") }
+    var showBannedUsers by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -56,20 +59,31 @@ fun UserSearchScreen(adminInfoViewModel: SearchUsersViewModel) {
                         label = { Text("Cerca utenti") },
                         modifier = Modifier.width(320.dp)
                     )
-                    IconButton(onClick = { adminInfoViewModel.searchSpecifcUsers(searchText) }) {
+                    IconButton(onClick = { SearchAndBanViewModel.searchSpecifcUsers(searchText) }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                     }
+                }
+                Spacer(modifier = Modifier.padding(top = 10.dp))
+                Row{
+                   Button(modifier = Modifier.padding(horizontal = 105.dp), onClick = { showBannedUsers = !showBannedUsers }) {
+                       if (!showBannedUsers) {
+                           Text(text = "Mostra tutti gli utenti")
+                       }else{
+                           Text(text = "Mostra utenti bannati")
+                       }
+                   }
                 }
             }
         },
         content = { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                UserSearchComponent(searchUsersViewModel = adminInfoViewModel, banViewModel = BanViewModel())
+                if(!showBannedUsers)
+                    UserSearchComponent(searchAndBanUsersViewModel = SearchAndBanViewModel)
+                else
+                    BanSection(banViewModel = SearchAndBanViewModel)
             }
         },
-        bottomBar = {
-            AdminNavigationBottomBar(navController = navController)
-        }
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
     )
 }
 

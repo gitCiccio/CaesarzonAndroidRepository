@@ -24,19 +24,18 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 
 @Composable
-fun AppNavigation(){
+fun AppNavigation() {
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     val isAdmin by rememberSaveable { mutableStateOf(true) }
 
-
-    Scaffold (
+    Scaffold(
         topBar = {},
         bottomBar = {
             if (logged) {
@@ -83,7 +82,6 @@ fun AppNavigation(){
                         homeViewModel = HomeViewModel(),
                         navController = navController,
                         logged = logged,
-
                     )
                 }
                 composable("wishlists") {
@@ -93,13 +91,18 @@ fun AppNavigation(){
                         logged = logged
                     )
                 }
-                composable("userInfo") {
-                    if (logged) {
-                        if (isAdmin) {
-                            AdminScreen(padding, banViewModel = BanViewModel())
-                        } else {
-                            AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
+                composable("addProduct") {
+                    if (isAdmin && logged) {
+                        AddProductScreen()
+                    } else {
+                        LaunchedEffect(Unit) {
+                            showLoginDialog = true
                         }
+                    }
+                }
+                composable("userInfo") {
+                    if (logged && !isAdmin) {
+                        AccountScreen(padding, accountInfoViewModel = AccountInfoViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
@@ -108,7 +111,7 @@ fun AppNavigation(){
                 }
                 composable("friendlist") {
                     if (logged) {
-                        FriendlistScreen(followersAndFriendsViewModel = FollowersAndFriendsViewModel(), navController)
+                        FriendlistScreen(FollowersAndFriendsViewModel(), navController)
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
@@ -122,11 +125,11 @@ fun AppNavigation(){
                     val productName = backStackEntry.arguments?.getString("productName")
                     productName?.let { ProductDetailsScreen(query = it, navController) }
                 }
-                composable("userpage"){
+                composable("userpage") {
                     UserPageScreen(navController = navController)
                 }
                 composable("searchUser") {
-                    UserSearchScreen(SearchUsersViewModel())
+                    UserSearchScreen(SearchAndBanUsersViewModel())
                 }
                 composable("reports") {
                     ReportsScreen(ReportViewModel(), navController)
@@ -135,10 +138,6 @@ fun AppNavigation(){
                     SupportRequestScreen(SupportRequestViewModel(), navController)
                 }
             }
-        },
+        }
     )
-
 }
-
-
-
