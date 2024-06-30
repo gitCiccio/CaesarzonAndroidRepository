@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +32,9 @@ import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewMod
 @Composable
 fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
 
-    var expanded by remember { mutableStateOf(false) }
-    var popupMessage by remember { mutableStateOf("") }
-    var showPopup by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var popupMessage by rememberSaveable { mutableStateOf("") }
+    var showPopup by rememberSaveable { mutableStateOf(false) }
 
     Card(
         modifier = Modifier

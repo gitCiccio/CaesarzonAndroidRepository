@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,9 +18,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 @Composable
 fun ReturnsSection() {
     val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3") // Dati fittizi
-    var showReturnDialog by remember { mutableStateOf(false) }
-    var selectedOrder by remember { mutableStateOf("") }
-    var returnReason by remember { mutableStateOf(TextFieldValue("")) }
+    var showReturnDialog by rememberSaveable { mutableStateOf(false) }
+    var selectedOrder by rememberSaveable { mutableStateOf("") }
+    var returnReason by rememberSaveable { mutableStateOf(TextFieldValue("")) }
 
     Column {
         Text(text = "Cronologia ordini per reso", style = MaterialTheme.typography.bodyMedium)
