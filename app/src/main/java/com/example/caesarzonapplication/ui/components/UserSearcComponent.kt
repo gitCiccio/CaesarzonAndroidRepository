@@ -8,15 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.BanViewModel
 
 @Composable
-fun UserSearchComponent(searchUsersViewModel: SearchUsersViewModel,banViewModel: BanViewModel) {
+fun UserSearchComponent(searchAndBanUsersViewModel: SearchAndBanUsersViewModel) {
     Spacer(modifier = Modifier.height(30.dp))
 
     LazyColumn(modifier = Modifier.padding(16.dp)) {
-        items(searchUsersViewModel.searchResults) { user ->
+        items(searchAndBanUsersViewModel.searchResults) { user ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -25,7 +25,7 @@ fun UserSearchComponent(searchUsersViewModel: SearchUsersViewModel,banViewModel:
             ) {
                 Text(text = user.username)
                 Row {
-                    Button(onClick = { banViewModel.banUser(user) }) {
+                    Button(onClick = { searchAndBanUsersViewModel.banUser(user) }) {
                         Text(text = "Banna utente")
                     }
                 }
