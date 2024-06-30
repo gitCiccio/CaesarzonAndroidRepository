@@ -8,6 +8,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,6 +25,11 @@ fun WishlistProductList(
     wishlistViewModel: WishlistViewModel,
     wishlistId: UUID
 ) {
+
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+    var showPopupMessage by rememberSaveable { mutableStateOf("") }
+
+    if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
     Spacer(modifier = Modifier.height(8.dp))
     if (productList != null) {
@@ -39,8 +48,11 @@ fun WishlistProductList(
                     color = Color.Gray,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
-                Button(onClick = 
-                    { wishlistViewModel.removeWishlistProduct(wishlistId, product.productId) })
+                Button(onClick = {
+                        wishlistViewModel.removeWishlistProduct(wishlistId, product.productId);
+                        showPopupMessage = "Prodotto rimosso dalla wishlist";
+                        showPopup = true
+                    })
                 {
                     Text(text = "Rimuovi")   
                 }
