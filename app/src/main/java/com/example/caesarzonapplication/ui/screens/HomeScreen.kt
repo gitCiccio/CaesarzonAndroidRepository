@@ -40,10 +40,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
                 Spacer(modifier = Modifier.height(45.dp))
                 AppTopBar(navController)
         } },
-        bottomBar = { if(!isAdmin)
-                            NavigationBottomBar(navController = rememberNavController(), logged = true)
-                    else
-                            AdminNavigationBottomBar(navController = rememberNavController())},
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))
+        /*if(!isAdmin) NavigationBottomBar(navController = rememberNavController(), logged = true) else AdminNavigationBottomBar(navController = rememberNavController())*/ },
         floatingActionButton = {
             if(logged){
                 NotificationFloatingButton(onClick =  {

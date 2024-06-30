@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +28,7 @@ fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewMode
 
     Scaffold (
         topBar = { AppTopBar(navController)},
-        bottomBar = { NavigationBottomBar(navController = rememberNavController(), logged = false)},
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))},
         content = { padding ->
             Column( modifier = Modifier
                 .padding(padding)

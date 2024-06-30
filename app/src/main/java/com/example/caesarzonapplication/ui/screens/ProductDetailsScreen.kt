@@ -65,6 +65,6 @@ fun ProductDetailsScreen(query: String, navController: NavHostController) {
 
             }
         },
-        bottomBar = { AdminNavigationBottomBar(navController) }
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
     )
 }
