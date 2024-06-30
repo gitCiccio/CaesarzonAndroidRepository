@@ -139,63 +139,73 @@ class WishlistViewModel: ViewModel(){
 
     suspend fun getWishlistProducts(wishlistId: UUID): List<SingleWishlistProductDTO>? {
         return withContext(Dispatchers.IO) {
-            _products.clear()
-            for (wishlist in _wishlists) {
-                if (wishlist.id == wishlistId) {
-                    val manageURL =
-                        URL("http://25.25.161.198:8090/product-api/wishlist/products?wish-id=$wishlistId");
-                    val request = Request.Builder().url(manageURL)
-                        .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-                    try {
-                        val response = client.newCall(request).execute()
-                        val responseBody = response.body?.string()
-                        if (responseBody != null) {
-                            val jsonResponse = try {
-                                val jsonObject = JSONObject(responseBody)
-                                jsonObject.getJSONArray("singleWishListProductDTOS")
-                            } catch (e: JSONException) {
-                                return@withContext null
-                            }
-                            for (i in 0 until jsonResponse.length()) {
-                                val id = jsonResponse.getJSONObject(i).getString("productId")
-                                val productName = jsonResponse.getJSONObject(i).getString("productName")
-                                val price = jsonResponse.getJSONObject(i).optString("price", "")
-                                _products.add(SingleWishlistProductDTO(UUID.fromString(id),productName, price.toDouble()))
-                            }
-                            return@withContext products
+            val productsTemp = mutableListOf<SingleWishlistProductDTO>()
+            val wishlist = _wishlists.find { it.id == wishlistId }
+            if (wishlist != null) {
+                val manageURL = URL("http://25.25.161.198:8090/product-api/wishlist/products?wish-id=$wishlistId")
+                val request = Request.Builder()
+                    .url(manageURL)
+                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                    .build()
+                try {
+                    val response = client.newCall(request).execute()
+                    val responseBody = response.body?.string()
+                    if (responseBody != null) {
+                        val jsonResponse = try {
+                            val jsonObject = JSONObject(responseBody)
+                            jsonObject.getJSONArray("singleWishListProductDTOS")
+                        } catch (e: JSONException) {
+                            return@withContext null
                         }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
+                        for (i in 0 until jsonResponse.length()) {
+                            val jsonObject = jsonResponse.getJSONObject(i)
+                            val id = jsonObject.getString("productId")
+                            val productName = jsonObject.getString("productName")
+                            val price = jsonObject.optDouble("price", 0.0)
+                            productsTemp.add(SingleWishlistProductDTO(UUID.fromString(id), productName, price))
+                        }
+                        withContext(Dispatchers.Main) {
+                            _products.clear()
+                            _products.addAll(productsTemp)
+                        }
+                        return@withContext _products
                     }
+                } catch (e: IOException) {
+                    e.printStackTrace()
                 }
             }
             return@withContext null
         }
     }
 
-    fun deleteWishlist(wishlistId: UUID){
+
+
+    fun deleteWishlist(wishlistId: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/"+wishlistId);
-            val request = Request.Builder().url(manageURL).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/$wishlistId")
+            val request = Request.Builder()
+                .url(manageURL)
+                .delete()
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
             try {
                 val response = client.newCall(request).execute()
-                if(!response.isSuccessful){
-                    println("Errore nella risposta: "+response.message+"  "+response.code)
+                if (!response.isSuccessful) {
+                    println("Errore nella risposta: " + response.message + "  " + response.code)
                     return@launch
                 }
-                for (wishlist in _wishlists){
-                    if(wishlist.id == wishlistId){
-                        _wishlists.remove(wishlist)
-                        println("Sto eliminando la wishlist: $wishlistId")
-                    }
+                _wishlists.removeIf { it.id == wishlistId }
+                println("Sto eliminando la wishlist: $wishlistId")
+                if (_products.any { it.productId == wishlistId }) {
+                    _products.clear()
                 }
-                _products.clear()
             } catch (e: IOException) {
                 e.printStackTrace()
                 return@launch
             }
         }
     }
+
 
     fun emptyWishlist(wishlistId: UUID) {
         CoroutineScope(Dispatchers.IO).launch {

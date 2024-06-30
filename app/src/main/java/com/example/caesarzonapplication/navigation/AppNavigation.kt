@@ -1,8 +1,6 @@
 package com.example.caesarzonapplication.navigation
 
 
-import ShoppingCartScreen
-import UserSearchScreen
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +18,9 @@ import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
 
 
 @Composable
@@ -58,7 +59,8 @@ fun AppNavigation() {
                         homeViewModel = HomeViewModel(),
                         navController = navController,
                         logged = logged,
-                        userNotificationViewModel = UserNotificationViewModel()
+                        userNotificationViewModel = UserNotificationViewModel(),
+                        isAdmin = isAdmin
                     )
                 }
                 composable("shopcart") {
@@ -66,6 +68,13 @@ fun AppNavigation() {
                         padding,
                         shoppingCartViewModel = ShoppingCartViewModel(),
                         homeViewModel = HomeViewModel(),
+                        navController = navController,
+                        logged = logged
+                    )
+                }
+                composable("register") {
+                    UserRegistrationScreen(
+                        padding,
                         navController = navController,
                         logged = logged
                     )
