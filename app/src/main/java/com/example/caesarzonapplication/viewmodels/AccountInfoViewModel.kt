@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.dto.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
+import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +14,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
@@ -75,11 +79,100 @@ class AccountInfoViewModel : ViewModel() {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    suspend fun getUserData(): String {
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
-        val request = Request.Builder().url(manageURL)
+    suspend fun retrieveForgottenPassword(username: String): String {
+        val passwordChangeDTO = PasswordChangeDTO("", username)
+        val body = JSONObject().apply {
+            put("username", passwordChangeDTO.username)
+        }
+        val json = body.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+        val manageURL = URL("http://25.49.50.144:8090/user-api/password?recovery=true")
+        val request = Request.Builder()
+            .url(manageURL)
+            .post(requestBody)
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "${response.message} ${response.code}"
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error"
+            }
+        }
+    }
+
+    suspend fun changePassword(password: String) {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/password?recovery=false");
+        val request = Request.Builder().url(manageURL).post(password.toRequestBody()).build()
+
+    }
+
+    suspend fun verifyOTP(otp: String, password: String, username: String): String {
+        val passwordChangeDTO = PasswordChangeDTO(password, username)
+        val body = JSONObject().apply {
+            put("username", passwordChangeDTO.username)
+        }
+        val json = body.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+        val manageURL = URL("http://25.49.50.144:8090/user-api/otp/"+otp)
+        val request = Request.Builder()
+            .url(manageURL)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "${response.message} ${response.code}"
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error"
+            }
+        }
+    }
+
+
+    suspend fun registerUser(firstName: String, lastName: String, username: String, email: String, credentialValue: String): String {
+        val newUserDTO = UserRegistrationDTO( firstName, lastName, username, email, credentialValue)
+        val body = JSONObject()
+        body.put("username", newUserDTO.username)
+        body.put("email", newUserDTO.email)
+        body.put("firstName", newUserDTO.firstName)
+        body.put("lastName", newUserDTO.lastName)
+        body.put("credentialValue", newUserDTO.credentialValue)
+
+        val json = body.toString()
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
+        val request = Request.Builder().url(manageURL).post(json.toRequestBody()).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext response.message + " " + response.code
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error"
+            }
+        }
+    }
+
+    suspend fun getUserData(): String {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
+        val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
         return withContext(Dispatchers.IO)  {
             try {
                 val response = client.newCall(request).execute()

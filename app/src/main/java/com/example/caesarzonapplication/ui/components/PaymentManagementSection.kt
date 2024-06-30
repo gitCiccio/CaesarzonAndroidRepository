@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,10 +23,10 @@ fun PaymentManagementSection() {
     var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
     var expirationDate by remember { mutableStateOf(TextFieldValue("")) }
     var cvc by remember { mutableStateOf(TextFieldValue("")) }
-    var paymentMethods by remember { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
-    var showAddPaymentDialog by remember { mutableStateOf(false) }
-    var showRemovePaymentDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var paymentMethods by rememberSaveable { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
+    var showAddPaymentDialog by rememberSaveable { mutableStateOf(false) }
+    var showRemovePaymentDialog by rememberSaveable { mutableStateOf(false) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     val cardUtils = CardUtils()
 
     LazyColumn {

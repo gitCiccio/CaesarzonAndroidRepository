@@ -23,10 +23,10 @@ fun UserInfoSection() {
     var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
     var addresses by remember { mutableStateOf(listOf("")) }
-    var selectedAddress by remember { mutableStateOf(addresses[0]) }
-    var showAddAddressDialog by remember { mutableStateOf(false) }
-    var showRemoveAddressDialog by remember { mutableStateOf(false) }
-    var addressDropdownExpanded by remember { mutableStateOf(false) }
+    var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
+    var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
+    var showRemoveAddressDialog by rememberSaveable { mutableStateOf(false) }
+    var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {

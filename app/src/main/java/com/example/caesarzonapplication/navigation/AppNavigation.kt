@@ -1,7 +1,5 @@
 package com.example.caesarzonapplication.navigation
 
-
-import ShoppingCartScreen
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,10 +15,6 @@ import androidx.navigation.navArgument
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
-import com.example.caesarzonapplication.ui.screens.AccountScreen
-import com.example.caesarzonapplication.ui.screens.AdminScreen
-import com.example.caesarzonapplication.ui.screens.FriendlistScreen
-
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
@@ -34,21 +28,14 @@ fun AppNavigation() {
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(true) }
+    val isAdmin by rememberSaveable { mutableStateOf(false) }
 
 
     Scaffold(
         topBar = {},
         bottomBar = {
-            if (logged) {
-                if (isAdmin) {
-                    AdminNavigationBottomBar(navController)
-                } else {
-                    NavigationBottomBar(navController, logged)
-                }
-            } else {
-                NavigationBottomBar(navController, logged)
-            }
+            if (logged && isAdmin){ AdminNavigationBottomBar(navController)}
+            NavigationBottomBar(navController, logged)
         },
         content = { padding ->
             if (showLoginDialog) {
@@ -83,15 +70,28 @@ fun AppNavigation() {
                         shoppingCartViewModel = ShoppingCartViewModel(),
                         homeViewModel = HomeViewModel(),
                         navController = navController,
-                        logged = logged,
+                        logged = logged
                     )
                 }
-                composable("wishlists") {
-                    WishlistScreen(
-                        wishlistViewModel = WishlistViewModel(),
+                composable("register") {
+                    UserRegistrationScreen(
+                        padding,
                         navController = navController,
                         logged = logged
                     )
+                }
+                composable("wishlists") {
+                    if (logged){
+                        WishlistScreen(
+                            wishlistViewModel = WishlistViewModel(),
+                            navController = navController,
+                            logged = logged
+                        )}
+                    else{
+                        LaunchedEffect(Unit) {
+                            showLoginDialog = true
+                        }
+                    }
                 }
                 composable("addProduct") {
                     if (isAdmin && logged) {
@@ -140,6 +140,10 @@ fun AppNavigation() {
                     SupportRequestScreen(SupportRequestViewModel(), navController)
                 }
             }
-        }
+        },
     )
+
 }
+
+
+
