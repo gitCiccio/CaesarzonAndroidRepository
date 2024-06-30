@@ -48,14 +48,14 @@ fun AdminNavigationBottomBar(navController: NavHostController){
         )
 
         NavigationBarItem(
-            selected = currentDestination?.route == "addProducts",
-            onClick = { navController.navigate("addProducts") },
+            selected = currentDestination?.route == "addProduct",
+            onClick = { navController.navigate("addProduct") },
             icon = { Icon(modifier = Modifier
-                .width(25.dp)
-                .height(25.dp), painter = painterResource(
+                .width(22.dp)
+                .height(22.dp), painter = painterResource(
                 id = R.drawable.addition
             ), contentDescription = stringResource(id = R.string.addProduct),
-                tint = if (currentDestination?.route == "addProducts") Color(238, 137, 60, 255) else Color.Black) }
+                tint = if (currentDestination?.route == "addProduct") Color(238, 137, 60, 255) else Color.Black) }
         )
 
 
@@ -80,8 +80,8 @@ fun AdminNavigationBottomBar(navController: NavHostController){
             selected = currentDestination?.route == "supportRequest",
             onClick = { navController.navigate("supportRequest")},
             icon = { Icon(modifier = Modifier
-                .width(25.dp)
-                .height(25.dp), painter = painterResource(id = R.drawable.customer_service), contentDescription = stringResource(R.string.supportRequest),
+                .width(27.dp)
+                .height(27.dp), painter = painterResource(id = R.drawable.customer_service), contentDescription = stringResource(R.string.supportRequest),
                 tint = if (currentDestination?.route == "supportRequest") Color(238, 137, 60, 255) else Color.Black)
             }
         )

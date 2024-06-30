@@ -83,9 +83,7 @@ fun UserSearchScreen(SearchAndBanViewModel: SearchAndBanUsersViewModel) {
                     BanSection(banViewModel = SearchAndBanViewModel)
             }
         },
-        bottomBar = {
-            AdminNavigationBottomBar(navController = navController)
-        }
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
     )
 }
 

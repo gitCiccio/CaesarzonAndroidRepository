@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -50,7 +51,7 @@ fun ReportsScreen(reportViewModel: ReportViewModel, navController : NavHostContr
             }
         },
         content = {padding -> ReportComponent(reportViewModel, padding) },
-        bottomBar = { NavigationBottomBar(navController = navController, logged = true)}
+        bottomBar = { Spacer(modifier = Modifier.padding(60.dp)) }
     )
 
 }
