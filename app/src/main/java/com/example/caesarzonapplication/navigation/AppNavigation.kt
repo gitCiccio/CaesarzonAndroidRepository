@@ -23,6 +23,7 @@ import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
@@ -94,7 +95,7 @@ fun AppNavigation() {
                 }
                 composable("addProduct") {
                     if (isAdmin && logged) {
-                        AddProductScreen()
+                        AddProductScreen(adminProductViewModel = AdminProductViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true
