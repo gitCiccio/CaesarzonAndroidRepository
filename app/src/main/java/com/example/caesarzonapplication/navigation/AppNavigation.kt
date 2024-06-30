@@ -1,6 +1,5 @@
 package com.example.caesarzonapplication.navigation
 
-
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
