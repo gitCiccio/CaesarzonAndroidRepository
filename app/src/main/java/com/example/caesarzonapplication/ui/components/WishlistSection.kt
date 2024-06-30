@@ -79,17 +79,27 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
+            coroutineScope.launch {productList ?: wishlistViewModel.getWishlistProducts(wishlist.id)}
             if (selectedWishlistId == wishlist.id && productList != null) {
                 WishlistProductList(
-                    productList ?: emptyList(),
+                    productList,
                     wishlistViewModel,
                     wishlist.id
                 )
             }
             when (visibility) {
-                0 -> Button(onClick = { /*Rendi privata*/ }) { Text(text = "Rendi privata") }
-                1 -> Button(onClick = { /*Rendi pubblica*/ }) { Text(text = "Rendi pubblica") }
-                2 -> Button(onClick = { /*Rendi pubblica*/ }) { Text(text = "Rendi pubblica") }
+                0 ->Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 1) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi privata") }
+                }
+                1 -> Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                }
+                2 -> Row{
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi privata") }
+                }
             }
         }
     }
