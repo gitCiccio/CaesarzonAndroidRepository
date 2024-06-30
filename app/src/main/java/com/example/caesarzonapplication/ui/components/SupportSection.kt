@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
@@ -10,9 +11,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupportSection() {
-    var reportText by remember { mutableStateOf(TextFieldValue("")) }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedReason by remember { mutableStateOf("Seleziona...") }
+    var reportText by rememberSaveable { mutableStateOf(TextFieldValue("")) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var selectedReason by rememberSaveable { mutableStateOf("Seleziona...") }
     val reportReasons = listOf("Ordine", "Spedizione", "Resi e rimborsi", "Domande sui prodotti", "Assistenza post-vendita", "Problemi tecnici", "Modifiche dell'account", "Promozione e sconti", "Feedback e suggerimenti", "Assistenza personalizzata")
 
     Column {
