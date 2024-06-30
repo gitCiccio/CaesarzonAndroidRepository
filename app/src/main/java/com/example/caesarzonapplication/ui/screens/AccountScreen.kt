@@ -157,7 +157,6 @@ fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewM
         }
     }
 
-    // Load profile image from database when AccountScreen is first opened
     LaunchedEffect(true) {
         accountInfoViewModel.loadProfileImageFromDatabase()
     }
