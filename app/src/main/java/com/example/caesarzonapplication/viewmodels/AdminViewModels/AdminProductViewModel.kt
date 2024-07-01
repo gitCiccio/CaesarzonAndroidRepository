@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
+import java.util.UUID
 
 class AdminProductViewModel {
 
@@ -19,8 +20,6 @@ class AdminProductViewModel {
     val gson = Gson()
 
     fun addProduct(productDTO: SendProductDTO){
-        for(availability in productDTO.availabilities)
-            println("Taglia: ${availability.size}, Quantità: ${availability.amount}")
 
         val manageURL = URL("http://25.49.50.144:8090/product-api/product")
         val jsonProduct = gson.toJson(productDTO)
@@ -56,8 +55,32 @@ class AdminProductViewModel {
         /*TODO*/
     }
 
-    fun deleteProduct(){
-        /*TODO*/
+    fun deleteProduct(productID: UUID){
+        println("id del prodtto: "+productID)
+        val manageURL = URL("http://25.49.50.144:8090/product-api/product?productID=$productID")
+
+        val request = Request
+            .Builder()
+            .url(manageURL)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .delete()
+            .build()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = client.newCall(request).execute()
+
+                println("response: ${response.message} ${response.code}")
+                if (!response.isSuccessful) {
+                    println("Errore nella cancellazione del prodotto: ${response.message}")
+                    println("Body: ${response.body?.string()}") // Stampa il body della risposta per maggiori dettagli
+                } else {
+                    println("Prodotto eliminato con successo")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
 }

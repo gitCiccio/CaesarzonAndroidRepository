@@ -25,6 +25,7 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -34,7 +35,7 @@ fun ProductCard(product: ProductSearchDTO, navController: NavHostController){
             .padding(end = 8.dp)
             .height(250.dp)
             .width(200.dp)
-            .clickable { navController.navigate("productDetails/${product.productName}") },
+            .clickable { navController.navigate("productDetails/${product.productId}") },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(

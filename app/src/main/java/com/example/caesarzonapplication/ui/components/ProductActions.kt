@@ -11,17 +11,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.viewmodels.WishlistViewModel
+import com.google.gson.Gson
 
 @Composable
-fun ProductActions(productViewModel: AdminProductViewModel) {
+fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
-    var isAdmin by rememberSaveable { mutableStateOf(false) }
+    var isAdmin by rememberSaveable { mutableStateOf(true) }
 
     if(!isAdmin){
         if (showPopup) {
@@ -91,10 +95,13 @@ fun ProductActions(productViewModel: AdminProductViewModel) {
         }
     }else{
         Row{
-            Button(onClick = { productViewModel.updateProduct() }) {
+            Button(onClick = {
+                val gson = Gson()
+                val productJson = gson.toJson(productDTO) // Serializza il prodotto a JSON
+                navController.navigate("addProduct/$productJson") }) {
                 Text(text = "Modifica")
             }
-            Button(onClick = { productViewModel.deleteProduct() }) {
+            Button(onClick = { adminProductViewModel.deleteProduct(productDTO.id) }) {
                 Text(text = "Elimina")
             }
         }
