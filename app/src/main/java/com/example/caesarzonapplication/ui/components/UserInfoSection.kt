@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -23,7 +24,13 @@ fun UserInfoSection() {
 
     var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
+    var username by remember { mutableStateOf(user.value.username) }
+    var firstName by remember { mutableStateOf(user.value.firstName) }
+    var lastName by remember { mutableStateOf(user.value.lastName) }
+    var email by remember { mutableStateOf(user.value.email) }
+    var phoneNumber by remember { mutableStateOf(user.value.phoneNumber) }
     var password by remember { mutableStateOf("") }
+
     val coroutineScope = rememberCoroutineScope()
 
     var addresses by remember { mutableStateOf(listOf("")) }
@@ -32,6 +39,7 @@ fun UserInfoSection() {
     var showRemoveAddressDialog by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
     var isPasswordTextFieldEnabled by remember { mutableStateOf(false) }
+    var isUserInfoTextFieldEnabled by remember { mutableStateOf(false) }
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showPopupMessage by rememberSaveable { mutableStateOf("") }
@@ -40,100 +48,152 @@ fun UserInfoSection() {
 
     val accountInfoViewModel = AccountInfoViewModel()
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
+    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-
-        TextField(
-            value = user.value.firstName,
-            onValueChange = { user.value.firstName = it },
-            label = { Text("Nome") }
-        )
-        Spacer(modifier = Modifier.height(15.dp))
-
-        TextField(
-            value = user.value.lastName,
-            onValueChange = { user.value.lastName = it },
-            label = { Text("Cognome") }
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        TextField(
-            value = user.value.email,
-            onValueChange = { user.value.email = it },
-            label = { Text("Email") }
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            enabled = isPasswordTextFieldEnabled,
-            label = { Text("Password") }
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(onClick = {
-            if (isPasswordTextFieldEnabled) {
-                coroutineScope.launch {
-                    val responseCode = accountInfoViewModel.changePassword(password)
-                    if(responseCode == "success"){
-                        password = ""
-                        showPopupMessage = "Password modificata con successo"
-                    }else{
-                        showPopupMessage = "Errore durante la modifica della password"
-                    }
-                    showPopup = true
-                }
-            }
-            isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
-        })
-        {
-            Text(text = if (isPasswordTextFieldEnabled) "Conferma password" else "Modifica password")
-        }
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        Box {
+        item {
             TextField(
-                value = TextFieldValue(selectedAddress),
-                onValueChange = {},
-                label = { Text("Indirizzo di spedizione") },
-                enabled = false,
-                trailingIcon = {
-                    Icon(Icons.Filled.ArrowDropDown, contentDescription = "Drop-down arrow")
-                },
-                modifier = Modifier
-                    .clickable { addressDropdownExpanded = true }
+                enabled = isUserInfoTextFieldEnabled,
+                value = firstName,
+                onValueChange = { firstName = it },
+                label = { Text("Nome") }
             )
-            DropdownMenu(
-                expanded = addressDropdownExpanded,
-                onDismissRequest = { addressDropdownExpanded = false },
-                modifier = Modifier.width(280.dp)
-            ) {
-                addresses.forEach { address ->
-                    DropdownMenuItem(
-                        text = { Text(text = address) },
-                        onClick = {
-                            selectedAddress  = address
-                            addressDropdownExpanded  = false
-                        }
-                    )
-                }
-            }
+            Spacer(modifier = Modifier.height(15.dp))
         }
 
-        Spacer(modifier = Modifier.height(15.dp))
+        item {
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = lastName,
+                onValueChange = { lastName = it },
+                label = { Text("Cognome") }
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+        }
 
-        Row {
-            Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
-                Text(text = "Modifica i tuoi dati")
+        item {
+            TextField(
+                enabled = false,
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") }
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
+        item {
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+
+        item {
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
+                label = { Text("Numero di telefono") }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+
+        item {
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                enabled = isPasswordTextFieldEnabled,
+                label = { Text("Password") }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
+        item {
+            Button(onClick = {
+                if (isPasswordTextFieldEnabled) {
+                    coroutineScope.launch {
+                        val responseCode = accountInfoViewModel.changePassword(password)
+                        if (responseCode == "success") {
+                            password = ""
+                            showPopupMessage = "Password modificata con successo"
+                        } else {
+                            showPopupMessage = "Errore durante la modifica della password"
+                        }
+                        showPopup = true
+                    }
+                }
+                isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
+            })
+            {
+                Text(text = if (isPasswordTextFieldEnabled) "Conferma password" else "Modifica password")
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Box {
+                TextField(
+                    value = TextFieldValue(selectedAddress),
+                    onValueChange = {},
+                    label = { Text("Indirizzo di spedizione") },
+                    enabled = false,
+                    trailingIcon = {
+                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Drop-down arrow")
+                    },
+                    modifier = Modifier
+                        .clickable { addressDropdownExpanded = true }
+                )
+                DropdownMenu(
+                    expanded = addressDropdownExpanded,
+                    onDismissRequest = { addressDropdownExpanded = false },
+                    modifier = Modifier.width(280.dp)
+                ) {
+                    addresses.forEach { address ->
+                        DropdownMenuItem(
+                            text = { Text(text = address) },
+                            onClick = {
+                                selectedAddress = address
+                                addressDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Row {
+                Button(onClick = {
+                    if (isUserInfoTextFieldEnabled) {
+                        coroutineScope.launch {
+                            val responseCode = accountInfoViewModel.modifyUser(
+                                user.value.id,
+                                firstName,
+                                lastName,
+                                username,
+                                email,
+                                phoneNumber
+                            )
+                            showPopupMessage = if (responseCode == "success") {
+                                "Informazioni modificate con successo"
+                            } else {
+                                "Errore durante la modifica delle informazioni"
+                            }
+                            println(responseCode)
+                            showPopup = true
+                        }
+                        isUserInfoTextFieldEnabled = !isUserInfoTextFieldEnabled
+                    }
+                    else {
+                        isUserInfoTextFieldEnabled = true
+                    }
+                }) {
+                    Text(text = "Modifica i tuoi dati")
+                }
             }
         }
     }
-
     if (showAddAddressDialog) {
         Dialog(onDismissRequest = { showAddAddressDialog = false }) {
             Box(
