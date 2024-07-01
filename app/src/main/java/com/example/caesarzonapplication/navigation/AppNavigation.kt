@@ -12,12 +12,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.caesarzonapplication.model.repository.NotifyRepository
+import com.example.caesarzonapplication.model.repository.ProductRepository
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
@@ -28,8 +29,9 @@ fun AppNavigation() {
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(true) }
-
+    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val productRepository = ProductRepository()
+    val notificationRepository = NotifyRepository()
 
     Scaffold(
         topBar = {},
@@ -59,18 +61,19 @@ fun AppNavigation() {
                 composable("home") {
                     HomeScreen(
                         padding,
-                        homeViewModel = HomeViewModel(),
+                        homeViewModel = HomeViewModel(productRepository, notificationRepository),
                         navController = navController,
                         logged = logged,
                         userNotificationViewModel = UserNotificationViewModel(),
-                        isAdmin = isAdmin
+                        isAdmin = isAdmin,
+
                     )
                 }
                 composable("shopcart") {
                     ShoppingCartScreen(
                         padding,
                         shoppingCartViewModel = ShoppingCartViewModel(),
-                        homeViewModel = HomeViewModel(),
+                        homeViewModel = HomeViewModel(productRepository, notificationRepository),
                         navController = navController,
                         logged = logged
                     )
@@ -97,7 +100,7 @@ fun AppNavigation() {
                 }
                 composable("addProduct") {
                     if (isAdmin && logged) {
-                        AddProductScreen(adminProductViewModel = AdminProductViewModel())
+                        //AddProductScreen(adminProductViewModel = AdminProductViewModel())
                     } else {
                         LaunchedEffect(Unit) {
                             showLoginDialog = true

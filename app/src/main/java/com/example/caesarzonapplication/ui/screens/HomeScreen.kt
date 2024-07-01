@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -19,22 +21,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.CategoryGrid
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
-import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.NotificationFloatingButton
 import com.example.caesarzonapplication.ui.components.NotificationsPopup
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
 import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
-import kotlin.math.log
 
 @Composable
 fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, userNotificationViewModel: UserNotificationViewModel, isAdmin: Boolean){
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
-    val notifications = userNotificationViewModel.userNotifications
+    val newProducts by homeViewModel.newProducts.collectAsState()
+    val hotProducts by homeViewModel.hotProducts.collectAsState()
+    val notifications by homeViewModel.notification.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeViewModel.loadProducts()
+    }
+
+
     Scaffold(
         topBar = { Column {
                 Spacer(modifier = Modifier.height(45.dp))
@@ -60,8 +66,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
                 item{
                     Column {
                         CategoryGrid()
-                        HorizontalProductSection(title ="Offerte speciali", products = homeViewModel.products, navController)
-                        HorizontalProductSection(title = "Novità", products = homeViewModel.products, navController)
+                        HorizontalProductSection(title ="Offerte speciali", products = newProducts, navController)
+                        HorizontalProductSection(title = "Novità", products = hotProducts, navController)
                     }
                 }
             }
@@ -71,6 +77,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
         }
     )
 }
+
+
 
 
 
