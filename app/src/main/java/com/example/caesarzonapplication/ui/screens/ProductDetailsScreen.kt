@@ -13,6 +13,7 @@ import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.ProductDetails
 import com.example.caesarzonapplication.ui.components.ProductReviews
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 
 @Composable
 fun ProductDetailsScreen(query: String, navController: NavHostController) {
@@ -41,7 +42,7 @@ fun ProductDetailsScreen(query: String, navController: NavHostController) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
-                    ProductActions()
+                    ProductActions(AdminProductViewModel())
                 }
                 item{
                     Spacer(modifier = Modifier.height(24.dp))

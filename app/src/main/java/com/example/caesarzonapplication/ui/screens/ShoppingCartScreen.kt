@@ -119,11 +119,11 @@ fun ShoppingCartScreen(
                 }
                 if(shoppingCartViewModel.buyLaterProducts.isNotEmpty()) {
                     item {
-                        HorizontalProductSection(title = "Prodotti da comprare più tardi", products = shoppingCartViewModel.buyLaterProducts, navController)
+                       // HorizontalProductSection(title = "Prodotti da comprare più tardi", products = shoppingCartViewModel.buyLaterProducts, navController)
                     }
                 }
                 item {
-                    HorizontalProductSection(title = "Altri prodotti", products = homeViewModel.products, navController)
+                    //HorizontalProductSection(title = "Altri prodotti", products = , navController)
                 }
             }
         }

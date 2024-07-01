@@ -15,10 +15,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.Product
+import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 
 
 @Composable
-fun HorizontalProductSection(title: String, products: List<Product>, navController: NavHostController) {
+fun HorizontalProductSection(title: String, products: List<ProductSearchDTO>, navController: NavHostController) {
     Column(modifier = Modifier.padding(16.dp)){
         Text(text=title, style= MaterialTheme.typography.titleLarge, color= MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(8.dp))

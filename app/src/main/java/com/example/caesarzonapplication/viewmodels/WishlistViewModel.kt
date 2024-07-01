@@ -158,6 +158,7 @@ class WishlistViewModel: ViewModel(){
     }
 
     suspend fun getWishlistProducts(wishlistId: UUID): List<SingleWishlistProductDTO>? {
+        _products.clear()
         return withContext(Dispatchers.IO) {
             val productsTemp = mutableListOf<SingleWishlistProductDTO>()
             val wishlist = _wishlists.find { it.id == wishlistId }
@@ -185,7 +186,6 @@ class WishlistViewModel: ViewModel(){
                             productsTemp.add(SingleWishlistProductDTO(UUID.fromString(id), productName, price))
                         }
                         withContext(Dispatchers.Main) {
-                            _products.clear()
                             _products.addAll(productsTemp)
                         }
                         return@withContext products
