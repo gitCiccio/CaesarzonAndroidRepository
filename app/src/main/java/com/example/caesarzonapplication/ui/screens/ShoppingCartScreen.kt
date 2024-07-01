@@ -42,7 +42,6 @@ import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 fun ShoppingCartScreen(
     padding: PaddingValues,
     shoppingCartViewModel: ShoppingCartViewModel,
-    homeViewModel: HomeViewModel,
     navController: NavHostController,
     logged: Boolean,
 ) {
