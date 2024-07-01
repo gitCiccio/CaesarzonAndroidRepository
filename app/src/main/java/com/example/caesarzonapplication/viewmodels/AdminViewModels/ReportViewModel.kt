@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.viewmodels.AdminViewModels
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.ViewModel
 import com.example.caesarzonapplication.model.dto.ReportDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +14,7 @@ import java.io.IOException
 import java.net.URL
 import java.util.UUID
 
-class ReportViewModel {
+class ReportViewModel : ViewModel() {
 
     val client = OkHttpClient()
 

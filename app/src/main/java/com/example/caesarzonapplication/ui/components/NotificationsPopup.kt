@@ -1,10 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
-
-
-
-import adminNotificationTab
-import androidx.compose.foundation.layout.Column
+import AdminNotificationTab
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,15 +12,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
-
+import com.example.caesarzonapplication.model.dto.UserNotificationDTO
+import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import java.util.UUID
 
 @Composable
-fun NotificationsPopup(notifications: List<AdminNotificationDTO>, onDismissRequest: () -> Unit) {
+fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit, homeViewModel: HomeViewModel) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -51,7 +48,11 @@ fun NotificationsPopup(notifications: List<AdminNotificationDTO>, onDismissReque
                     }
                 } else {
                     items(notifications) { notification ->
-                        adminNotificationTab(notification)
+                        when (notification) {
+                            is AdminNotificationDTO -> AdminNotificationTab(notification, homeViewModel)
+                            is UserNotificationDTO -> UserNotificationsTab(notification, homeViewModel)
+                            else -> error("Tipo di notifica sconosciuto")
+                        }
                     }
                 }
                 item {
@@ -63,7 +64,6 @@ fun NotificationsPopup(notifications: List<AdminNotificationDTO>, onDismissReque
                     }
                 }
             }
-
         }
     }
 }
