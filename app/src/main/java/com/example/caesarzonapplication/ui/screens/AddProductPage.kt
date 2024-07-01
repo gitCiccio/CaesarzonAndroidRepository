@@ -22,19 +22,18 @@ import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 
 @Composable
-fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
+fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productDTO: SendProductDTO?) {
 
-    var productName by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-    var brand by rememberSaveable { mutableStateOf("") }
-    var price by rememberSaveable { mutableStateOf("") }
-    var discount by rememberSaveable { mutableStateOf("") }
-    var primaryColor by rememberSaveable { mutableStateOf("") }
-    var secondaryColor by rememberSaveable { mutableStateOf("") }
-    var is_cloating by rememberSaveable { mutableStateOf(false) }
-    var availability by rememberSaveable { mutableStateOf(mutableListOf<SendAvailabilityDTO>()) }
-    var sport by rememberSaveable { mutableStateOf("") }
-    var lastModified by rememberSaveable { mutableStateOf("") }
+    var productName by rememberSaveable { mutableStateOf(productDTO?.name ?: "") }
+    var description by rememberSaveable { mutableStateOf(productDTO?.description ?: "") }
+    var brand by rememberSaveable { mutableStateOf(productDTO?.brand ?: "") }
+    var price by rememberSaveable { mutableStateOf(productDTO?.price?.toString() ?: "") }
+    var discount by rememberSaveable { mutableStateOf(productDTO?.discount?.toString() ?: "") }
+    var primaryColor by rememberSaveable { mutableStateOf(productDTO?.primaryColor ?: "") }
+    var secondaryColor by rememberSaveable { mutableStateOf(productDTO?.secondaryColor ?: "") }
+    var is_clothing by rememberSaveable { mutableStateOf(productDTO?.is_clothing ?: false) }
+    var availability by rememberSaveable { mutableStateOf(productDTO?.availabilities?.toMutableList() ?: mutableListOf()) }
+    var sport by rememberSaveable { mutableStateOf(productDTO?.sport ?: "") }
 
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     // List of product types
@@ -206,8 +205,8 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                     }
 
                     item {
-                        OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = { is_cloating = !is_cloating }) {
-                            if (is_cloating)
+                        OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = { is_clothing = !is_clothing }) {
+                            if (is_clothing)
                                 Text(text = "Abbigliamento")
                             else
                                 Text(text = "Attrezzatura")
@@ -224,7 +223,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                                     discount = discount.toDouble(),
                                     primaryColor = primaryColor,
                                     secondaryColor = secondaryColor,
-                                    is_clothing = is_cloating,
+                                    is_clothing = is_clothing,
                                     sport = sport,
                                     availabilities = availability
                                 )

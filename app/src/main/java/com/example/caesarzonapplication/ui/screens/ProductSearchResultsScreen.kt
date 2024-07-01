@@ -24,7 +24,7 @@ import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 
 @Composable
 fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewModel, navController: NavHostController){
-    val filteredResults = productsViewModel.loadSimpleProducts()
+    //val filteredResults = productsViewModel.loadSimpleProducts()
         //.filter{ it.name.contains(query, ignoreCase = true) }
     var productList = mutableListOf<ProductSearchDTO>()
 

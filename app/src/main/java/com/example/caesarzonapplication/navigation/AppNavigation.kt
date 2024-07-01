@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.repository.NotifyRepository
 import com.example.caesarzonapplication.model.repository.ProductRepository
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
@@ -19,19 +20,25 @@ import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.*
 import com.example.caesarzonapplication.viewmodels.*
+import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.google.gson.Gson
+import java.util.UUID
 
 
 @Composable
 fun AppNavigation() {
+    val gson = Gson()
     val navController = rememberNavController()
     var logged by rememberSaveable { mutableStateOf(false) }
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
-    val isAdmin by rememberSaveable { mutableStateOf(false) }
+    val isAdmin by rememberSaveable { mutableStateOf(true) }
     val productRepository = ProductRepository()
     val notificationRepository = NotifyRepository()
+    val productsViewModel = ProductsViewModel()
+    val adminProductViewModel = AdminProductViewModel()
 
     Scaffold(
         topBar = {},
@@ -98,14 +105,16 @@ fun AppNavigation() {
                         }
                     }
                 }
-                composable("addProduct") {
-                    if (isAdmin && logged) {
-                        //AddProductScreen(adminProductViewModel = AdminProductViewModel())
-                    } else {
-                        LaunchedEffect(Unit) {
-                            showLoginDialog = true
-                        }
+                composable(
+                    route = "addProduct/{product}",
+                    arguments = listOf(navArgument("product") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val productJson = backStackEntry.arguments?.getString("product")
+                    val productDTO = productJson?.let {
+                        // Deserializza il prodotto da JSON a ProductDTO
+                        gson.fromJson(it, SendProductDTO::class.java)
                     }
+                    AddProductScreen(adminProductViewModel = adminProductViewModel, productDTO = productDTO)
                 }
                 composable("userInfo") {
                     if (logged && !isAdmin) {
@@ -126,11 +135,11 @@ fun AppNavigation() {
                     }
                 }
                 composable(
-                    route = "productDetails/{productName}",
-                    arguments = listOf(navArgument("productName") { type = NavType.StringType })
+                    route = "productDetails/{productId}",
+                    arguments = listOf(navArgument("productId") { type = NavType.StringType })
                 ) { backStackEntry ->
-                    val productName = backStackEntry.arguments?.getString("productName")
-                    productName?.let { ProductDetailsScreen(query = it, navController) }
+                    val productId = backStackEntry.arguments?.getString("productId")
+                    productId?.let { ProductDetailsScreen(UUID.fromString(productId), navController, productsViewModel,adminProductViewModel) }
                 }
                 composable("userpage") {
                     UserPageScreen(navController = navController)
