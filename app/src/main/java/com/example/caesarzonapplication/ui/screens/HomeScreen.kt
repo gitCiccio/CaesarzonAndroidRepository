@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.CategoryGrid
@@ -27,14 +28,15 @@ import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NotificationFloatingButton
 import com.example.caesarzonapplication.ui.components.NotificationsPopup
 import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import com.example.caesarzonapplication.viewmodels.UserNotificationViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, userNotificationViewModel: UserNotificationViewModel, isAdmin: Boolean){
+fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navController: NavHostController, logged : Boolean, isAdmin: Boolean){
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
     val newProducts by homeViewModel.newProducts.collectAsState()
     val hotProducts by homeViewModel.hotProducts.collectAsState()
-    val notifications by homeViewModel.notification.collectAsState()
+    val adminNotifications by homeViewModel.adminNotification.collectAsState()
+    val userNotifications by homeViewModel.userNotification.collectAsState()
 
     LaunchedEffect(Unit) {
         homeViewModel.loadProducts()
@@ -72,7 +74,12 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel, navCo
                 }
             }
             if (showNotificationsPopup) {
-                NotificationsPopup(notifications = notifications, onDismissRequest = { showNotificationsPopup = false })
+                val notificationsToShow = if (isAdmin) adminNotifications else userNotifications
+                NotificationsPopup(
+                    notifications = notificationsToShow,
+                    onDismissRequest = { showNotificationsPopup = false },
+                    homeViewModel
+                    )
             }
         }
     )

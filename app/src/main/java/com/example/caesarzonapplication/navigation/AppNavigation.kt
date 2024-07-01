@@ -61,10 +61,9 @@ fun AppNavigation() {
                 composable("home") {
                     HomeScreen(
                         padding,
-                        homeViewModel = HomeViewModel(productRepository, notificationRepository),
+                        homeViewModel = HomeViewModel(productRepository, notificationRepository, isAdmin),
                         navController = navController,
                         logged = logged,
-                        userNotificationViewModel = UserNotificationViewModel(),
                         isAdmin = isAdmin,
 
                     )
@@ -73,7 +72,6 @@ fun AppNavigation() {
                     ShoppingCartScreen(
                         padding,
                         shoppingCartViewModel = ShoppingCartViewModel(),
-                        homeViewModel = HomeViewModel(productRepository, notificationRepository),
                         navController = navController,
                         logged = logged
                     )
