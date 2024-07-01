@@ -174,6 +174,37 @@ class AccountInfoViewModel : ViewModel() {
         }
     }
 
+    suspend fun modifyUser(id: String, firstName: String, lastName: String, username: String, email: String, phoneNumber: String): String {
+        val newUserDTO = UserDTO( id, username, firstName, lastName, phoneNumber,email )
+        val jsonObject = JSONObject()
+            .put("firstName", newUserDTO.firstName)
+            .put("lastName", newUserDTO.lastName)
+            .put("username", newUserDTO.username)
+            .put("email", newUserDTO.email)
+            .put("phoneNumber", newUserDTO.phoneNumber)
+
+        val json = jsonObject.toString()
+
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
+        val request = Request.Builder().url(manageURL).put(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        return withContext(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext response.message + " " + response.code
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error"
+            }
+        }
+    }
+
     suspend fun registerUser(firstName: String, lastName: String, username: String, email: String, credentialValue: String): String {
         val newUserDTO = UserRegistrationDTO( firstName, lastName, username, email, credentialValue)
         val jsonObject = JSONObject()
