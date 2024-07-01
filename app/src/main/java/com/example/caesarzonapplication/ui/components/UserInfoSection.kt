@@ -16,17 +16,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserInfoSection() {
 
     var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
+    var password by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
     var showRemoveAddressDialog by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
+    var isPasswordTextFieldEnabled by remember { mutableStateOf(false) }
+
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+    var showPopupMessage by rememberSaveable { mutableStateOf("") }
+
+    if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
+
+    val accountInfoViewModel = AccountInfoViewModel()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
@@ -51,6 +63,36 @@ fun UserInfoSection() {
             onValueChange = { user.value.email = it },
             label = { Text("Email") }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            enabled = isPasswordTextFieldEnabled,
+            label = { Text("Password") }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(onClick = {
+            if (isPasswordTextFieldEnabled) {
+                coroutineScope.launch {
+                    val responseCode = accountInfoViewModel.changePassword(password)
+                    if(responseCode == "success"){
+                        password = ""
+                        showPopupMessage = "Password modificata con successo"
+                    }else{
+                        showPopupMessage = "Errore durante la modifica della password"
+                    }
+                    showPopup = true
+                }
+            }
+            isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
+        })
+        {
+            Text(text = if (isPasswordTextFieldEnabled) "Conferma password" else "Modifica password")
+        }
 
         Spacer(modifier = Modifier.height(15.dp))
 
