@@ -1,15 +1,19 @@
 package com.example.caesarzonapplication.ui.components
 
-import android.app.Dialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -17,7 +21,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -25,13 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -49,6 +52,8 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showPopupMessage by rememberSaveable { mutableStateOf("") }
     var showOtpPopup by rememberSaveable { mutableStateOf(false) }
+
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
@@ -163,9 +168,21 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                       label = { Text(text = "Username") })
                   TextField(
                       value = password,
-                      onValueChange = {password = it},
+                      onValueChange = { password = it },
                       label = { Text(text = "Password") },
-                      visualTransformation = PasswordVisualTransformation()
+                      visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                      trailingIcon = {
+                          val image = if (passwordVisible)
+                              Icons.Default.Visibility
+                          else
+                              Icons.Default.VisibilityOff
+
+                          IconButton(onClick = {
+                              passwordVisible = !passwordVisible
+                          }) {
+                              Icon(image, contentDescription = null)
+                          }
+                      }
                   )
                   TextButton(
                       modifier = Modifier.padding(vertical = 10.dp),
