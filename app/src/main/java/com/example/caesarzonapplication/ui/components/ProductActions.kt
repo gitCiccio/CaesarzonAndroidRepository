@@ -21,7 +21,7 @@ fun ProductActions(productViewModel: AdminProductViewModel) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
-    var isAdmin by rememberSaveable { mutableStateOf(true) }
+    var isAdmin by rememberSaveable { mutableStateOf(false) }
 
     if(!isAdmin){
         if (showPopup) {
