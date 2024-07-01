@@ -80,8 +80,9 @@ class KeycloakService {
 
     fun getBasicToken() {
         CoroutineScope(Dispatchers.IO).launch {
-            val manageUrl = "http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token"
-            val passwordGuest = "9Xz#sWv3Dq2J%8f@6t!g4N&hP7eL\$mK1oI5uRcF0bQ@yG2j!H3wXe#4RvB!5ZnC@m2L\$p1GkE8zYxW!7uV"
+            val manageUrl =
+                "http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token"
+            val passwordGuest = "CiaoSonoguest69!"
 
             // Encode the parameters
             val params = listOf(
@@ -90,10 +91,16 @@ class KeycloakService {
                 "username" to "guest",
                 "password" to passwordGuest
             ).joinToString("&") { (key, value) ->
-                "${URLEncoder.encode(key, StandardCharsets.UTF_8.name())}=${URLEncoder.encode(value, StandardCharsets.UTF_8.name())}"
+                "${URLEncoder.encode(key, StandardCharsets.UTF_8.name())}=${
+                    URLEncoder.encode(
+                        value,
+                        StandardCharsets.UTF_8.name()
+                    )
+                }"
             }
 
-            val requestBody = params.toRequestBody("application/x-www-form-urlencoded".toMediaType())
+            val requestBody =
+                params.toRequestBody("application/x-www-form-urlencoded".toMediaType())
             val request = Request.Builder()
                 .url(manageUrl)
                 .post(requestBody)
