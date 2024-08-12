@@ -11,7 +11,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.HomeViewModel
 import java.util.UUID
 
 @Composable

@@ -22,8 +22,8 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.ProductReviews
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import java.util.UUID
 
 @Composable

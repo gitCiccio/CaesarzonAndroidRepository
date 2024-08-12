@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.viewmodels
+package com.example.caesarzonapplication.model.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

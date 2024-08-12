@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.AvailabilityDTO
 import com.example.caesarzonapplication.model.dto.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.SendProductDTO
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
 
 @Composable
 fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productDTO: SendProductDTO?) {

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.WishlistSection
-import com.example.caesarzonapplication.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 
 
 enum class WishlistTab {
@@ -42,7 +42,7 @@ fun WishlistScreen(
 
     Scaffold(
         topBar = { },
-        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))},
+        bottomBar = { NavigationBottomBar(navController = navController, logged = logged)},
         content = { padding ->
             LazyColumn(
                 modifier = Modifier

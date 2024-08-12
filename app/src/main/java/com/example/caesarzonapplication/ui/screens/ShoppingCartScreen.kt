@@ -33,10 +33,10 @@ import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ShoppingCartCard
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import com.example.caesarzonapplication.viewmodels.ShoppingCartViewModel
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.FollowersAndFriendsViewModel
 
 @Composable
 fun ShoppingCartScreen(

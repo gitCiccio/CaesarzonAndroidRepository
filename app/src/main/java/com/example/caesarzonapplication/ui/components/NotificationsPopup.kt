@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.HomeViewModel
 import java.util.UUID
 
 @Composable

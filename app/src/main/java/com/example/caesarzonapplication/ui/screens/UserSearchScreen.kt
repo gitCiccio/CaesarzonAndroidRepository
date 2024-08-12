@@ -19,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.BanSection
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 
 @Composable
 fun UserSearchScreen(SearchAndBanViewModel: SearchAndBanUsersViewModel) {

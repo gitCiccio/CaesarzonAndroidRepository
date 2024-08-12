@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.SupportDTO
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
 fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestViewModel){

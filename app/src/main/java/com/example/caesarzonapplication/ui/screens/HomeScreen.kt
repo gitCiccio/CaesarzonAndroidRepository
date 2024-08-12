@@ -27,7 +27,7 @@ import com.example.caesarzonapplication.ui.components.CategoryGrid
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 import com.example.caesarzonapplication.ui.components.NotificationFloatingButton
 import com.example.caesarzonapplication.ui.components.NotificationsPopup
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.HomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
