@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.viewmodels.AdminViewModels
+package com.example.caesarzonapplication.model.viewmodels.AdminViewModels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel

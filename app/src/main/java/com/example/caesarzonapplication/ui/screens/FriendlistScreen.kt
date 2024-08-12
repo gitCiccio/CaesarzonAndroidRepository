@@ -28,7 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.model.viewmodels.FollowersAndFriendsViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
