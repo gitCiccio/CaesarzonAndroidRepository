@@ -11,11 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.caesarzonapplication.model.Product
-import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 
 

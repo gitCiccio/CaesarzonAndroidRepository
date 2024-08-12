@@ -15,15 +15,21 @@ import androidx.navigation.navArgument
 import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.repository.NotifyRepository
 import com.example.caesarzonapplication.model.repository.ProductRepository
+import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.LoginPopup
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.screens.*
-import com.example.caesarzonapplication.viewmodels.*
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.*
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.model.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 import java.util.UUID
 

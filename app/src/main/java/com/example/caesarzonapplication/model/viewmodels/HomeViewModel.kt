@@ -1,10 +1,8 @@
-package com.example.caesarzonapplication.viewmodels
+package com.example.caesarzonapplication.model.viewmodels
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
-import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
 import com.example.caesarzonapplication.model.repository.NotifyRepository
@@ -23,9 +21,6 @@ import java.util.UUID
 
 class HomeViewModel(private val repository: ProductRepository, private val notifyRepository: NotifyRepository, val isAdmin : Boolean) : ViewModel(){
 
-    private val client = OkHttpClient()
-
-
     val client = OkHttpClient()
     val gson = Gson()
 
@@ -33,8 +28,6 @@ class HomeViewModel(private val repository: ProductRepository, private val notif
     val hotProducts: StateFlow<List<ProductSearchDTO>> get() = repository.hotProducts
     val adminNotification: StateFlow<List<AdminNotificationDTO>> get() = notifyRepository.notificationAdmin
     val userNotification : StateFlow<List<UserNotificationDTO>> get() = notifyRepository.userNotification
-
-
 
 
     fun loadProducts() {

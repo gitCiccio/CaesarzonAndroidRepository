@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.ui.components.AdminNavigationBottomBar
 import com.example.caesarzonapplication.ui.components.SupportRequest
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
 fun SupportRequestScreen(supportRequestViewModel: SupportRequestViewModel, navController: androidx.navigation.NavHostController) {

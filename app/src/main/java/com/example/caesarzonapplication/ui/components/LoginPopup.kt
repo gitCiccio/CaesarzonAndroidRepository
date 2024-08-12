@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

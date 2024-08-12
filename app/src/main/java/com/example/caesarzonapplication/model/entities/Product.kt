@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.model
+package com.example.caesarzonapplication.model.entities
 
 data class Product(
     val name: String,

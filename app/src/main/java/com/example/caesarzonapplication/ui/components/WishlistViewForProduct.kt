@@ -18,7 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.WishlistDTO
-import com.example.caesarzonapplication.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 
 @Composable
 fun WishlistViewForProduct(wishlistViewModel: WishlistViewModel, visibility: Int) {

@@ -1,10 +1,14 @@
-package com.example.caesarzonapplication.model
+package com.example.caesarzonapplication.model.entities
 
-import androidx.compose.runtime.MutableState
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-
+@Entity (tableName = "utenti")
 data class User(
+
+    @PrimaryKey(autoGenerate = true)
     val id: String = "",
+
     val firstName: String = "",
     val lastName: String = "",
     var username: String = "",

@@ -13,14 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.caesarzonapplication.model.Product
-import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.ui.components.AppTopBar
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
-import com.example.caesarzonapplication.ui.components.NavigationBottomBar
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 
 @Composable
 fun ProductSearchResultScreen(query: String, productsViewModel: ProductsViewModel, navController: NavHostController){

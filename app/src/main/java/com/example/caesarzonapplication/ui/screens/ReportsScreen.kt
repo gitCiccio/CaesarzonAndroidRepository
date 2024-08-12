@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.ui.components.NavigationBottomBar
 import com.example.caesarzonapplication.ui.components.ReportComponent
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
 
 
 @Composable

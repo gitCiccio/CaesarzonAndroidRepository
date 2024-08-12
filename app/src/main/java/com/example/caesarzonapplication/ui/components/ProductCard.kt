@@ -22,10 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.Product
-import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 
 @SuppressLint("DefaultLocale")
 @Composable

@@ -16,13 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun UserInfoSection() {
 
-    var user  = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
+    val user = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
     var username by remember { mutableStateOf(user.value.username) }
     var firstName by remember { mutableStateOf(user.value.firstName) }
@@ -48,26 +48,56 @@ fun UserInfoSection() {
 
     val accountInfoViewModel = AccountInfoViewModel()
 
+    var firstNameError by remember { mutableStateOf("") }
+    var lastNameError by remember { mutableStateOf("") }
+    var phoneNumberError by remember { mutableStateOf("") }
+
     LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = firstName,
-                onValueChange = { firstName = it },
-                label = { Text("Nome") }
-            )
-            Spacer(modifier = Modifier.height(15.dp))
+            Column {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = firstName,
+                    onValueChange = {
+                        firstName = it
+                        firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                            "Il nome deve avere la prima lettera maiuscola"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Nome") },
+                    isError = firstNameError.isNotEmpty()
+                )
+                if (firstNameError.isNotEmpty()) {
+                    Text(firstNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+            }
         }
 
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = lastName,
-                onValueChange = { lastName = it },
-                label = { Text("Cognome") }
-            )
-            Spacer(modifier = Modifier.height(15.dp))
+            Column {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = lastName,
+                    onValueChange = {
+                        lastName = it
+                        lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                            "Il cognome deve avere la prima lettera maiuscola"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Cognome") },
+                    isError = lastNameError.isNotEmpty()
+                )
+                if (lastNameError.isNotEmpty()) {
+                    Text(lastNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+            }
         }
 
         item {
@@ -91,13 +121,26 @@ fun UserInfoSection() {
         }
 
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text("Numero di telefono") }
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+            Column {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = phoneNumber,
+                    onValueChange = {
+                        phoneNumber = it
+                        phoneNumberError = if (it.length != 10) {
+                            "Il numero di telefono deve essere composto da 10 caratteri"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Numero di telefono") },
+                    isError = phoneNumberError.isNotEmpty()
+                )
+                if (phoneNumberError.isNotEmpty()) {
+                    Text(phoneNumberError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+            }
         }
 
         item {
@@ -194,6 +237,7 @@ fun UserInfoSection() {
             }
         }
     }
+
     if (showAddAddressDialog) {
         Dialog(onDismissRequest = { showAddAddressDialog = false }) {
             Box(
