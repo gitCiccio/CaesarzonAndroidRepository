@@ -11,7 +11,7 @@ data class ProductDTO(
     val discount: Double,
     val primaryColor: String,
     val secondaryColor: String,
-    val is_clothing: Boolean,
+    val isClothing: Boolean,
     val sport: String,
     val availabilities: List<AvailabilityDTO>,
 )

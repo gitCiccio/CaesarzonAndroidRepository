@@ -31,13 +31,14 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.WishListComponent
 
 @Composable
-fun UserPageContent(padding: PaddingValues) {
+fun UserPageScreen() {
+
     var public by rememberSaveable { mutableStateOf(true) }
     var shared by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
-            .padding(padding)
+            .padding(15.dp)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally){
         Image(
@@ -48,12 +49,17 @@ fun UserPageContent(padding: PaddingValues) {
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Username", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "nome_utente    cognome_utente", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(30.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(30.dp)){
+        Text(
+            text = "Username",
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Text(
+            text = "nome_utente    cognome_utente",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(30.dp)
+        ) {
             Button(onClick = { public=!public }) {
                 Text(text = "Liste pubbliche")
             }
@@ -67,14 +73,4 @@ fun UserPageContent(padding: PaddingValues) {
         if(shared)
             WishListComponent()
     }
-}
-
-@Composable
-fun UserPageScreen(navController: NavHostController) {
-    Scaffold(
-        content = { padding ->
-            UserPageContent(padding)
-        },
-        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
-    )
 }

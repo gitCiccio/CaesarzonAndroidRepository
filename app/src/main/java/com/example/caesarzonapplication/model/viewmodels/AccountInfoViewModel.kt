@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.viewmodels
 
+import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
@@ -270,6 +271,14 @@ class AccountInfoViewModel : ViewModel() {
                 "error"
             }
         }
+    }
+
+    fun getApplication(): Application {
+        return this.getApplication()
+    }
+
+    fun exit() {
+        TODO("Not yet implemented")
     }
 }
 
