@@ -15,10 +15,10 @@ import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
 
 @Composable
-fun SupportRequest(supportRequestViewModel: SupportRequestViewModel, padding: PaddingValues) {
+fun SupportRequest(supportRequestViewModel: SupportRequestViewModel) {
+
     if(supportRequestViewModel.supportRequests.isNotEmpty()){
         LazyColumn(
-            contentPadding = padding,
             modifier = Modifier.padding(top = 8.dp)
         ) {
             items(supportRequestViewModel.supportRequests) { support ->
@@ -34,7 +34,8 @@ fun SupportRequest(supportRequestViewModel: SupportRequestViewModel, padding: Pa
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
-            ), text = "Non si sono richieste di assistenza"
+            ),
+            text = "Non si sono richieste di assistenza"
         )
     }
 }

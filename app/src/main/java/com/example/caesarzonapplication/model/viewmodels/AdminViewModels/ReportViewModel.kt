@@ -80,4 +80,8 @@ class ReportViewModel : ViewModel() {
             }
         }
     }
+
+    fun loadReports() {
+        TODO("Not yet implemented")
+    }
 }

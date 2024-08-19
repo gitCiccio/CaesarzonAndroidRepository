@@ -60,9 +60,7 @@ fun ProductReviews(navController : NavHostController) {
             }
 
             if (isReviewExpanded) {
-
                 //lista fittizia, da rimpiazzare
-
                 val reviews = listOf(
                     ReviewDTO(
                         id = UUID.randomUUID(),
@@ -125,26 +123,19 @@ fun ProductReviews(navController : NavHostController) {
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.height(8.dp))
-
                             Text(
                                 text = "Utente: ${review.username}",
                                 style = MaterialTheme.typography.bodyMedium
                             )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
                             Text(
                                 text = review.text,
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
             }
         }
-
         Button(
             onClick = { isAddReviewDialogOpen = true },
             modifier = Modifier

@@ -1,12 +1,15 @@
 package com.example.caesarzonapplication.model.viewmodels
 
-import android.graphics.Bitmap
+import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.ViewModel
-import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.dto.FollowerDTO
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.database.AppDatabase
+import com.example.caesarzonapplication.model.database.FollowerDatabase
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
+import com.example.caesarzonapplication.model.entities.Follower
+import com.example.caesarzonapplication.model.repository.FollowerRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -18,22 +21,33 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import java.security.KeyStore.TrustedCertificateEntry
-import java.util.UUID
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-//TODO capire come gestire la logica delle liste con i nuovi dati
-/*COSE FATTE:
-  - Chiamata per caaricare amici e follower, da capire perché crasha l'app
-  - Chiamata per cercare gli utenti,
-  - Aggiustata logica di aggiunta, rimozione e toggle friend status
-  - Aggiunte funzioni per caricare i follwers e i friends, da gestire se sono nulli, dal lato grafico,
-  - POST per modificare gli stati, e aggiungere utenti o toglierli fatta
-  - Delete aggiunta
+class FollowersViewModel(application: Application): AndroidViewModel(application) {
 
- */
-class FollowersAndFriendsViewModel: ViewModel() {
+    private val getAllFollowers: LiveData<List<Follower>>
+    private val repository: FollowerRepository
+
+    init {
+        val followerDao = AppDatabase.getDatabase(application).followerDao()
+        repository = FollowerRepository(followerDao)
+        getAllFollowers = repository.readAllData
+    }
+
+    fun addFollower(follower: Follower){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.addFollower(follower)
+        }
+    }
+
+    fun getFollowerByUsername(username: String): Follower? {
+        return repository.getFollowerByUsername(username)
+    }
+
+    fun getFollowerById(id: String): Follower? {
+        return repository.getFollowerById(id)
+    }
 
     private var _users = mutableStateListOf<UserSearchDTO>()
 
@@ -76,7 +90,6 @@ class FollowersAndFriendsViewModel: ViewModel() {
 
     }
 
-
     fun removeFollower(follower: UserSearchDTO) {
         // Trova l'utente con lo stesso username del follower
         val user = _users.find { it.username == follower.username }
@@ -86,7 +99,7 @@ class FollowersAndFriendsViewModel: ViewModel() {
         // Se l'utente è trovato, esegui le operazioni richieste
         user?.let {
             // Controlla e aggiorna il friend status se necessario
-            if (it.friendStatus == true) {
+            if (it.friendStatus) {
                 println("Username: ${user.username}, status follower: ${user.follower}, status friend: ${user.friendStatus}")
                 it.friendStatus = false
                 _friends.removeIf { friend -> friend.username == it.username }
@@ -101,7 +114,6 @@ class FollowersAndFriendsViewModel: ViewModel() {
             _newFollowersAndFriends.add(it)
         }
     }
-
 
     fun toggleFriendStatus(follower: UserSearchDTO) {
         println("Inside toggleFriendStatus")
@@ -121,13 +133,11 @@ class FollowersAndFriendsViewModel: ViewModel() {
         _newFollowersAndFriends.add(follower)
     }
 
-
-    //Questa funzione è ok
     @OptIn(ExperimentalEncodingApi::class)
     fun searchUsers(username: String) {
         _users.clear()
         if(username.isEmpty()) return
-        val manageURL = URL("http://25.49.50.144:8090/search-api/search/users?username="+username)
+        val manageURL = URL("http://25.49.50.144:8090/search-api/search/users?username=$username")
         val connection = manageURL.openConnection() as HttpURLConnection
 
         try{
@@ -145,7 +155,7 @@ class FollowersAndFriendsViewModel: ViewModel() {
             println("Response Code: ${connection.responseCode}")
             if(connection.responseCode == HttpURLConnection.HTTP_OK){
                 val jsonResponse = JSONArray(response.toString())
-                println("Response Body: "+jsonResponse)
+                println("Response Body: $jsonResponse")
                 for(i in 0 until jsonResponse.length()){
                     val jsonObject = jsonResponse.getJSONObject(i)
                     val username = jsonObject.getString("username")
