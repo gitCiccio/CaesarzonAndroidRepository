@@ -1,7 +1,5 @@
 package com.example.caesarzonapplication.model.dto
 
-import kotlinx.coroutines.flow.MutableStateFlow
-
 data class UserDTO (
     var id : String,
     var username: String,

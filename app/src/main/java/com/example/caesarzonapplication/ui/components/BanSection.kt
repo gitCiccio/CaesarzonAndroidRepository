@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 
 @Composable
 fun BanSection(banViewModel: SearchAndBanUsersViewModel) {

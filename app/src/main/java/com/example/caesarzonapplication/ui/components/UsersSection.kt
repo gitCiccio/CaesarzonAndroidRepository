@@ -1,9 +1,9 @@
 package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.runtime.Composable
-import com.example.caesarzonapplication.viewmodels.FollowersAndFriendsViewModel
+import com.example.caesarzonapplication.model.viewmodels.FollowersViewModel
 
 @Composable
-fun UsersSection(followersAndFriendsViewModel: FollowersAndFriendsViewModel){
+fun UsersSection(followersViewModel: FollowersViewModel){
        //userViewModel.users
 }

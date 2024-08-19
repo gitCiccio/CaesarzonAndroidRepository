@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.viewmodels
+package com.example.caesarzonapplication.model.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
@@ -226,7 +226,7 @@ class WishlistViewModel: ViewModel(){
 
     fun emptyWishlist(wishlistId: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/products?wish-id="+wishlistId);
+            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/products?wish-id=$wishlistId");
             val request = Request.Builder().url(manageURL).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try {
                 val response = client.newCall(request).execute()
@@ -244,9 +244,8 @@ class WishlistViewModel: ViewModel(){
     }
 
     fun removeWishlistProduct(wishlistId: UUID, productId: UUID) {
-        println("$wishlistId $productId")
         CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/product?wish-id="+wishlistId+"&product-id="+productId);
+            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/product?wish-id=$wishlistId&product-id=$productId");
             val request = Request.Builder().url(manageURL).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try {
                 val response = client.newCall(request).execute()
@@ -254,11 +253,12 @@ class WishlistViewModel: ViewModel(){
                     println("Errore nella risposta: "+response.message+"  "+response.code)
                     return@launch
                 }
-                // Colleziona gli elementi da rimuovere
-                val productsToRemove = _products.filter { it.productId == productId }
-                // Rimuovi gli elementi al di fuori del ciclo
-                _products.removeAll(productsToRemove)
-                println("Sto eliminando il prodotto dalla wishlist: $wishlistId")
+                for(product in _products){
+                    if(product.productId == productId){
+                        _products.remove(product)
+                        println("Sto eliminando il prodotto ${product.productName} dalla wishlist: $wishlistId")
+                    }
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
                 return@launch

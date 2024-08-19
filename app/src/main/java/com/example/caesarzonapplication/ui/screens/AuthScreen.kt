@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.ui.components
+package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,9 +32,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
-import com.example.caesarzonapplication.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -42,7 +44,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController: NavController, accountInfoViewModel: AccountInfoViewModel){
+fun AuthScreen( navController: NavController, accountInfoViewModel: AccountInfoViewModel){
+
+    var logged by rememberSaveable { mutableStateOf(false) }
+
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var otp by rememberSaveable { mutableStateOf("") }
@@ -57,9 +62,10 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
 
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
+    @Composable
     if (showOtpPopup) {
         AlertDialog(
-            onDismissRequest = { onDismiss() },
+            onDismissRequest = { onDismiss(navController) },
             title = {
                 Text(text = "Recupero password", style = TextStyle(fontSize = 16.sp))
             },
@@ -86,7 +92,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                         if (responseCode == "success") {
                             showPopupMessage = "Codice OTP confermato. Password ripristinata con successo."
                             showPopup = true
-                            onDismiss()
+                            navController.navigate("home")
                         } else {
                             showPopupMessage = "Codice OTP errato"
                             showPopup = true
@@ -127,7 +133,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
 
     AlertDialog(
           modifier = Modifier.height(420.dp),
-          onDismissRequest = onDismiss,
+          onDismissRequest = { onDismiss(navController) },
           confirmButton = {
                   Button(
                       colors = ButtonColors(Color(238, 137, 60, 255), Color.White, Color.White, Color.White) ,
@@ -137,7 +143,8 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                                   KeycloakService().getAccessToken(username, password)
                                   if (myToken != null) {
                                       if (accountInfoViewModel.getUserData() == "success") {
-                                          onLoginSuccess()
+                                          onDismiss(navController)
+                                          logged = true
                                       } else {
                                           errorMessage = "Username o password errati."
                                       }
@@ -153,7 +160,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                       Text(text = "Accedi")
                   }
           },
-          dismissButton = { Button(onClick = {navController.navigate("home"); onDismiss(); })
+          dismissButton = { Button(onClick = {navController.navigate("home"); onDismiss(navController); })
           { Text(text = "Annulla") } },
           title = { Text(modifier = Modifier
               .fillMaxWidth()
@@ -186,7 +193,7 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
                   )
                   TextButton(
                       modifier = Modifier.padding(vertical = 10.dp),
-                      onClick = { navController.navigate("register"); onDismiss(); },
+                      onClick = { navController.navigate("register"); onDismiss(navController); },
                       ) {
                       Text(text = "Non sei registrato? Clicca qui per registrarti",style = TextStyle(fontSize = 16.sp))
                   }
@@ -214,6 +221,10 @@ fun LoginPopup(onDismiss: () -> Unit, onLoginSuccess: () -> Unit, navController:
               }
           }
       )
+}
+
+fun onDismiss(navController: NavController){
+    navController.navigate("home")
 }
 
 

@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.ReportDTO
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
 
 @Composable
 fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {

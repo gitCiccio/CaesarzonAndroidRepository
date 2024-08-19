@@ -11,11 +11,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
+import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
 import java.util.UUID
 
 @Composable
-fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, homeViewModel: HomeViewModel) {
+fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, notificationViewModel: NotificationViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +51,7 @@ fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, homeViewModel
         }
         ClickableText(
             text = AnnotatedString("X"),
-            onClick = { homeViewModel.deleteNotification(userNotificationDTO.id, true) },
+            onClick = { notificationViewModel.deleteNotification(userNotificationDTO.id, true) },
             style = LocalTextStyle.current.copy(
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.error

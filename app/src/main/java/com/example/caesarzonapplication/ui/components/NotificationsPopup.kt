@@ -17,11 +17,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.viewmodels.HomeViewModel
-import java.util.UUID
+import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
 
 @Composable
-fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit, homeViewModel: HomeViewModel) {
+fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit) {
+
+    val notificationViewModel = NotificationViewModel()
+
+    if (notifications.isEmpty()) {
+        return
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -39,9 +45,6 @@ fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit, h
                             .fillMaxWidth()
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
                 if (notifications.isEmpty()) {
                     item {
                         Text(text = "Non ci sono notifiche disponibili.")
@@ -49,18 +52,15 @@ fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit, h
                 } else {
                     items(notifications) { notification ->
                         when (notification) {
-                            is AdminNotificationDTO -> AdminNotificationTab(notification, homeViewModel)
-                            is UserNotificationDTO -> UserNotificationsTab(notification, homeViewModel)
+                            is AdminNotificationDTO -> AdminNotificationTab(notification, notificationViewModel)
+                            is UserNotificationDTO -> UserNotificationsTab(notification, notificationViewModel)
                             else -> error("Tipo di notifica sconosciuto")
                         }
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                item {
                     Button(onClick = onDismissRequest) {
-                        Text("Close")
+                        Text("Chiudi")
                     }
                 }
             }

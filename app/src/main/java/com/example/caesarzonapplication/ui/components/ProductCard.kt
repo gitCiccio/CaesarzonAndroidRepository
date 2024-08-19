@@ -1,11 +1,9 @@
 package com.example.caesarzonapplication.ui.components
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,12 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.Product
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun ProductCard(product: ProductSearchDTO, navController: NavHostController){
     Card(
@@ -46,24 +41,23 @@ fun ProductCard(product: ProductSearchDTO, navController: NavHostController){
                 contentDescription = product.productName,
                 modifier = Modifier
                     .height(100.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(8.dp)
             )
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = String.format("€%.2f", product.price),
+                text =  (product.price.toString()+"€"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
             Text(
-                text = "Inserire la descrizione del prodotti",
+                text = "Inserire la descrizione del prodotto",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )

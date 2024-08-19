@@ -12,12 +12,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
 
 @Composable
-fun ReportComponent(reportViewModel: ReportViewModel, padding: PaddingValues) {
-    LazyColumn(modifier = Modifier.padding(padding)) {
-        if (!reportViewModel.reports.isEmpty()) {
+fun ReportComponent() {
+
+    val reportViewModel = ReportViewModel()
+    reportViewModel.loadReports()
+    LazyColumn(modifier = Modifier.padding())
+    {
+        if (reportViewModel.reports.isNotEmpty()) {
             items(reportViewModel.reports) { report ->
                 ReportCardTab(report, reportViewModel)
             }

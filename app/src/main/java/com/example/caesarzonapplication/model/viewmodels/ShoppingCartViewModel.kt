@@ -1,18 +1,12 @@
-package com.example.caesarzonapplication.viewmodels
+package com.example.caesarzonapplication.model.viewmodels
 
-import android.media.Image
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.traceEventEnd
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.Product
+import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.entities.Product
 import kotlinx.coroutines.launch
 
 class ShoppingCartViewModel: ViewModel() {
@@ -20,9 +14,9 @@ class ShoppingCartViewModel: ViewModel() {
 
     private var _buyLaterProducts = mutableStateListOf<Product>()
 
-    val productInShoppingCart: SnapshotStateList<Product> get() = _productsInShoppingCart
+    val productInShoppingCart = mutableStateListOf<Product>()
 
-    val buyLaterProducts: SnapshotStateList<Product> get() = _buyLaterProducts
+    val buyLaterProducts = mutableStateListOf<ProductSearchDTO>()
 
     init{
         loadShoppingCartProduct()
@@ -118,7 +112,7 @@ class ShoppingCartViewModel: ViewModel() {
 
 
     fun deleteProduct(name: String){
-        println("Prodotto eliminato: "+name)
+        println("Prodotto eliminato: $name")
         _productsInShoppingCart.removeAll{ it.name == name }
     }
 

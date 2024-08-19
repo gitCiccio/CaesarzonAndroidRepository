@@ -15,9 +15,9 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
-import com.example.caesarzonapplication.viewmodels.AdminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.viewmodels.ProductsViewModel
-import com.example.caesarzonapplication.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 
 @Composable
@@ -37,7 +37,10 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+            ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -59,9 +62,6 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
                         textAlign = TextAlign.Center
                     )
                 }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
                 Button(
                     onClick = { showPopup = true },
                     modifier = Modifier
@@ -76,9 +76,6 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(
                 onClick = { showWishlistPopup = true},
                 modifier = Modifier

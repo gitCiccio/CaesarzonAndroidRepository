@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.viewmodels.AdminViewModels
+package com.example.caesarzonapplication.model.viewmodels.AdminViewModels
 
 import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
