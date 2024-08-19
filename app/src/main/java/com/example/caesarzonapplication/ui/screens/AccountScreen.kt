@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
@@ -52,7 +53,10 @@ enum class AccountTab {
 }
 
 @Composable
-fun AccountScreen(padding: PaddingValues, accountInfoViewModel: AccountInfoViewModel) {
+fun AccountScreen(navController: NavController) {
+
+    val accountInfoViewModel = AccountInfoViewModel()
+    val padding = PaddingValues(16.dp)
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
     val context = LocalContext.current
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.R
+import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.model.entities.Product
 import kotlinx.coroutines.launch
 
@@ -13,9 +14,9 @@ class ShoppingCartViewModel: ViewModel() {
 
     private var _buyLaterProducts = mutableStateListOf<Product>()
 
-    val productInShoppingCart: SnapshotStateList<Product> get() = _productsInShoppingCart
+    val productInShoppingCart = mutableStateListOf<Product>()
 
-    val buyLaterProducts: SnapshotStateList<Product> get() = _buyLaterProducts
+    val buyLaterProducts = mutableStateListOf<ProductSearchDTO>()
 
     init{
         loadShoppingCartProduct()
@@ -111,7 +112,7 @@ class ShoppingCartViewModel: ViewModel() {
 
 
     fun deleteProduct(name: String){
-        println("Prodotto eliminato: "+name)
+        println("Prodotto eliminato: $name")
         _productsInShoppingCart.removeAll{ it.name == name }
     }
 

@@ -2,9 +2,12 @@ package com.example.caesarzonapplication.model.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.entities.Product
 import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -27,18 +30,21 @@ class ProductsViewModel: ViewModel() {
 
     val selectedProduct = mutableStateOf<ProductDTO?>(null)
 
+    private val _newProducts = mutableStateListOf<ProductSearchDTO>()
+    val newProducts: List<ProductSearchDTO> get() = _newProducts
 
-    /*
-    // Metodo per aggiungere prodotti al carrello
+    private val _hotProducts = mutableStateListOf<ProductSearchDTO>()
+    val hotProducts: List<ProductSearchDTO> get() = _hotProducts
+
+
     fun addProductToCart(product: Product) {
         _productsInShoppingCart.add(product)
     }
-     */
-
 
     fun getProduct(productID: UUID){
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/product-api/product/"+productID)
+        viewModelScope.launch(Dispatchers.IO)
+         {
+            val manageURL = URL("http://25.49.50.144:8090/product-api/product/$productID")
             val request = Request
                 .Builder()
                 .url(manageURL)
@@ -65,6 +71,18 @@ class ProductsViewModel: ViewModel() {
             }
         }
 
+    }
+
+    fun loadNewProducts() {
+        TODO("Not yet implemented")
+    }
+
+    fun loadHotProducts() {
+        TODO("Not yet implemented")
+    }
+
+    fun exit() {
+        TODO("Not yet implemented")
     }
 
 }
