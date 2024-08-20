@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -30,9 +31,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 
@@ -44,23 +47,29 @@ fun SearchBar(navController: NavHostController){
     TopAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(67.dp)
+            .height(70.dp)
             .background(Color(100, 104, 208))
             .padding(8.dp),
         title = {
             TextField(
                 value = textFieldValue,
+                textStyle = TextStyle(
+                    color = Color.Black,
+                    fontSize = 18.sp
+                ),
                 onValueChange = { textFieldValue = it },
                 modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .height(50.dp),
-                placeholder = { Text(
-                    text = "Cerca...",
-                    color = Color.Black,
-                    modifier = Modifier
-                        .alpha(0.5f)
-                        .padding(horizontal = 15.dp)
-                )},
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp)
+                    .fillMaxWidth()
+                ,
+                placeholder = {
+                    Text(
+                        text = "Cerca...",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .alpha(0.5f)
+                    ) },
                 shape = RoundedCornerShape(50),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.LightGray,
@@ -85,8 +94,7 @@ fun SearchBar(navController: NavHostController){
                         },
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
-                            .height(50.dp)
-                            .width(50.dp)
+                            .size(50.dp)
                             .background(
                                 color = Color.LightGray,
                                 shape = RoundedCornerShape(50)
@@ -97,11 +105,9 @@ fun SearchBar(navController: NavHostController){
                             contentDescription = "Search",
                             tint = Color.Black,
                             modifier = Modifier
-                                .padding(horizontal = 10.dp)
-                                .height(50.dp)
-                                .width(50.dp)
+                                .size(35.dp)
                                 .background(
-                                    color = Color.LightGray,
+                                    color = Color.Gray,
                                     shape = RoundedCornerShape(50)
                                 )
                         )
@@ -123,10 +129,4 @@ fun SearchBar(navController: NavHostController){
             containerColor = Color(100,104,208)
         )
     )
-}
-
-@Composable
-@Preview
-fun SearchBarPreview(){
-    SearchBar(navController = NavHostController(LocalContext.current))
 }
