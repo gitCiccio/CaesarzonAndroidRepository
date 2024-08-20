@@ -6,7 +6,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.database.AppDatabase
-import com.example.caesarzonapplication.model.database.FollowerDatabase
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.model.entities.Follower
 import com.example.caesarzonapplication.model.repository.FollowerRepository

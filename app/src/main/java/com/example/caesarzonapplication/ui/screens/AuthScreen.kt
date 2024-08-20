@@ -1,17 +1,18 @@
 package com.example.caesarzonapplication.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,29 +25,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.AuthViewModel
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun AuthScreen( navController: NavController, accountInfoViewModel: AccountInfoViewModel){
+fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel) {
 
     var logged by rememberSaveable { mutableStateOf(false) }
+
+    val authViewModel = AuthViewModel()
 
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -60,171 +63,179 @@ fun AuthScreen( navController: NavController, accountInfoViewModel: AccountInfoV
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
+    if (showPopup) {
+        GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false })
+    }
 
-    @Composable
     if (showOtpPopup) {
-        AlertDialog(
-            onDismissRequest = { onDismiss(navController) },
-            title = {
-                Text(text = "Recupero password", style = TextStyle(fontSize = 16.sp))
-            },
-            text = {
-                Column {
-                    Text("Otp di recupero inviato con successo! Controlla la tua e-mail e inserisci il codice otp qua sotto:")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = otp,
-                        onValueChange = { otp = it },
-                        label = { Text("Inserisci codice OTP") }
-                    )
-                    TextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Inserisci nuova password") }
-                    )
+        OtpDialog(
+            otp = otp,
+            password = password,
+            onOtpChange = { otp = it },
+            onPasswordChange = { password = it },
+            onConfirm = {
+                coroutineScope.launch {
+                    val responseCode = authViewModel.verifyOTP(otp, password, username)
+                    if (responseCode == "success") {
+                        showPopupMessage = "Codice OTP confermato. Password ripristinata con successo."
+                        showPopup = true
+                        navController.navigate("home")
+                    } else {
+                        showPopupMessage = "Codice OTP errato"
+                        showPopup = true
+                    }
                 }
             },
-            confirmButton = {
-                Button(onClick = {
-                    coroutineScope.launch {
-                        val responseCode = accountInfoViewModel.verifyOTP(otp,password,username)
-                        if (responseCode == "success") {
-                            showPopupMessage = "Codice OTP confermato. Password ripristinata con successo."
-                            showPopup = true
+            onDismiss = { showOtpPopup = false }
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Caesarzon",
+            style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+                .padding(bottom = 30.dp)
+        )
+        TextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text(text = "Username") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text(text = "Password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(image, contentDescription = null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        Button(
+            onClick = {
+                try {
+
+                    if (myToken != null) {
+                        if (accountInfoViewModel.getUserData() == "success") {
+                            logged = true
                             navController.navigate("home")
                         } else {
-                            showPopupMessage = "Codice OTP errato"
+                            errorMessage = "Username o password errati."
+                        }
+                    } else {
+                        errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    errorMessage = "Errore durante il login. Contatta l'assistenza per ricevere supporto su questo errore."
+                }
+            },
+            modifier = Modifier
+                .width(200.dp)
+                .padding(vertical = 14.dp)
+                .height(65.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 16.dp)
+        ) {
+            Text(text = "Accedi")
+        }
+        TextButton(
+            onClick = { navController.navigate(DetailsScreen.UserRegistrationDetailsScreen.route) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Non sei registrato? Clicca qui per registrarti",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        TextButton(
+            onClick = {
+                if (username.isNotEmpty()) {
+                    coroutineScope.launch {
+                        val responseFromPasswordRecovery = authViewModel.retrieveForgottenPassword(username)
+                        if (responseFromPasswordRecovery == "success") {
+                            showOtpPopup = true
+                        } else {
+                            showPopupMessage = "Problemi nell'invio dell'otp per il recupero della password. Username non valido"
                             showPopup = true
                         }
                     }
-                }) {
-                    Text(text = "OK")
-                }
-            }
-        )
-    }
-    
-    if (errorMessage != null) {
-        AlertDialog(onDismissRequest = { errorMessage=null }, 
-            confirmButton = { 
-                Button(modifier = Modifier
-                    .padding(30.dp)
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    , onClick = { errorMessage = null }) {
-                    Text(text = "OK")
+                } else {
+                    showPopupMessage = "Si prega di inserire uno username valido"
+                    showPopup = true
                 }
             },
-            title = { Text(modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-                text = "Errore durante il login",
-                softWrap = false) },
-            text = { Text(modifier = Modifier
-                .fillMaxWidth(),
-                text = errorMessage ?: "",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Password dimenticata? Clicca qui per resettarla",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+fun OtpDialog(
+    otp: String,
+    password: String,
+    onOtpChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Recupero password", style = TextStyle(fontSize = 16.sp)) },
+        text = {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Otp di recupero inviato con successo! Controlla la tua e-mail e inserisci il codice otp qua sotto:")
+                TextField(
+                    value = otp,
+                    onValueChange = onOtpChange,
+                    label = { Text("Inserisci codice OTP") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                TextField(
+                    value = password,
+                    onValueChange = onPasswordChange,
+                    label = { Text("Inserisci nuova password") },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
-        )
-    }
-
-    AlertDialog(
-          modifier = Modifier.height(420.dp),
-          onDismissRequest = { onDismiss(navController) },
-          confirmButton = {
-                  Button(
-                      colors = ButtonColors(Color(238, 137, 60, 255), Color.White, Color.White, Color.White) ,
-                      onClick = {
-                          GlobalScope.launch(Dispatchers.IO){
-                              try{
-                                  KeycloakService().getAccessToken(username, password)
-                                  if (myToken != null) {
-                                      if (accountInfoViewModel.getUserData() == "success") {
-                                          onDismiss(navController)
-                                          logged = true
-                                      } else {
-                                          errorMessage = "Username o password errati."
-                                      }
-                                  } else {
-                                      errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."}
-                              }catch (e: Exception){
-                                  e.printStackTrace()
-                                  errorMessage = "Errore durante il login. Contatta l'assistenza per ricevere supporto su questo errore."
-                              }
-                          }
-                      }
-                  ){
-                      Text(text = "Accedi")
-                  }
-          },
-          dismissButton = { Button(onClick = {navController.navigate("home"); onDismiss(navController); })
-          { Text(text = "Annulla") } },
-          title = { Text(modifier = Modifier
-              .fillMaxWidth()
-              .wrapContentSize()
-              .height(40.dp)
-              , text = "Login") },
-          text = {
-              Column {
-                  TextField(
-                      value = username,
-                      onValueChange = { username = it },
-                      label = { Text(text = "Username") })
-                  TextField(
-                      value = password,
-                      onValueChange = { password = it },
-                      label = { Text(text = "Password") },
-                      visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                      trailingIcon = {
-                          val image = if (passwordVisible)
-                              Icons.Default.Visibility
-                          else
-                              Icons.Default.VisibilityOff
-
-                          IconButton(onClick = {
-                              passwordVisible = !passwordVisible
-                          }) {
-                              Icon(image, contentDescription = null)
-                          }
-                      }
-                  )
-                  TextButton(
-                      modifier = Modifier.padding(vertical = 10.dp),
-                      onClick = { navController.navigate("register"); onDismiss(navController); },
-                      ) {
-                      Text(text = "Non sei registrato? Clicca qui per registrarti",style = TextStyle(fontSize = 16.sp))
-                  }
-                  TextButton(
-                      onClick = {
-                          if (username.isNotEmpty()) {
-                                coroutineScope.launch {
-                                    val responseFromPasswordRecovery = accountInfoViewModel.retrieveForgottenPassword(username)
-                                    if (responseFromPasswordRecovery == "success") {
-                                        showOtpPopup = true
-                                    }
-                                    else{
-                                        showPopupMessage = "Problemi nell'invio dell'otp per il recupero della password. Username non valido"
-                                        showPopup = true
-                                    }
-                                }}
-                          else{
-                              showPopupMessage = "Si prega di inserire uno username valido"
-                              showPopup = true
-                          }
-                      })
-                  {
-                      Text(text = "Password dimenticata? Clicca qui per resettarla",style = TextStyle(fontSize = 16.sp))
-                  }
-              }
-          }
-      )
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = "OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Annulla")
+            }
+        }
+    )
 }
-
-fun onDismiss(navController: NavController){
-    navController.navigate("home")
-}
-
-

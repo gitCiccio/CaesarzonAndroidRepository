@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.caesarzonapplication.model.dao.FollowerDao
 import com.example.caesarzonapplication.model.entities.Follower
 
 @Database (entities = [Follower::class], version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase()  {
+    abstract fun followerDao(): FollowerDao
 
     companion object{
         @Volatile
