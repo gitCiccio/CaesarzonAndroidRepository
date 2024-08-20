@@ -23,6 +23,7 @@ import com.example.caesarzonapplication.ui.screens.ProductSearchResultsScreen
 import com.example.caesarzonapplication.ui.screens.ReportsScreen
 import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
+import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
 import java.util.UUID
 
 @Composable
@@ -84,6 +85,14 @@ fun NavigationGraph(
                 ProductSearchResultsScreen(query, productsViewModel, navController)
         }
 
+        composable(route = DetailsScreen.ProductSearchResultsScreen.route+"/{category}",
+            arguments = listOf(navArgument("category"){ type = NavType.StringType })
+        ) { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category") ?: ""
+            if (category != "")
+                ProductSearchResultsScreen(category, productsViewModel, navController)
+        }
+
         composable(route = DetailsScreen.ReportsDetailsScreen.route) {
             ReportsScreen()
         }
@@ -102,6 +111,9 @@ fun NavigationGraph(
             }
         }
 
+        composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {
+            UserRegistrationScreen(navController, accountInfoViewModel)
+        }
 
 
     }
