@@ -29,7 +29,7 @@ fun HomeScreen(navController: NavHostController, productsViewModel: ProductsView
             .background(Color.White),
         content = {
             item {
-                CategoryGrid()
+                CategoryGrid(navController)
                 HorizontalProductSection(title ="Offerte speciali", products = hotProducts, navController)
                 HorizontalProductSection(title = "Novità", products = newProducts, navController)
             }

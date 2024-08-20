@@ -18,10 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.caesarzonapplication.R
+import com.example.caesarzonapplication.navigation.DetailsScreen
 
 @Composable
-fun CategoryGrid(){
+fun CategoryGrid(navController: NavController){
 
     val categories= listOf(
         "Atletica" to R.drawable.ic_atletica,
@@ -43,7 +45,7 @@ fun CategoryGrid(){
         content = {
             items(categories){ (category,iconRes) ->
                 Button(
-                    onClick = {},
+                    onClick = { navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$category")},
                     modifier = Modifier
                         .padding(10.dp)
                         .aspectRatio(1f)
@@ -70,10 +72,4 @@ fun CategoryGrid(){
             vertical = 8.dp
         )
     )
-}
-
-@Composable
-@Preview
-fun CategoryGridPreview(){
-    CategoryGrid()
 }

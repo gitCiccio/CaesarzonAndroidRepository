@@ -12,14 +12,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.navigation.NavigationBottomBar
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
-import kotlinx.coroutines.launch
 
 @Composable
-fun UserRegistrationScreen(navController: NavHostController, logged: Boolean) {
-
-    if(logged) navController.navigate("home")
+fun UserRegistrationScreen(
+    navController: NavHostController,
+    accountInfoViewModel: AccountInfoViewModel
+) {
 
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
@@ -127,7 +126,7 @@ fun UserRegistrationScreen(navController: NavHostController, logged: Boolean) {
                 }
                 TextField(
                     value = password,
-                    onValueChange = {
+                    onValueChange = { it ->
                         password = it
                         passwordError = when {
                             it.isEmpty() -> "La password non può essere vuota"
@@ -182,6 +181,9 @@ fun UserRegistrationScreen(navController: NavHostController, logged: Boolean) {
                         password = ""
                         confirmPassword = ""
                     }
+                    if(checksAreOk(nameError, surnameError, usernameError, emailError, passwordError)) {
+                        accountInfoViewModel.registerUser(name, surname, username, email, password)
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
@@ -192,4 +194,8 @@ fun UserRegistrationScreen(navController: NavHostController, logged: Boolean) {
             }
         }
     }
+}
+
+fun checksAreOk(nameError: String, surnameError: String, usernameError: String, emailError: String, passwordError: String): Boolean {
+    return !(nameError.isNotEmpty() || surnameError.isNotEmpty() || usernameError.isNotEmpty() || emailError.isNotEmpty() || passwordError.isNotEmpty())
 }
