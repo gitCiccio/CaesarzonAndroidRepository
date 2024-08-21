@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.database.AppDatabase
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.model.entities.Follower
-import com.example.caesarzonapplication.model.repository.FollowerRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope

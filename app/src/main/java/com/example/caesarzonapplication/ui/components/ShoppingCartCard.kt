@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.entities.Product
 import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 
 

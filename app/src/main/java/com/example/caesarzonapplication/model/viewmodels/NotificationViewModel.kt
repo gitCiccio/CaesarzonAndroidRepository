@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.model.repository.NotifyRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope

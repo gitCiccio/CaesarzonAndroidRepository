@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.compose.rememberNavController
+import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
@@ -27,6 +28,8 @@ class MainActivity : ComponentActivity() {
         setContent{
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
+                KeycloakService().getBasicToken()
+
                 MainScreen(
                     navController = navController,
                     isAdmin,
