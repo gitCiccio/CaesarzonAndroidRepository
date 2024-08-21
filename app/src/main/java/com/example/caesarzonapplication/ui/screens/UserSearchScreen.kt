@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -21,67 +22,78 @@ import com.example.caesarzonapplication.ui.components.UserSearchComponent
 import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
 
 @Composable
-fun UserSearchScreen(SearchAndBanViewModel: SearchAndBanUsersViewModel) {
-    val navController = rememberNavController()
+fun UserSearchScreen(searchAndBanViewModel: SearchAndBanUsersViewModel) {
+
     var searchText by rememberSaveable { mutableStateOf("") }
     var showBannedUsers by rememberSaveable { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            Column {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Ricerca utenti",
-                        style = TextStyle(
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 30.dp),
-                        color = Color.Black
-                    )
-                }
-                Spacer(modifier = Modifier.padding(top = 10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(modifier = Modifier.width(35.dp))
-                    TextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        label = { Text("Cerca utenti") },
-                        modifier = Modifier.width(320.dp)
-                    )
-                    IconButton(onClick = { SearchAndBanViewModel.searchSpecifcUsers(searchText) }) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-                    }
-                }
-                Spacer(modifier = Modifier.padding(top = 10.dp))
-                Row{
-                   Button(modifier = Modifier.padding(horizontal = 105.dp), onClick = { showBannedUsers = !showBannedUsers }) {
-                       if (!showBannedUsers) {
-                           Text(text = "Mostra tutti gli utenti")
-                       }else{
-                           Text(text = "Mostra utenti bannati")
-                       }
-                   }
-                }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Ricerca utenti",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp),
+                color = Color.Black
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                label = { Text("Cerca utenti") },
+                modifier = Modifier.width(320.dp)
+            )
+            IconButton(
+                onClick = { searchAndBanViewModel.searchSpecifcUsers(searchText) }
+            ) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
             }
-        },
-        content = { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
+        }
+        Button(
+            modifier = Modifier.padding(end = 8.dp),
+            onClick = { showBannedUsers = !showBannedUsers }
+        ) {
+            if (!showBannedUsers) {
+               Text(text = "Mostra tutti gli utenti")
+            }else{
+               Text(text = "Mostra utenti bannati")
+            }
+        }
+    }
+    LazyColumn(
+        modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        content = {
+            item {
                 if(!showBannedUsers)
-                    UserSearchComponent(searchAndBanUsersViewModel = SearchAndBanViewModel)
-                else
-                    BanSection(banViewModel = SearchAndBanViewModel)
+                    UserSearchComponent(searchAndBanViewModel)
+                else BanSection(searchAndBanViewModel)
             }
-        },
-        bottomBar = { Spacer(modifier = Modifier.padding(60.dp))}
+        }
     )
 }
+
 

@@ -25,7 +25,6 @@ import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchA
 
 @Composable
 fun BanSection(banViewModel: SearchAndBanUsersViewModel) {
-    //val bans by adminInfoViewModel.bans
 
     LazyColumn {
         items(banViewModel.bans.size) { index ->
