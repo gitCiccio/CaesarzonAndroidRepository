@@ -5,26 +5,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.caesarzonapplication.ui.screens.HomeScreen
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun NavigationBottomBar(navController: NavHostController) {
 
-    var navigationSelectedItem by remember {
-        mutableStateOf<BottomBarScreen>(BottomBarScreen.Home)
-    }
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
     val screens = listOf(
         BottomBarScreen.Home,
@@ -39,7 +27,7 @@ fun NavigationBottomBar(navController: NavHostController) {
     ) {
         screens.forEach { screen ->
             NavigationBarItem(
-                selected = screen == navigationSelectedItem,
+                selected = currentDestination?.route == screen.route,
                 icon = {
                     Icon(
                         imageVector = screen.icon,
@@ -47,13 +35,11 @@ fun NavigationBottomBar(navController: NavHostController) {
                     )
                 },
                 onClick = {
-                    navigationSelectedItem = screen
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                    if (currentDestination?.route != screen.route){
+                        navController.navigate(screen.route) {
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
@@ -67,10 +53,3 @@ fun NavigationBottomBar(navController: NavHostController) {
         }
     }
 }
-
-@Composable
-@Preview
-fun NavigationBottomBarPreview() {
-    NavigationBottomBar(rememberNavController())
-}
-
