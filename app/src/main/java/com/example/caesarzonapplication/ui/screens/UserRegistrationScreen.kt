@@ -183,6 +183,7 @@ fun UserRegistrationScreen(
                     }
                     if(checksAreOk(nameError, surnameError, usernameError, emailError, passwordError)) {
                         accountInfoViewModel.registerUser(name, surname, username, email, password)
+                        navController.navigate("LoginScreen")
                     }
                 },
                 modifier = Modifier

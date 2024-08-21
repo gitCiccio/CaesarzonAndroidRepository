@@ -50,7 +50,7 @@ fun ShoppingCartScreen(navController: NavHostController, logged: MutableState<Bo
                 EmptyShoppingCart()
             }
         } else {
-            items(shoppingCartViewModel.productInShoppingCart) { it ->
+            items(shoppingCartViewModel.productInShoppingCart) {
                 ShoppingCartCard(it, shoppingCartViewModel, navController)
                 Spacer(modifier = Modifier.height(30.dp))
             }

@@ -14,20 +14,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.dto.ProductSearchDTO
-import com.example.caesarzonapplication.ui.components.SearchBar
 import com.example.caesarzonapplication.ui.components.ProductReviews
 import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import java.util.UUID
 
 @Composable
-fun ProductDetailsScreen(productID: UUID, navController: NavHostController, productsViewModel: ProductsViewModel) {
+fun ProductDetailsScreen(productID: UUID, navController: NavHostController, productsViewModel: ProductsViewModel, isAdmin: MutableState<Boolean>) {
 
     val adminProductViewModel = AdminProductViewModel()
     var selectedProduct by remember { mutableStateOf(productsViewModel.selectedProduct) }
@@ -87,7 +81,7 @@ fun ProductDetailsScreen(productID: UUID, navController: NavHostController, prod
             }
         }
         item {
-            selectedProduct.value?.let { ProductActions(navController, adminProductViewModel, it) }
+            selectedProduct.value?.let { ProductActions(navController, adminProductViewModel, it, isAdmin) }
         }
         item {
             ProductReviews(navController)

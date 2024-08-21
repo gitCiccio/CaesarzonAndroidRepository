@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,16 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
-import java.util.UUID
 
 @Composable
-fun AddProductScreen() {
-
-    val adminProductViewModel = AdminProductViewModel()
+fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
 
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
@@ -56,200 +53,186 @@ fun AddProductScreen() {
     var selectedSize by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
 
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Aggiungi prodotto",
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp),
-                color = Color.Black
-            )
-        }
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    OutlinedTextField(
-                        value = productName,
-                        onValueChange = { productName = it },
-                        label = { Text("Nome") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = { Text("Descrizione") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = brand,
-                        onValueChange = { brand = it },
-                        label = { Text("Brand") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = price,
-                        onValueChange = { price = it },
-                        label = { Text("Prezzo") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = discount,
-                        onValueChange = { discount = it },
-                        label = { Text("Sconto") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = primaryColor,
-                        onValueChange = { primaryColor = it },
-                        label = { Text("Colore primario") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = secondaryColor,
-                        onValueChange = { secondaryColor = it },
-                        label = { Text("Colore secondario") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    OutlinedTextField(
-                        value = sport,
-                        onValueChange = { sport = it },
-                        label = { Text("Sport") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
-                            value = selectedSize,
-                            onValueChange = { selectedSize = it },
-                            label = { Text("Taglia") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
-                            value = quantity,
-                            onValueChange = { quantity = it },
-                            label = { Text("Quantità") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {
-                            if (selectedSize.isNotBlank() && quantity.isNotBlank()) {
-                                val qty = quantity.toIntOrNull() ?: 0
-                                if (qty > 0) {
-                                    availability = availability.toMutableList().apply {
-                                        add(SendAvailabilityDTO(amount = qty, size = selectedSize))
-                                    }
-                                    selectedSize = ""
-                                    quantity = ""
-                                }
-                            }
-                        }) {
-                            Text("Aggiungi")
-                        }
-                    }
-                }
-                item { Spacer(modifier = Modifier.padding(top = 10.dp)) }
-                // Display the list of added availabilities
-                items(availability.size) { availabilityIndex ->
-                    val availabilityItem = availability[availabilityIndex]
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Taglia: ${availabilityItem.size}",
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Quantità: ${availabilityItem.amount}",
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(onClick = {
-                            availability = availability.toMutableList().apply {
-                                removeAt(availabilityIndex)
-                            }
-                        }) {
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
-                        }
-                    }
-                }
 
-                item {
-                    OutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { isClothing = !isClothing }) {
-                        if (isClothing)
-                            Text(text = "Abbigliamento")
-                        else
-                            Text(text = "Attrezzatura")
-                    }
-                }
-                item {
-                    Button(
-                        onClick = {
-                        adminProductViewModel.addProduct(
-                            SendProductDTO(
-                                name = productName,
-                                description = description,
-                                brand = brand,
-                                price = price.toDouble(),
-                                discount = discount.toDouble(),
-                                primaryColor = primaryColor,
-                                secondaryColor = secondaryColor,
-                                is_clothing = isClothing,
-                                sport = sport,
-                                availabilities = availability
-                            )
-                        ) }
-                    ) {
-                        Text(text = "Aggiungi prodotto")
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        content =
+        {
+            item {
+                Text(
+                    text = "Aggiungi prodotto",
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp),
+                    color = Color.Black
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = productName,
+                    onValueChange = { productName = it },
+                    label = { Text("Nome") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Descrizione") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = brand,
+                    onValueChange = { brand = it },
+                    label = { Text("Brand") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { price = it },
+                    label = { Text("Prezzo") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = discount,
+                    onValueChange = { discount = it },
+                    label = { Text("Sconto") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = primaryColor,
+                    onValueChange = { primaryColor = it },
+                    label = { Text("Colore primario") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = secondaryColor,
+                    onValueChange = { secondaryColor = it },
+                    label = { Text("Colore secondario") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = sport,
+                    onValueChange = { sport = it },
+                    label = { Text("Sport") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = selectedSize,
+                        onValueChange = { selectedSize = it },
+                        label = { Text("Taglia") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = quantity,
+                        onValueChange = { quantity = it },
+                        label = { Text("Quantità") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Button(onClick = {
+                        if (selectedSize.isNotBlank() && quantity.isNotBlank()) {
+                            val qty = quantity.toIntOrNull() ?: 0
+                            if (qty > 0) {
+                                availability = availability.toMutableList().apply {
+                                    add(SendAvailabilityDTO(amount = qty, size = selectedSize))
+                                }
+                                selectedSize = ""
+                                quantity = ""
+                            }
+                        }
+                    }) {
+                        Text("Aggiungi")
                     }
                 }
             }
+            items(availability.size) { availabilityIndex ->
+                val availabilityItem = availability[availabilityIndex]
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Taglia: ${availabilityItem.size}",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "Quantità: ${availabilityItem.amount}",
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = {
+                        availability = availability.toMutableList().apply {
+                            removeAt(availabilityIndex)
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
+                    }
+                }
+            }
+            item {
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { isClothing = !isClothing }) {
+                    if (isClothing)
+                        Text(text = "Abbigliamento")
+                    else
+                        Text(text = "Attrezzatura")
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                    adminProductViewModel.addProduct(
+                        SendProductDTO(
+                            name = productName,
+                            description = description,
+                            brand = brand,
+                            price = price.toDouble(),
+                            discount = discount.toDouble(),
+                            primaryColor = primaryColor,
+                            secondaryColor = secondaryColor,
+                            is_clothing = isClothing,
+                            sport = sport,
+                            availabilities = availability
+                        )
+                    ) }
+                ) {
+                    Text(text = "Aggiungi prodotto")
+                }
+            }
         }
-    }
+    )
 }
+

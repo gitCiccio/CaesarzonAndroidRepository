@@ -21,13 +21,12 @@ import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 
 @Composable
-fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO) {
+fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO, isAdmin: MutableState<Boolean>) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
-    var isAdmin by rememberSaveable { mutableStateOf(true) }
 
-    if(!isAdmin){
+    if(!isAdmin.value){
         if (showPopup) {
             GenericMessagePopup(message = "Prodotto aggiunto al carrello con successo!", onDismiss = { showPopup = false })
         }
@@ -95,10 +94,13 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
             Button(onClick = {
                 val gson = Gson()
                 val productJson = gson.toJson(productDTO) // Serializza il prodotto a JSON
-                navController.navigate("addProduct/$productJson") }) {
+                navController.navigate("addProduct/$productJson") }
+            ) {
                 Text(text = "Modifica")
             }
-            Button(onClick = { adminProductViewModel.deleteProduct(productDTO.id) }) {
+            Button(
+                onClick = { adminProductViewModel.deleteProduct(productDTO.id) }
+            ) {
                 Text(text = "Elimina")
             }
         }

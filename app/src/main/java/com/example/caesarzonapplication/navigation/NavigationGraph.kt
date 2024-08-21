@@ -8,7 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
@@ -24,6 +27,7 @@ import com.example.caesarzonapplication.ui.screens.ReportsScreen
 import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
+import com.example.caesarzonapplication.ui.screens.UserSearchScreen
 import java.util.UUID
 
 @Composable
@@ -33,7 +37,6 @@ fun NavigationGraph(
     logged: MutableState<Boolean>,
     productsViewModel: ProductsViewModel,
     accountInfoViewModel: AccountInfoViewModel,
-    notificationViewModel: NotificationViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -64,9 +67,29 @@ fun NavigationGraph(
         }
 
 
-        composable(route = DetailsScreen.AddProductDetailsScreen.route) {
-            AddProductScreen()
+        if(isAdmin.value) {
+            val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
+            val reportViewModel = ReportViewModel()
+            val supportRequestViewModel = SupportRequestViewModel()
+            val adminProductViewModel = AdminProductViewModel()
+
+            composable(route = AdminBottomBarScreen.Home.route) {
+                AdminScreen(navController, productsViewModel)
+            }
+            composable(route = AdminBottomBarScreen.AddProduct.route) {
+                AddProductScreen(adminProductViewModel)
+            }
+            composable(route = AdminBottomBarScreen.Reports.route) {
+                ReportsScreen(reportViewModel)
+            }
+            composable(route = AdminBottomBarScreen.SupportRequest.route) {
+                SupportRequestScreen(supportRequestViewModel)
+            }
+            composable(route = AdminBottomBarScreen.SearchUser.route) {
+                UserSearchScreen(searchAndBanUsersViewModel)
+            }
         }
+
 
         composable(
             route = DetailsScreen.ProductDetailsScreen.route + "/{productId}",
@@ -74,7 +97,7 @@ fun NavigationGraph(
         ) { backStackEntry ->
             val productId = UUID.fromString(backStackEntry.arguments?.getString("productId"))
             if (productId != null)
-                ProductDetailsScreen(productID = productId, navController, productsViewModel)
+                ProductDetailsScreen(productID = productId, navController, productsViewModel, isAdmin)
         }
 
         composable(route = DetailsScreen.ProductSearchResultsScreen.route+"/{query}",
@@ -93,22 +116,8 @@ fun NavigationGraph(
                 ProductSearchResultsScreen(category, productsViewModel, navController)
         }
 
-        composable(route = DetailsScreen.ReportsDetailsScreen.route) {
-            ReportsScreen()
-        }
-
-        composable(route = DetailsScreen.SupportRequestDetailsScreen.route) {
-            SupportRequestScreen()
-        }
-
         composable(route = DetailsScreen.UserPageDetailsScreen.route) {
             UserPageScreen()
-        }
-
-        if(isAdmin.value) {
-            composable(route = DetailsScreen.AdminScreen.route) {
-                AdminScreen()
-            }
         }
 
         composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {
