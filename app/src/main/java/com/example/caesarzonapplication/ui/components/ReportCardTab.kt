@@ -66,7 +66,7 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
                             reportViewModel.deleteReport(report, true)
                             popupMessage = "Segnalazione accettata con successo!"
                             showPopup = true
-                                  },
+                        },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -82,7 +82,7 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
                             reportViewModel.deleteReport(report, false)
                             popupMessage = "Segnalazione scartata con successo!"
                             showPopup = true
-                                  },
+                        },
                         modifier = Modifier.size(60.dp)
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -1,6 +1,9 @@
 package com.example.caesarzonapplication.model.dto
 
-data class SendProductDTO (
+import java.io.Serializable
+
+data class SendProductDTO(
+    val id: Serializable,
     val name: String,
     val description: String,
     val brand: String,

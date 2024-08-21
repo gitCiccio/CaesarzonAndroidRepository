@@ -64,7 +64,7 @@ fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestVi
                     supportRequestViewmModel.deleteSupport(supports.id, responseText)
                     responseText=""
                     showPopup = true
-                          },
+                },
 
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
@@ -74,6 +74,3 @@ fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestVi
     }
 }
 //Implementare logica per inviare la risposta
-
-
-

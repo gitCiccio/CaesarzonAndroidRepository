@@ -44,7 +44,7 @@ class ReportViewModel : ViewModel() {
                     val usernameUser1 = jsonResponse.getJSONObject(i).getString("usernameUser1")
                     val usernameUser2 = jsonResponse.getJSONObject(i).getString("usernameUser2")
                     val reviewId = jsonResponse.getJSONObject(i).getString("reviewId")
-                    _reports.add(ReportDTO(UUID.fromString(id), reportDate, reason, description, usernameUser1, usernameUser2, UUID.fromString(reviewId)))
+                    _reports.add(ReportDTO(UUID.fromString(id).toString(), reportDate, reason, description, usernameUser1, usernameUser2, UUID.fromString(reviewId)))
                 }
 
 

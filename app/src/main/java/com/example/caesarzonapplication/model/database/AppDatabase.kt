@@ -4,12 +4,54 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.caesarzonapplication.model.dao.FollowerDao
-import com.example.caesarzonapplication.model.entities.Follower
+import com.example.caesarzonapplication.model.dao.notificationDao.AdminNotificationDao
+import com.example.caesarzonapplication.model.dao.notificationDao.BanDao
+import com.example.caesarzonapplication.model.dao.notificationDao.ReportDao
+import com.example.caesarzonapplication.model.dao.notificationDao.SupportDao
+import com.example.caesarzonapplication.model.dao.notificationDao.UserNotificationDao
+import com.example.caesarzonapplication.model.dao.productDao.ProductDao
+import com.example.caesarzonapplication.model.dao.productDao.ProductOrderDao
+import com.example.caesarzonapplication.model.dao.userDao.AddressDao
+import com.example.caesarzonapplication.model.dao.userDao.CardDao
+import com.example.caesarzonapplication.model.dao.userDao.CityDataDao
+import com.example.caesarzonapplication.model.dao.userDao.FollowerDao
+import com.example.caesarzonapplication.model.dao.userDao.UserDao
+import com.example.caesarzonapplication.model.dao.wishlistDao.WishlistDao
+import com.example.caesarzonapplication.model.dao.wishlistDao.WishlistProductDao
+import com.example.caesarzonapplication.model.entities.notificationEntity.Ban
+import com.example.caesarzonapplication.model.entities.notificationEntity.Report
+import com.example.caesarzonapplication.model.entities.notificationEntity.Support
+import com.example.caesarzonapplication.model.entities.notificationEntity.UserNotification
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.ProductOrder
+import com.example.caesarzonapplication.model.entities.userEntity.Address
+import com.example.caesarzonapplication.model.entities.userEntity.Card
+import com.example.caesarzonapplication.model.entities.userEntity.CityData
+import com.example.caesarzonapplication.model.entities.userEntity.Follower
+import com.example.caesarzonapplication.model.entities.userEntity.User
+import com.example.caesarzonapplication.model.entities.wishListEntity.Wishlist
+import com.example.caesarzonapplication.model.entities.wishListEntity.WishlistProduct
 
-@Database (entities = [Follower::class], version = 1, exportSchema = false)
+@Database (entities = [AdminNotificationDao::class, Ban::class, Report::class, Support::class, UserNotification::class,
+                      Product::class, ProductOrder::class,
+                      Address::class, Card::class, CityData::class, Follower::class, User::class,
+                      Wishlist::class, WishlistProduct::class],
+    version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase()  {
+    abstract fun adminNotificationDao(): AdminNotificationDao
+    abstract fun banDao(): BanDao
+    abstract fun reportDao(): ReportDao
+    abstract fun supportDao(): SupportDao
+    abstract fun userNotificationDao(): UserNotificationDao
+    abstract fun productDao(): ProductDao
+    abstract fun productOrderDao(): ProductOrderDao
+    abstract fun addressDao(): AddressDao
+    abstract fun cardDao(): CardDao
+    abstract fun cityDataDao(): CityDataDao
     abstract fun followerDao(): FollowerDao
+    abstract fun userDao(): UserDao
+    abstract fun wishlistDao(): WishlistDao
+    abstract fun wishlistProductDao(): WishlistProductDao
 
     companion object{
         @Volatile
@@ -24,11 +66,32 @@ abstract class AppDatabase: RoomDatabase()  {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "follower_database"
+                    "app_database"
                 ).build()
                 INSTANCE = instance
                 return instance
             }
         }
     }
+
+   override fun clearAllTables() {
+        adminNotificationDao().deleteAllAdminNotifications()
+        banDao().deleteAllBans()
+        reportDao().deleteAllReports()
+        supportDao().deleteAllSupport()
+        userNotificationDao().deleteAllUserNotifications()
+        productDao().deleteAllProducts()
+        productOrderDao().deleteAllProductOrders()
+        addressDao().deleteAll()
+        cardDao().deleteAllCards()
+        cityDataDao().deleteAllCityData()
+        followerDao().deleteAllFollowers()
+        wishlistDao().deleteAllWishlist()
+        wishlistProductDao().deleteAllWishlistProducts()
+    }
+
+    /*fun closeDatabase(){
+        INSTANCE?.close()
+        INSTANCE = null
+    }da capire come gestirla*/
 }

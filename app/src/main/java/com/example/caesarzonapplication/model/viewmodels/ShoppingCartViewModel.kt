@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
-import com.example.caesarzonapplication.model.entities.Product
 import kotlinx.coroutines.launch
 
 class ShoppingCartViewModel: ViewModel() {

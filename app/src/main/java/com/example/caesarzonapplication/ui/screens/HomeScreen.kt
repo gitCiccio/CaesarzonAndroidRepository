@@ -21,7 +21,7 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         productsViewModel.loadNewProducts()
-        productsViewModel.loadHotProducts()
+        //productsViewModel.loadHotProducts()
     }
 
     val newProducts = productsViewModel.newProducts
