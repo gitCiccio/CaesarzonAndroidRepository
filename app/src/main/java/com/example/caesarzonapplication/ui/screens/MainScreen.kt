@@ -90,7 +90,6 @@ fun MainScreen(
                     logged = logged,
                     productsViewModel = productsViewModel,
                     accountInfoViewModel = accountInfoViewModel,
-                    notificationViewModel = notificationViewModel
                 )
             }
         }

@@ -34,14 +34,9 @@ class MainActivity : ComponentActivity() {
                     accountInfoViewModel = accountInfoViewModel,
                     productsViewModel = productsViewModel,
                     notificationViewModel = notificationViewModel
-                    )
+                )
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
     }
 }
 
