@@ -47,56 +47,54 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
-
     var firstNameError by remember { mutableStateOf("") }
     var lastNameError by remember { mutableStateOf("") }
     var phoneNumberError by remember { mutableStateOf("") }
 
-    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+    LazyColumn(
+        modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center)
+    {
         item {
-            Column {
-                TextField(
-                    enabled = isUserInfoTextFieldEnabled,
-                    value = firstName,
-                    onValueChange = {
-                        firstName = it
-                        firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
-                            "Il nome deve avere la prima lettera maiuscola"
-                        } else {
-                            ""
-                        }
-                    },
-                    label = { Text("Nome") },
-                    isError = firstNameError.isNotEmpty()
-                )
-                if (firstNameError.isNotEmpty()) {
-                    Text(firstNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                Spacer(modifier = Modifier.height(15.dp))
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = firstName,
+                onValueChange = {
+                    firstName = it
+                    firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                        "Il nome deve avere la prima lettera maiuscola"
+                    } else {
+                        ""
+                    }
+                },
+                label = { Text("Nome") },
+                isError = firstNameError.isNotEmpty()
+            )
+            if (firstNameError.isNotEmpty()) {
+                Text(firstNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
         }
 
         item {
-            Column {
-                TextField(
-                    enabled = isUserInfoTextFieldEnabled,
-                    value = lastName,
-                    onValueChange = {
-                        lastName = it
-                        lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
-                            "Il cognome deve avere la prima lettera maiuscola"
-                        } else {
-                            ""
-                        }
-                    },
-                    label = { Text("Cognome") },
-                    isError = lastNameError.isNotEmpty()
-                )
-                if (lastNameError.isNotEmpty()) {
-                    Text(lastNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                Spacer(modifier = Modifier.height(15.dp))
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = lastName,
+                onValueChange = {
+                    lastName = it
+                    lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                        "Il cognome deve avere la prima lettera maiuscola"
+                    } else {
+                        ""
+                    }
+                },
+                label = { Text("Cognome") },
+                isError = lastNameError.isNotEmpty()
+            )
+            if (lastNameError.isNotEmpty()) {
+                Text(lastNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -107,7 +105,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 onValueChange = { username = it },
                 label = { Text("Username") }
             )
-            Spacer(modifier = Modifier.height(15.dp))
         }
 
         item {
@@ -117,29 +114,25 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 onValueChange = { email = it },
                 label = { Text("Email") }
             )
-            Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
-            Column {
-                TextField(
-                    enabled = isUserInfoTextFieldEnabled,
-                    value = phoneNumber,
-                    onValueChange = {
-                        phoneNumber = it
-                        phoneNumberError = if (it.length != 10) {
-                            "Il numero di telefono deve essere composto da 10 caratteri"
-                        } else {
-                            ""
-                        }
-                    },
-                    label = { Text("Numero di telefono") },
-                    isError = phoneNumberError.isNotEmpty()
-                )
-                if (phoneNumberError.isNotEmpty()) {
-                    Text(phoneNumberError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                Spacer(modifier = Modifier.height(20.dp))
+            TextField(
+                enabled = isUserInfoTextFieldEnabled,
+                value = phoneNumber,
+                onValueChange = {
+                    phoneNumber = it
+                    phoneNumberError = if (it.length != 10) {
+                        "Il numero di telefono deve essere composto da 10 caratteri"
+                    } else {
+                        ""
+                    }
+                },
+                label = { Text("Numero di telefono") },
+                isError = phoneNumberError.isNotEmpty()
+            )
+            if (phoneNumberError.isNotEmpty()) {
+                Text(phoneNumberError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -150,7 +143,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 enabled = isPasswordTextFieldEnabled,
                 label = { Text("Password") }
             )
-            Spacer(modifier = Modifier.height(10.dp))
         }
 
         item {
@@ -170,13 +162,9 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 }
                 isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
             })
-
             {
                 Text(text = if (isPasswordTextFieldEnabled) "Conferma password" else "Modifica password")
             }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
             Box {
                 TextField(
                     value = TextFieldValue(selectedAddress),
@@ -205,9 +193,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
             Row {
                 Button(onClick = {
                     if (isUserInfoTextFieldEnabled) {
@@ -233,7 +218,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     Text(text = "Modifica i tuoi dati")
                 }
             }
-
         }
     }
 
@@ -248,7 +232,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
                         .background(Color.White, shape = MaterialTheme.shapes.medium)
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -283,37 +266,31 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         onValueChange = { street = it },
                         label = { Text("Via") }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = houseNumber,
                         onValueChange = { houseNumber = it },
                         label = { Text("Numero Civico") }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = city,
                         onValueChange = { city = it },
                         label = { Text("Città") }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = zipCode,
                         onValueChange = { zipCode = it },
                         label = { Text("CAP") }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = province,
                         onValueChange = { province = it },
                         label = { Text("Provincia") }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = region,
                         onValueChange = { region = it },
                         label = { Text("Regione") }
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         val newAddress = "${street.text} ${houseNumber.text}, ${city.text}, ${zipCode.text}, ${province.text}, ${region.text}"
                         addresses = addresses + newAddress
@@ -388,4 +365,3 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         }
     }
 }
-

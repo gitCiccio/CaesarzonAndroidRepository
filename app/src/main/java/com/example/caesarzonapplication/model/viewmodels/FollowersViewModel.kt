@@ -360,4 +360,3 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
             _users.addAll(fakeUsers)
         }
 }
-

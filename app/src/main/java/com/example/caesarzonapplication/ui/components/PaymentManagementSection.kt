@@ -19,6 +19,7 @@ import com.example.caesarzonapplication.model.utils.CardUtils
 
 @Composable
 fun PaymentManagementSection() {
+
     var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
     var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
     var expirationDate by remember { mutableStateOf(TextFieldValue("")) }
@@ -31,22 +32,21 @@ fun PaymentManagementSection() {
 
     LazyColumn {
         item {
-            Text(text = "Metodi di pagamento", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Text(
+                text = "Metodi di pagamento",
+                style = MaterialTheme.typography.bodyMedium
+            )
             paymentMethods.forEach { method ->
                 Text(text = cardUtils.maskCreditCard(method), modifier = Modifier.padding(8.dp))
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = { showAddPaymentDialog = true }) {
+            Button(
+                onClick = { showAddPaymentDialog = true })
+            {
                 Text(text = "Aggiungi metodo di pagamento")
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(onClick = { showRemovePaymentDialog = true }) {
+            Button(
+                onClick = { showRemovePaymentDialog = true })
+            {
                 Text(text = "Rimuovi metodo di pagamento")
             }
 
@@ -61,7 +61,6 @@ fun PaymentManagementSection() {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
                                 .background(Color.White, shape = MaterialTheme.shapes.medium)
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -89,25 +88,21 @@ fun PaymentManagementSection() {
                                 onValueChange = { cardHolderName = it },
                                 label = { Text("Nome e Cognome del Titolare") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = cardNumber,
                                 onValueChange = { cardNumber = it },
                                 label = { Text("Numero Carta di Credito") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = expirationDate,
                                 onValueChange = { expirationDate = it },
                                 label = { Text("Data di Scadenza (MM/AA)") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = cvc,
                                 onValueChange = { cvc = it },
                                 label = { Text("CVC") }
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = {
                                 if (cardUtils.validateCreditCardDetails(cardNumber.text, expirationDate.text, cvc.text)) {
                                     val maskedCardNumber = cardUtils.maskCreditCard(cardNumber.text)
@@ -146,7 +141,6 @@ fun PaymentManagementSection() {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
                                 .background(Color.White, shape = MaterialTheme.shapes.medium)
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
