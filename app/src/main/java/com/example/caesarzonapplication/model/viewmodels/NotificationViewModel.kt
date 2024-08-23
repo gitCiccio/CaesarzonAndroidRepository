@@ -18,7 +18,7 @@ import java.util.UUID
 
 class NotificationViewModel: ViewModel() {
 
-    private val notifyRepository: NotifyRepository = NotifyRepository()
+    /*private val notifyRepository: NotifyRepository = NotifyRepository()
     val adminNotification: StateFlow<List<AdminNotificationDTO>> get() = notifyRepository.notificationAdmin
     val userNotification : StateFlow<List<UserNotificationDTO>> get() = notifyRepository.userNotification
 
@@ -53,5 +53,5 @@ class NotificationViewModel: ViewModel() {
 
     fun exit() {
         TODO("Not yet implemented")
-    }
+    }*/
 }

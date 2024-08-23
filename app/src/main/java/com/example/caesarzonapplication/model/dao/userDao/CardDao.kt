@@ -15,10 +15,7 @@ interface CardDao {
     suspend fun addCard(card: Card)
 
     @Query("SELECT * FROM carte")
-    suspend fun getAllCards(): List<Card>
-
-    @Query("SELECT * FROM carte WHERE id = :id")
-    suspend fun getCardById(id: Long): Card?
+    fun getAllCards(): LiveData<List<Card>>
 
     @Query("DELETE FROM carte WHERE id = :id")
     suspend fun deleteCardById(id: Long)

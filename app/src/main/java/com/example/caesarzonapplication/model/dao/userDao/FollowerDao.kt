@@ -14,10 +14,8 @@ interface FollowerDao {
     suspend fun addFollower(follower: Follower)
 
     @Query("SELECT * FROM follower")
-    suspend fun getAllFollowers(): List<Follower>
+    fun getAllFollowers(): LiveData<List<Follower>>
 
-    @Query("SELECT * FROM follower WHERE id = :id")
-    suspend fun getFollowerById(id: Long): Follower?
 
     @Query("DELETE FROM follower WHERE id = :id")
     suspend fun deleteFollowerById(id: Long)

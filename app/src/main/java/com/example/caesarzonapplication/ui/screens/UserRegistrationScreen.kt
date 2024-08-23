@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.navigation.BottomBarScreen
+import com.example.caesarzonapplication.navigation.DetailsScreen
 
 @Composable
 fun UserRegistrationScreen(
@@ -182,9 +184,15 @@ fun UserRegistrationScreen(
                         confirmPassword = ""
                     }
                     if(checksAreOk(nameError, surnameError, usernameError, emailError, passwordError)) {
-                        accountInfoViewModel.registerUser(name, surname, username, email, password)
-                        navController.navigate("LoginScreen")
+                        accountInfoViewModel.registerUser(name, surname, username, email, password) { result ->
+                            if (result == "success") {
+                                navController.navigate(BottomBarScreen.Profile.route)
+                            } else {
+                                println("Errore durante la registrazione: $result")
+                            }
+                        }
                     }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.6f)

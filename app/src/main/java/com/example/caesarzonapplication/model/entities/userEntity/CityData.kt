@@ -7,9 +7,9 @@ import java.util.UUID
 
 @Entity(tableName = "dati_comune")
 data class CityData(
-
-    @ColumnInfo(name = "id")val id: UUID,
-    @ColumnInfo(name = "id_dati_comune")val id_dati_comune: String,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")val id: Long=0,
+    @ColumnInfo(name = "id_dati_comune")val id_city_data: String,
     @ColumnInfo(name = "nome_comune")val city: String,
     @ColumnInfo(name = "cap")var cap: String,
     @ColumnInfo(name = "regione")var region: String,

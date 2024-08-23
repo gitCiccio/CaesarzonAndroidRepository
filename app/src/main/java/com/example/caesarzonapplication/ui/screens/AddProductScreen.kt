@@ -39,6 +39,7 @@ import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminPr
 @Composable
 fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
 
+    var productId by rememberSaveable { mutableStateOf("") }
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var brand by rememberSaveable { mutableStateOf("") }
@@ -216,6 +217,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                     onClick = {
                     adminProductViewModel.addProduct(
                         SendProductDTO(
+                            id = productId,
                             name = productName,
                             description = description,
                             brand = brand,

@@ -21,7 +21,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +39,8 @@ import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
-import com.example.caesarzonapplication.ui.components.UserInfoSection
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.ui.components.UserInfoSection
 
 enum class AccountTab {
     Profilo,
@@ -53,14 +52,14 @@ enum class AccountTab {
 }
 
 @Composable
-fun AccountScreen(navController: NavController) {
+fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel) {
 
-    val accountInfoViewModel = AccountInfoViewModel()
+
     val padding = PaddingValues(16.dp)
     var selectedTab by remember { mutableStateOf(AccountTab.Profilo) }
     val context = LocalContext.current
 
-    val profileImage by accountInfoViewModel.profileImage.collectAsState()
+    //val profileImage by accountInfoViewModel.profileImage.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -68,7 +67,7 @@ fun AccountScreen(navController: NavController) {
             uri?.let {
                 val source = ImageDecoder.createSource(context.contentResolver, it)
                 val bitmap = ImageDecoder.decodeBitmap(source)
-                accountInfoViewModel.setProfileImage(bitmap)
+                //accountInfoViewModel.setProfileImage(bitmap)
             }
         }
     )
@@ -85,14 +84,16 @@ fun AccountScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (profileImage != null) {
-                Image(
-                    bitmap = profileImage!!.asImageBitmap(),
-                    contentDescription = "User Profile",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(16.dp)
-                )
+            if (accountInfoViewModel != null) {
+                accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let {
+                    Image(
+                        bitmap = it,
+                        contentDescription = "User Profile",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(16.dp)
+                    )
+                }
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.logoutente),
@@ -151,7 +152,7 @@ fun AccountScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             when (selectedTab) {
-                AccountTab.Profilo -> UserInfoSection()
+                AccountTab.Profilo -> UserInfoSection(accountInfoViewModel)
                 AccountTab.Indirizzi -> UserAddressInfoSection(accountInfoViewModel)
                 AccountTab.Carte -> PaymentManagementSection()
                 AccountTab.Ordini -> OrderManagementSection()
@@ -162,6 +163,6 @@ fun AccountScreen(navController: NavController) {
     }
 
     LaunchedEffect(true) {
-        accountInfoViewModel.loadProfileImageFromDatabase()
+        //accountInfoViewModel.loadProfileImageFromDatabase()
     }
 }

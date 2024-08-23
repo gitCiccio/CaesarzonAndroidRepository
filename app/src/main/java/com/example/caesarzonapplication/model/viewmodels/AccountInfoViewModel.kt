@@ -1,67 +1,59 @@
 package com.example.caesarzonapplication.model.viewmodels
 
-import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
+import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
+import com.example.caesarzonapplication.model.entities.userEntity.User
+import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
+import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
+import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
+import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Headers
 import java.io.IOException
 import java.net.URL
 
 
-class AccountInfoViewModel : ViewModel() {
+class AccountInfoViewModel(private val userRepository: UserRepository, private val cardRepository: CardRepository, private val addressRepository: AddressRepository,
+    private val profileImageRepository: ProfileImageRepository) : ViewModel() {
 
-    object UserData{
-            private var _accountInfoData = MutableStateFlow(UserDTO("", "", "", "", "", ""))
-            var accountInfoData: StateFlow<UserDTO> = _accountInfoData
+    lateinit var accountInfoData: LiveData<UserDTO>
 
-            fun updateUserData(newUserData: UserDTO){
-                _accountInfoData.value = newUserData
-            }
-        }
+    lateinit var profileImage: LiveData<ProfileImage?>
 
-    // StateFlow per l'immagine del profilo
-    private val _profileImage = MutableStateFlow<Bitmap?>(null)
-    val profileImage = _profileImage
     private val client = OkHttpClient()
 
-    // Metodo per impostare l'immagine del profilo
-    fun setProfileImage(bitmap: Bitmap) {
-        viewModelScope.launch {
-            // Salva l'immagine nel database (da implementare)
-            saveProfileImageToDatabase(bitmap)
+    init{
+        loadUSerData()
+    }
 
-            // Aggiorna lo stato dell'immagine nel ViewModel
-            _profileImage.value = bitmap
+    fun loadUSerData(){
+        viewModelScope.launch {
+            accountInfoData = userRepository.getUserData()
+            cardRepository.getAllCards()
+            addressRepository.getAllAddresses()
+            profileImage = profileImageRepository.getProfileImage()
         }
     }
 
-    // Metodo per caricare l'immagine del profilo dal database
-    fun loadProfileImageFromDatabase() {
+    fun addUserData(user: UserRegistrationDTO){
         viewModelScope.launch {
-            val byteArray = loadProfileImageByteArrayFromDatabase()
-            byteArray?.let {
-                _profileImage.value = byteArrayToBitmap(it)
-            }
+            userRepository.addUser(user)
         }
     }
 
@@ -72,20 +64,36 @@ class AccountInfoViewModel : ViewModel() {
         // Utilizza una libreria o un approccio adatto al tuo database
     }
 
-    // Metodo per caricare il ByteArray dell'immagine dal database (da implementare)
-    private suspend fun loadProfileImageByteArrayFromDatabase(): ByteArray? {
-        // Implementa la logica per caricare il ByteArray dell'immagine dal tuo database
-        // Esempio di implementazione: carica il ByteArray salvato precedentemente
-        return null // Sostituisci con la tua logica reale di caricamento
+
+    //Fase di modifica dei dati
+    fun modifyUserData(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+        callback: (result: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val result = doModifyUser(username, firstName, lastName, username, email)
+                callback(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+        }
     }
 
-    // Metodo di utilità per convertire ByteArray in Bitmap
-    private fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    }
 
-    suspend fun modifyUser(id: String, firstName: String, lastName: String, username: String, email: String, phoneNumber: String): String {
-        val newUserDTO = UserDTO( id, username, firstName, lastName, phoneNumber,email )
+    suspend fun doModifyUser(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+    ): String {
+        val newUserDTO = UserDTO(username, firstName, lastName, phoneNumber, email)
         val jsonObject = JSONObject()
             .put("firstName", newUserDTO.firstName)
             .put("lastName", newUserDTO.lastName)
@@ -94,18 +102,167 @@ class AccountInfoViewModel : ViewModel() {
             .put("phoneNumber", newUserDTO.phoneNumber)
 
         val json = jsonObject.toString()
-
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = json.toRequestBody(mediaType)
 
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
-        val request = Request.Builder().url(manageURL).put(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+        val request = Request.Builder()
+            .url(manageURL)
+            .put(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
         return withContext(Dispatchers.IO) {
             try {
                 val client = OkHttpClient()
                 val response = client.newCall(request).execute()
                 if (!response.isSuccessful) {
-                    return@withContext response.message + " " + response.code
+                    return@withContext "error: ${response.message} ${response.code}"
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error: ${e.message}"
+            }
+        }
+    }
+    //Fine modifica dei dati
+
+    //Fase di registrazione
+    fun registerUser(firstName: String, lastName: String, username: String, email: String, credentialValue: String,callback: (result: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                doRegistration(firstName, lastName, username, email, credentialValue)
+                val user = UserRegistrationDTO(username, firstName, lastName, email, credentialValue)
+                addUserData(user)
+                callback("success")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+        }
+    }
+
+
+    private suspend fun doRegistration(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        password: String,
+    ) {
+        withContext(Dispatchers.IO) {
+            val newUserDTO = UserRegistrationDTO(firstName, lastName, username, email, password)
+            val jsonObject = JSONObject()
+                .put("username", newUserDTO.username)
+                .put("email", newUserDTO.email)
+                .put("firstName", newUserDTO.firstName)
+                .put("lastName", newUserDTO.lastName)
+                .put("credentialValue", newUserDTO.credentialValue)
+
+            val json = jsonObject.toString()
+
+            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val requestBody = json.toRequestBody(mediaType)
+
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+            val request = Request.Builder()
+                .url(manageURL)
+                .post(requestBody)
+                .addHeader("Authorization", "Bearer ${KeycloakService.basicToken?.accessToken}")
+                .build()
+
+            val client = OkHttpClient()
+            val response = client.newCall(request).execute()
+
+            if (!response.isSuccessful) {
+                throw IOException("Errore durante la registrazione: ${response.message} ${response.code}")
+            }
+        }
+    }
+    //Fine fase di registrazione
+
+
+
+    //Inizio recupero password
+    fun retrieveForgottenPassword(username: String, callback: (result: String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val result = doRetrieveForgottenPassword(username)
+                callback(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+        }
+    }
+
+
+    suspend fun doRetrieveForgottenPassword(username: String): String {
+        val passwordChangeDTO = PasswordChangeDTO("", username)
+        val jsonObject = JSONObject().put("username", passwordChangeDTO.username)
+
+        val json = jsonObject.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+
+        val manageURL = URL("http://25.49.50.144:8090/user-api/password?recovery=true")
+        val request = Request.Builder()
+            .url(manageURL)
+            .put(requestBody)
+            .addHeader("Authorization", "Bearer ${KeycloakService.basicToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "error: ${response.message} ${response.code}"
+                }
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error: ${e.message}"
+            }
+        }
+    }
+    //Fine recupero password
+
+    //verifica otp
+
+    fun verifyOTP(otp: String, password: String, username: String, callback: (result: String) -> Unit){
+        viewModelScope.launch {
+            try{
+                doVerifyOTP(otp, password, username)
+                callback("success")
+            }catch (e: Exception){
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun doVerifyOTP(otp: String, password: String, username: String): String {
+        val passwordChangeDTO = PasswordChangeDTO(password, username)
+        val body = JSONObject().apply {
+            put("username", passwordChangeDTO.username)
+        }
+        val json = body.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+        val manageURL = URL("http://25.49.50.144:8090/user-api/otp/$otp")
+        val request = Request.Builder()
+            .url(manageURL)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "${response.message} ${response.code}"
                 }
                 "success"
             } catch (e: IOException) {
@@ -115,39 +272,16 @@ class AccountInfoViewModel : ViewModel() {
         }
     }
 
-    fun registerUser(firstName: String, lastName: String, username: String, email: String, credentialValue: String): String {
+    fun changePassword(password: String, username: String, callback: (result: String) -> Unit): String {
         viewModelScope.launch {
-            val newUserDTO = UserRegistrationDTO( firstName, lastName, username, email, credentialValue)
-            val jsonObject = JSONObject()
-                .put("firstName", newUserDTO.firstName)
-                .put("lastName", newUserDTO.lastName)
-                .put("username", newUserDTO.username)
-                .put("email", newUserDTO.email)
-                .put("credentialValue", newUserDTO.credentialValue)
-
-            val json = jsonObject.toString()
-
-            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-            val requestBody = json.toRequestBody(mediaType)
-
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user");
-            val request = Request.Builder().url(manageURL).post(requestBody).addHeader("Authorization", "Bearer ${KeycloakService.basicToken?.accessToken}").build()
-            try {
-                val client = OkHttpClient()
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    println("Errore durante la registrazione: "+response.message + " " + response.code)
-                    return@launch
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+            if(doChangePassword(password, username) == "success")
+                callback("success")
         }
-        return "success"
+        return "error"
     }
 
-    suspend fun changePassword(password: String): String {
-        val passwordChangeDTO = PasswordChangeDTO(password, "")
+    suspend fun doChangePassword(password: String, username: String): String {
+        val passwordChangeDTO = PasswordChangeDTO(password, username)
         val jsonObject = JSONObject()
             .put("password", passwordChangeDTO.password)
 
@@ -177,39 +311,75 @@ class AccountInfoViewModel : ViewModel() {
         }
     }
 
-    fun getUserData(): String {
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user");
-        val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        viewModelScope.launch  {
+    suspend fun getUserData(): String {
+        return withContext(Dispatchers.IO) {
             try {
+                val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+                val request = Request.Builder()
+                    .url(manageURL)
+                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                    .build()
+
                 val response = client.newCall(request).execute()
                 if (!response.isSuccessful) {
-                    return@launch
+                    return@withContext "failed"
                 }
+
                 val responseBody = response.body?.string()
                 val jsonObject = JSONObject(responseBody)
 
-                val id = jsonObject.optString("id", "")
                 val firstName = jsonObject.optString("firstName", "")
                 val lastName = jsonObject.optString("lastName", "")
                 val username = jsonObject.optString("username", "")
                 val email = jsonObject.optString("email", "")
                 val phoneNumber = jsonObject.optString("phoneNumber", "")
 
-                val userDTO = UserDTO(
-                    id = id,
-                    firstName = firstName,
-                    lastName = lastName,
-                    username = username,
-                    email = email,
-                    phoneNumber = phoneNumber
-                )
-                UserData.updateUserData(userDTO)
+                val userDTO = UserRegistrationDTO(username, firstName, lastName, phoneNumber, email)
+                userRepository.addUser(userDTO)
+
+                "success"
             } catch (e: IOException) {
                 e.printStackTrace()
+                "error"
             }
         }
-        return "success"
     }
+
+
+
+    suspend fun login(username: String, password: String): Boolean {
+        // Resetta il token all'inizio del login
+        myToken = null
+
+        // Attende la risposta della chiamata per ottenere il token
+        val result = withContext(Dispatchers.IO) {
+            KeycloakService().getAccessToken(username, password)
+        }
+
+        return if (result != null && result.accessToken.isNotBlank()) {
+            getUserData()
+            logged.value = true
+            true
+        } else {
+            println("Errore di login: credenziali non valide.")
+            false
+        }
+    }
+
 }
 
+class AccountInfoViewModelFactory(
+    private val userRepository: UserRepository,
+    private val cardRepository: CardRepository,
+    private val addressRepository: AddressRepository,
+    private val profileImageRepository: ProfileImageRepository
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AccountInfoViewModel::class.java)) {
+            return AccountInfoViewModel(userRepository, cardRepository, addressRepository, profileImageRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}

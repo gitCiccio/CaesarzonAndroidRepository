@@ -1,12 +1,14 @@
 package com.example.caesarzonapplication.model.repository.notificationRepository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.notificationDao.BanDao
 import com.example.caesarzonapplication.model.entities.notificationEntity.Ban
 class BanRepository(private val banDao: BanDao) {
 
     suspend fun addBan(ban: Ban): Boolean {
         return try {
-            banDao.insertBan(ban)
+            banDao.addBan(ban)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -14,14 +16,14 @@ class BanRepository(private val banDao: BanDao) {
         }
     }
 
-    suspend fun getAllBans(): List<Ban> {
+    fun getAllBans(): LiveData<List<Ban>> {
         return try {
             val bans = banDao.getAllBans()
             bans
         } catch (e: Exception) {
             val list = emptyList<Ban>()
             e.printStackTrace()
-            list
+            MutableLiveData(emptyList())
         }
     }
 

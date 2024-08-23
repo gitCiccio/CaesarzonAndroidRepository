@@ -5,5 +5,5 @@ data class UserRegistrationDTO (
     var lastName: String,
     var username: String,
     var email: String,
-    var credentialValue: String
+    var credentialValue: String,
 )

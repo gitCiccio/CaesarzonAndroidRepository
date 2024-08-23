@@ -14,10 +14,7 @@ interface CityDataDao {
     suspend fun addCityData(cityData: CityData)
 
     @Query("SELECT * FROM dati_comune")
-    suspend fun getAllCityData(): List<CityData>
-
-    @Query("SELECT * FROM dati_comune WHERE id = :id")
-    suspend fun getCityDataById(id: Long): CityData?
+    fun getAllCityData(): LiveData<List<CityData>>
 
     @Query("DELETE FROM dati_comune WHERE id = :id")
     suspend fun deleteCityDataById(id: Long)

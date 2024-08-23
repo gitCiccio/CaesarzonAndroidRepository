@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 
 
@@ -32,12 +33,12 @@ fun ShoppingCartCard(product: Product, shoppingCartViewModel: ShoppingCartViewMo
         .width(380.dp)
     ){
         Row(Modifier.clickable { navController.navigate("productDetails/${product.name}")  }) {
-            Image(painter = shoppingCartViewModel.getProduct(name = product.name)?.imageRes?.let { painterResource(id = it) } ?: painterResource(id = R.drawable.ic_launcher_background), contentDescription = "foto_del_prodotto",
+            /*Image(painter = shoppingCartViewModel.getProduct(name = product.name)?.imageRes?.let { painterResource(id = it) } ?: painterResource(id = R.drawable.ic_launcher_background), contentDescription = "foto_del_prodotto",
                 Modifier
                     .size(150.dp)
                     .padding(10.dp)
                     .clickable { navController.navigate("productDetails/${product.name}")  }
-            )
+            )*/
             Text(text = product.name, fontSize = 30.sp, modifier = Modifier
                 .padding(top = 30.dp)
                 .clickable { navController.navigate("productDetails/${product.name}")  }

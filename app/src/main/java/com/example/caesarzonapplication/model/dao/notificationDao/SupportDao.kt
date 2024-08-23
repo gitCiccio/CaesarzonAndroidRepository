@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.dao.notificationDao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,13 +10,11 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.Suppor
 @Dao
 interface SupportDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(support: Support)
+    suspend fun addSupport(support: Support)
 
-    @Query("SELECT * FROM richiesta_supporto WHERE id = :id")
-    suspend fun getSupportById(id: Long): Support?
 
     @Query("SELECT * FROM richiesta_supporto")
-    suspend fun getAllSupport(): List<Support>
+    fun getAllSupport(): LiveData<List<Support>>
 
     @Query("DELETE FROM richiesta_supporto WHERE id = :id")
     suspend fun deleteSupportById(id: Long)

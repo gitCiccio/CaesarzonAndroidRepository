@@ -25,6 +25,7 @@ lifecycleRuntimeKtxVersion = "2.8.4"
 adapters = "3.2.0-alpha11"
 ksp = "1.9.0-1.0.12"
 sqlite = "2.4.0"
+uiDesktop = "1.6.8"
 
 
 
@@ -64,6 +65,7 @@ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtim
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCommon" } # Cambia la versione per usare il valore definito in [versions]
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCommon" }
 androidx-adapters = { group = "androidx.databinding", name = "adapters", version.ref = "adapters" }
+androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.com.google.devtools.ksp)
 }
 
 android {
@@ -51,8 +52,6 @@ android {
 }
 
 dependencies {
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -72,9 +71,19 @@ dependencies {
     implementation(libs.compose.material.icons.extended)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    //implementation(libs.androidx.ui.desktop)
+
+    // Nuove dipendenze aggiunte dal secondo file
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.adapters)
+    implementation(libs.androidx.activity.compose.v172) // per inserire nuove immagini
+    implementation(libs.androidx.lifecycle.runtime.ktx.v260)
+    implementation(libs.android.database.sqlcipher) // per criptare i dati
+    implementation(libs.androidx.sqlite)
+    implementation(libs.androidx.sqlite.framework)
 
     testImplementation(libs.junit)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -82,5 +91,5 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
+

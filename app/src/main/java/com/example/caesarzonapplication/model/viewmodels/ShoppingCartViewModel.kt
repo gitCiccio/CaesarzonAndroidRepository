@@ -1,11 +1,11 @@
 package com.example.caesarzonapplication.model.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 import kotlinx.coroutines.launch
 
 class ShoppingCartViewModel: ViewModel() {
@@ -22,18 +22,7 @@ class ShoppingCartViewModel: ViewModel() {
     }
 
     private fun loadShoppingCartProduct(){
-        viewModelScope.launch {
-            _productsInShoppingCart.addAll(
-                listOf(
-                    Product("Calzettoni da calcio puzzolenti", R.drawable.ic_calcio, 100.00, "Calzettoni da calcio fetidi", true,0),
-                    Product("Paradenti masticato", R.drawable.ic_lotta, 20.00, "Un paradenti consumato", true,2),
-                    Product("Racchette rotte", R.drawable.ic_tennis, 10.00, "C'è il manico ma non la racchetta", true,3),
-                    Product("Tanga anaerobico", R.drawable.ic_atletica, 40.00, "Intimo utile per rinfrscare il sotto palla", true,1),
-                    Product("Capocuffia", R.drawable.ic_nuoto, 30.00, "Una cuffia da nuoto con la stampa di una capocchia", true,5),
-                    Product("Pallone bucato", R.drawable.ic_pallavolo, 104.00, "Palla bucata", true,9)
-                )
-            )
-        }
+       //Carica i prodotti sul carrello
     }
 
     fun addLaterProduct(product: Product){
@@ -81,9 +70,9 @@ class ShoppingCartViewModel: ViewModel() {
         return _productsInShoppingCart.find { it.name == name }
     }
 
-    fun getImage(name: String): Int {
+    /*fun getImage(name: String): Int {
         return _productsInShoppingCart.find { it.name == name }?.imageRes ?: 0
-    }
+    }*/
 
 
     fun increaseProduct(product: Product) {

@@ -13,11 +13,7 @@ interface AddressDao {
 
     //Prendi gli indirizzi
     @Query("SELECT * FROM indirizzo")
-    suspend fun getAllAddress(): List<Address>
-
-    //Prendi il singolo indirizzo
-    @Query("SELECT * FROM indirizzo WHERE id = :id")
-    suspend fun getAddressById(id: Long): Address?
+    fun getAllAddreses(): LiveData<List<Address>>
 
     //Aggiungi l'indirizzo
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -4,17 +4,20 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDate
-
 @Entity(tableName = "segnala")
 data class Report(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
-    @ColumnInfo(name = "id_segnalazione")val id_segnalazione: String,
-    @ColumnInfo(name = "data_segnalazione")val reportDate: LocalDate,
-    @ColumnInfo(name = "motivo")val reason: String,
-    @ColumnInfo(name = "descrizione")val description: String,
-    @ColumnInfo(name = "username_utente2")val usernameUser2:String,
-    @ColumnInfo(name = "id_recensione")val reviewId: String
-) {
+    @ColumnInfo(name = "id") val id: Long = 0,
 
-}
+    @ColumnInfo(name = "id_segnalazione") val id_segnalazione: String,
+
+    @ColumnInfo(name = "data_segnalazione") val reportDate: LocalDate,  // Richiede un TypeConverter
+
+    @ColumnInfo(name = "motivo") val reason: String,
+
+    @ColumnInfo(name = "descrizione") val description: String,
+
+    @ColumnInfo(name = "username_utente2") val usernameUser2: String,
+
+    @ColumnInfo(name = "id_recensione") val reviewId: String
+)

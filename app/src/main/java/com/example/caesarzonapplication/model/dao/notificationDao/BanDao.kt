@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.dao.notificationDao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -10,10 +11,10 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.Ban
 interface BanDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertBan(ban: Ban)
+    suspend fun addBan(ban: Ban)
 
     @Query("SELECT * FROM Ban")
-    suspend fun getAllBans(): List<Ban>
+    fun getAllBans(): LiveData<List<Ban>>
 
     @Query("DELETE FROM Ban WHERE username_utente = :username")
     suspend fun deleteBanByUserUsername(username: String)

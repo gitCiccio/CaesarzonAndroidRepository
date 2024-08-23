@@ -46,7 +46,7 @@ fun AdminNotificationTab(adminNotificationDTO: AdminNotificationDTO, notificatio
             )
         }
         IconButton(
-            onClick = { notificationViewModel.deleteNotification(adminNotificationDTO.id, false) }
+            onClick = { /*notificationViewModel.deleteNotification(adminNotificationDTO.id, false)*/ }
         ) {
             Icon(
                 imageVector = Icons.Filled.Close,

@@ -23,7 +23,7 @@ import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 @Composable
 fun WishlistViewForProduct(wishlistViewModel: WishlistViewModel, visibility: Int) {
 
-    val logged = wishlistViewModel.username.isNotEmpty()
+    //val logged = wishlistViewModel.username.isNotEmpty()
 
     var popupMessage by rememberSaveable { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
@@ -36,7 +36,7 @@ fun WishlistViewForProduct(wishlistViewModel: WishlistViewModel, visibility: Int
         wishlistViewModel.loadWishlists(visibility)
     }
 
-    if (!logged) {
+    if (!true) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

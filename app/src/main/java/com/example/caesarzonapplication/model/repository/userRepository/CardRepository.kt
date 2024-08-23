@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.repository.userRepository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.userDao.CardDao
 import com.example.caesarzonapplication.model.entities.userEntity.Card
 
@@ -14,25 +16,16 @@ class CardRepository(private val cardDao: CardDao) {
         }
     }
 
-    suspend fun getAllCards(): List<Card> {
+    fun getAllCards(): LiveData<List<Card>> {
         return try {
             val cards = cardDao.getAllCards()
             cards
         } catch (e: Exception) {
             e.printStackTrace()
-            emptyList()
+            MutableLiveData(emptyList())
         }
     }
 
-    suspend fun getCardById(id: Long): Card? {
-        return try {
-            val card = cardDao.getCardById(id)
-            card
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
     suspend fun deleteCardById(id: Long): Boolean {
         return try {
@@ -44,7 +37,7 @@ class CardRepository(private val cardDao: CardDao) {
         }
     }
 
-    suspend fun deleteAllCards(): Boolean {
+    fun deleteAllCards(): Boolean {
         return try {
             cardDao.deleteAllCards()
             true
