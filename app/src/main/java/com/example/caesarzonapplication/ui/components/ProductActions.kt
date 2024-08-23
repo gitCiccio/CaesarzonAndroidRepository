@@ -15,8 +15,7 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 

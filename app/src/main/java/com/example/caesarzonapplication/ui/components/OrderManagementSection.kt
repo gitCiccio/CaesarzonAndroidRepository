@@ -31,7 +31,7 @@ fun OrderManagementSection() {
         "Ordine #8",
         "Ordine #9",
         "Ordine #10"
-    ) // Esempi di ordini
+    )
 
     var expandedOrder by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -61,7 +61,10 @@ fun OrderManagementSection() {
                             .clickable { expandedOrder = if (expandedOrder == order) null else order },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = order, modifier = Modifier.weight(1f))
+                        Text(
+                            text = order,
+                            modifier = Modifier.weight(1f)
+                        )
                         Icon(
                             imageVector = if (expandedOrder == order) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                             contentDescription = null
@@ -74,7 +77,6 @@ fun OrderManagementSection() {
 
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

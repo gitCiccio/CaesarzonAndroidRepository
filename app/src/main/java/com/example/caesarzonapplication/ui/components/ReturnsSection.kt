@@ -17,7 +17,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
 fun ReturnsSection() {
-    val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3") // Dati fittizi
+
+    val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3")
     var showReturnDialog by rememberSaveable { mutableStateOf(false) }
     var selectedOrder by rememberSaveable { mutableStateOf("") }
     var returnReason by rememberSaveable { mutableStateOf(TextFieldValue("")) }
@@ -81,7 +82,6 @@ fun ReturnsSection() {
                                 .fillMaxWidth()
                                 .height(200.dp)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = { showReturnDialog = false }) {
                             Text(text = "Invia richiesta")
                         }

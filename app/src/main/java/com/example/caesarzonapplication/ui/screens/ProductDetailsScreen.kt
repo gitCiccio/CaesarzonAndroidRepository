@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.ProductReviews
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import java.util.UUID
 
