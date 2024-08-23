@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
 
 @Composable
 fun UserSearchComponent(searchAndBanUsersViewModel: SearchAndBanUsersViewModel) {

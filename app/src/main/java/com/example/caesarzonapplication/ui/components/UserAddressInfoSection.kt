@@ -22,7 +22,6 @@ import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 @Composable
 fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    val userData by accountInfoViewModel.accountInfoData.observeAsState()
 
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
@@ -37,27 +36,29 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             .padding(16.dp)
     ) {
         item {
-            userData?.firstName?.let {
+                accountInfoViewModel.userData?.firstName?.let {
+                    TextField(
+                        value = it,
+                        onValueChange = { accountInfoViewModel.userData!!.firstName = it },
+                        label = { Text("Nome") }
+                    )
+                }
+
+            accountInfoViewModel.userData?.lastName?.let {
                 TextField(
                     value = it,
-                    onValueChange = { userData!!.firstName = it },
-                    label = { Text("Nome") }
-                )
-            }
-            userData?.let {
-                TextField(
-                    value = it.lastName,
-                    onValueChange = { userData!!.lastName = it },
+                    onValueChange = { accountInfoViewModel.userData!!.lastName = it },
                     label = { Text("Cognome") }
                 )
             }
-            userData?.let {
+            accountInfoViewModel.userData?.email?.let {
                 TextField(
-                    value = it.email,
-                    onValueChange = { userData!!.email = it },
+                    value = it,
+                    onValueChange = { accountInfoViewModel.userData!!.email = it },
                     label = { Text("Email") }
                 )
             }
+
             Box {
                 TextField(
                     value = TextFieldValue(selectedAddress),

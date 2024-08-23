@@ -12,7 +12,7 @@ class UserRepository(private val userDao: UserDao) {
     // Inserisci un nuovo utente
     suspend fun addUser(user: UserRegistrationDTO): Boolean {
         return try {
-            userDao.addUser(User(user.username, user.firstName, user.lastName, "", user.email, user.credentialValue, ""))
+            userDao.addUser(User(user.lastName, user.username, user.firstName,  "", user.email, user.credentialValue, ""))
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -22,13 +22,13 @@ class UserRepository(private val userDao: UserDao) {
 
 
     // Recupera i dati dell'utente
-    fun getUserData(): LiveData<UserDTO> {
-        return userDao.getUserData().map { user ->
-            user.let {
-                UserDTO(it.username, it.firstName, it.lastName, it.phoneNumber, it.email)
-            }
-        }
+    suspend fun getUserData(username: String): UserDTO {
+        val user = userDao.getUserData(username)
+        println("utente: "+user.username
+            +" "+user.firstName+" "+user.lastName+" "+user.phoneNumber+" "+user.email)
+        return UserDTO(user.username, user.firstName, user.lastName, user.phoneNumber, user.email)
     }
+
 
     // Elimina i dati dell'utente
     suspend fun deleteUserData(): Boolean {
