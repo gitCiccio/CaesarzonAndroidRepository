@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.model.viewmodels.AdminViewModels
+package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
 import androidx.compose.runtime.mutableStateListOf
 import com.example.caesarzonapplication.model.dto.BanDTO

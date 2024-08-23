@@ -78,7 +78,7 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let {
+            accountInfoViewModel.profileImage?.asImageBitmap()?.let {
                 Image(
                     bitmap = it,
                     contentDescription = "User Profile",

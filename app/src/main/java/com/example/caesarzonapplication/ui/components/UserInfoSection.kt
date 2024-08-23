@@ -25,11 +25,11 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
 
 
-    var username by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.username ?: "username non trovato") }
-    var firstName by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.firstName ?: "firstname non trovato") }
-    var lastName by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.lastName ?: "lastname non trovato") }
-    var email by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.email ?: "email non trovata") }
-    var phoneNumber by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.phoneNumber ?: "foto non trovata") }
+    var username by remember { mutableStateOf(accountInfoViewModel.userData?.username) }
+    var firstName by remember { mutableStateOf(accountInfoViewModel.userData?.firstName) }
+    var lastName by remember { mutableStateOf(accountInfoViewModel.userData?.lastName) }
+    var email by remember { mutableStateOf(accountInfoViewModel.userData?.email) }
+    var phoneNumber by remember { mutableStateOf(accountInfoViewModel.userData?.phoneNumber) }
     var password by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
@@ -59,78 +59,88 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         verticalArrangement = Arrangement.Center)
     {
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = firstName,
-                onValueChange = {
-                    firstName = it
-                    firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
-                        "Il nome deve avere la prima lettera maiuscola"
-                    } else {
-                        ""
-                    }
-                },
-                label = { Text("Nome") },
-                isError = firstNameError.isNotEmpty()
-            )
+            firstName?.let {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = it,
+                    onValueChange = {
+                        firstName = it
+                        firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                            "Il nome deve avere la prima lettera maiuscola"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Nome") },
+                    isError = firstNameError.isNotEmpty()
+                )
+            }
             if (firstNameError.isNotEmpty()) {
                 Text(firstNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
         }
 
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = lastName,
-                onValueChange = {
-                    lastName = it
-                    lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
-                        "Il cognome deve avere la prima lettera maiuscola"
-                    } else {
-                        ""
-                    }
-                },
-                label = { Text("Cognome") },
-                isError = lastNameError.isNotEmpty()
-            )
+            lastName?.let {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = it,
+                    onValueChange = {
+                        lastName = it
+                        lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
+                            "Il cognome deve avere la prima lettera maiuscola"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Cognome") },
+                    isError = lastNameError.isNotEmpty()
+                )
+            }
             if (lastNameError.isNotEmpty()) {
                 Text(lastNameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
         }
 
         item {
-            TextField(
-                enabled = false,
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") }
-            )
+            username?.let {
+                TextField(
+                    enabled = false,
+                    value = it,
+                    onValueChange = { username = it },
+                    label = { Text("Username") }
+                )
+            }
         }
 
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") }
-            )
+            email?.let {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = it,
+                    onValueChange = { email = it },
+                    label = { Text("Email") }
+                )
+            }
         }
 
         item {
-            TextField(
-                enabled = isUserInfoTextFieldEnabled,
-                value = phoneNumber,
-                onValueChange = {
-                    phoneNumber = it
-                    phoneNumberError = if (it.length != 10) {
-                        "Il numero di telefono deve essere composto da 10 caratteri"
-                    } else {
-                        ""
-                    }
-                },
-                label = { Text("Numero di telefono") },
-                isError = phoneNumberError.isNotEmpty()
-            )
+            phoneNumber?.let {
+                TextField(
+                    enabled = isUserInfoTextFieldEnabled,
+                    value = it,
+                    onValueChange = {
+                        phoneNumber = it
+                        phoneNumberError = if (it.length != 10) {
+                            "Il numero di telefono deve essere composto da 10 caratteri"
+                        } else {
+                            ""
+                        }
+                    },
+                    label = { Text("Numero di telefono") },
+                    isError = phoneNumberError.isNotEmpty()
+                )
+            }
             if (phoneNumberError.isNotEmpty()) {
                 Text(phoneNumberError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
@@ -149,14 +159,16 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Button(onClick = {
                 if (isPasswordTextFieldEnabled) {
                     coroutineScope.launch {
-                        accountInfoViewModel.changePassword(password, username) { responseCode ->
-                            if (responseCode == "success") {
-                                password = ""
-                                showPopupMessage = "Password modificata con successo"
-                            } else {
-                                showPopupMessage = "Errore durante la modifica della password"
+                        username?.let {
+                            accountInfoViewModel.changePassword(password, it) { responseCode ->
+                                if (responseCode == "success") {
+                                    password = ""
+                                    showPopupMessage = "Password modificata con successo"
+                                } else {
+                                    showPopupMessage = "Errore durante la modifica della password"
+                                }
+                                showPopup = true
                             }
-                            showPopup = true
                         }
                     }
                 }
@@ -196,19 +208,29 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Row {
                 Button(onClick = {
                     if (isUserInfoTextFieldEnabled) {
-                        accountInfoViewModel.modifyUserData(
-                            firstName,
-                            lastName,
-                            username,
-                            email,
-                            phoneNumber
-                        ) { responseCode ->
-                            showPopupMessage = if (responseCode == "success") {
-                                "Informazioni modificate con successo"
-                            } else {
-                                "Errore durante la modifica delle informazioni"
+                        firstName?.let {
+                            lastName?.let { it1 ->
+                                phoneNumber?.let { it2 ->
+                                    username?.let { it3 ->
+                                        email?.let { it4 ->
+                                            accountInfoViewModel.modifyUserData(
+                                                it,
+                                                it1,
+                                                it3,
+                                                it4,
+                                                it2
+                                            ) { responseCode ->
+                                                showPopupMessage = if (responseCode == "success") {
+                                                    "Informazioni modificate con successo"
+                                                } else {
+                                                    "Errore durante la modifica delle informazioni"
+                                                }
+                                                showPopup = true
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            showPopup = true
                         }
                         isUserInfoTextFieldEnabled = !isUserInfoTextFieldEnabled
                     } else {
