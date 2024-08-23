@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,7 @@ import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 @Composable
 fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    val userData = remember { AccountInfoViewModel.UserData.accountInfoData}.collectAsState()
+    val userData by accountInfoViewModel.accountInfoData.observeAsState()
 
     var addresses by remember { mutableStateOf(listOf("")) }
     var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
@@ -36,23 +37,29 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             .padding(16.dp)
     ) {
         item {
-            TextField(
-                value = userData.value.firstName,
-                onValueChange = { userData.value.firstName = it },
-                label = { Text("Nome") }
-            )
+            userData?.firstName?.let {
+                TextField(
+                    value = it,
+                    onValueChange = { userData!!.firstName = it },
+                    label = { Text("Nome") }
+                )
+            }
             Spacer(modifier = Modifier.height(15.dp))
-            TextField(
-                value = userData.value.lastName,
-                onValueChange = { userData.value.lastName = it },
-                label = { Text("Cognome") }
-            )
+            userData?.let {
+                TextField(
+                    value = it.lastName,
+                    onValueChange = { userData!!.lastName = it },
+                    label = { Text("Cognome") }
+                )
+            }
             Spacer(modifier = Modifier.height(15.dp))
-            TextField(
-                value = userData.value.email,
-                onValueChange = { userData.value.email = it },
-                label = { Text("Email") }
-            )
+            userData?.let {
+                TextField(
+                    value = it.email,
+                    onValueChange = { userData!!.email = it },
+                    label = { Text("Email") }
+                )
+            }
             Spacer(modifier = Modifier.height(15.dp))
             Box {
                 TextField(

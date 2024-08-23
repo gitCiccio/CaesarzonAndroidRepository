@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
@@ -34,15 +36,14 @@ import com.example.caesarzonapplication.ui.components.SearchBar
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    isAdmin: MutableState<Boolean>,
-    logged: MutableState<Boolean>,
     accountInfoViewModel: AccountInfoViewModel,
     productsViewModel: ProductsViewModel,
     notificationViewModel: NotificationViewModel
 ){
 
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
-    val userNotifications by notificationViewModel.userNotification.collectAsState()
+    var userNotifications by rememberSaveable { mutableStateOf(listOf<String>()) }
+    //val userNotifications by notificationViewModel, da reinserire
 
     Scaffold(
         topBar = { SearchBar(navController) },

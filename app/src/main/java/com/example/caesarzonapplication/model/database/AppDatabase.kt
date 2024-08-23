@@ -4,39 +4,48 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.caesarzonapplication.model.dao.notificationDao.AdminNotificationDao
 import com.example.caesarzonapplication.model.dao.notificationDao.BanDao
 import com.example.caesarzonapplication.model.dao.notificationDao.ReportDao
 import com.example.caesarzonapplication.model.dao.notificationDao.SupportDao
 import com.example.caesarzonapplication.model.dao.notificationDao.UserNotificationDao
 import com.example.caesarzonapplication.model.dao.productDao.ProductDao
+import com.example.caesarzonapplication.model.dao.productDao.ProductImageDao
 import com.example.caesarzonapplication.model.dao.productDao.ProductOrderDao
 import com.example.caesarzonapplication.model.dao.userDao.AddressDao
 import com.example.caesarzonapplication.model.dao.userDao.CardDao
 import com.example.caesarzonapplication.model.dao.userDao.CityDataDao
 import com.example.caesarzonapplication.model.dao.userDao.FollowerDao
+import com.example.caesarzonapplication.model.dao.userDao.ProfileImageDao
 import com.example.caesarzonapplication.model.dao.userDao.UserDao
 import com.example.caesarzonapplication.model.dao.wishlistDao.WishlistDao
 import com.example.caesarzonapplication.model.dao.wishlistDao.WishlistProductDao
+import com.example.caesarzonapplication.model.entities.notificationEntity.AdminNotification
 import com.example.caesarzonapplication.model.entities.notificationEntity.Ban
 import com.example.caesarzonapplication.model.entities.notificationEntity.Report
 import com.example.caesarzonapplication.model.entities.notificationEntity.Support
 import com.example.caesarzonapplication.model.entities.notificationEntity.UserNotification
 import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.ProductImage
 import com.example.caesarzonapplication.model.entities.shoppingCartEntities.ProductOrder
 import com.example.caesarzonapplication.model.entities.userEntity.Address
 import com.example.caesarzonapplication.model.entities.userEntity.Card
 import com.example.caesarzonapplication.model.entities.userEntity.CityData
 import com.example.caesarzonapplication.model.entities.userEntity.Follower
+import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
 import com.example.caesarzonapplication.model.entities.userEntity.User
 import com.example.caesarzonapplication.model.entities.wishListEntity.Wishlist
 import com.example.caesarzonapplication.model.entities.wishListEntity.WishlistProduct
+import com.example.caesarzonapplication.model.utils.BitmapConverter
+import com.example.caesarzonapplication.model.utils.Converters
 
-@Database (entities = [AdminNotificationDao::class, Ban::class, Report::class, Support::class, UserNotification::class,
-                      Product::class, ProductOrder::class,
+@Database (entities = [AdminNotification::class, Ban::class, Report::class, Support::class, UserNotification::class,ProfileImage::class,
+                      Product::class, ProductOrder::class, ProductImage::class,
                       Address::class, Card::class, CityData::class, Follower::class, User::class,
                       Wishlist::class, WishlistProduct::class],
     version = 1, exportSchema = false)
+@TypeConverters(Converters::class, BitmapConverter::class)
 abstract class AppDatabase: RoomDatabase()  {
     abstract fun adminNotificationDao(): AdminNotificationDao
     abstract fun banDao(): BanDao
@@ -52,6 +61,8 @@ abstract class AppDatabase: RoomDatabase()  {
     abstract fun userDao(): UserDao
     abstract fun wishlistDao(): WishlistDao
     abstract fun wishlistProductDao(): WishlistProductDao
+    abstract fun profileImageDao(): ProfileImageDao
+    abstract fun productImageDao(): ProductImageDao
 
     companion object{
         @Volatile

@@ -28,7 +28,7 @@ class WishlistViewModel: ViewModel(){
     val wishlists: List<WishlistDTO> get() = _wishlists
     private val _products = mutableStateListOf<SingleWishlistProductDTO>()
     val products: List<SingleWishlistProductDTO> get() = _products
-    val username = AccountInfoViewModel.UserData.accountInfoData.value.username
+    //val username = AccountInfoViewModel
 
     fun addWishlist(wishlistName: String, visibility: Int){
         var visibilityType = ""
@@ -135,7 +135,7 @@ class WishlistViewModel: ViewModel(){
     fun loadWishlists(visibility: Int){
         CoroutineScope(Dispatchers.IO).launch {
             _wishlists.clear()
-            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlists?usr=$username&visibility=$visibility");
+            val manageURL = URL("http://25.49.50.144:8090/product-api/wishlists?usr=username&visibility=$visibility");
             val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
             try {
                 val response = client.newCall(request).execute()

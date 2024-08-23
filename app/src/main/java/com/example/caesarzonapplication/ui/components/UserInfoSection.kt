@@ -16,19 +16,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
+import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun UserInfoSection() {
+fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    val user = AccountInfoViewModel.UserData.accountInfoData.collectAsState()
 
-    var username by remember { mutableStateOf(user.value.username) }
-    var firstName by remember { mutableStateOf(user.value.firstName) }
-    var lastName by remember { mutableStateOf(user.value.lastName) }
-    var email by remember { mutableStateOf(user.value.email) }
-    var phoneNumber by remember { mutableStateOf(user.value.phoneNumber) }
+
+    var username by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.username ?: "username non trovato") }
+    var firstName by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.firstName ?: "firstname non trovato") }
+    var lastName by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.lastName ?: "lastname non trovato") }
+    var email by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.email ?: "email non trovata") }
+    var phoneNumber by remember { mutableStateOf(accountInfoViewModel.accountInfoData.value?.phoneNumber ?: "foto non trovata") }
     var password by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
@@ -46,7 +47,6 @@ fun UserInfoSection() {
 
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
-    val accountInfoViewModel = AccountInfoViewModel()
 
     var firstNameError by remember { mutableStateOf("") }
     var lastNameError by remember { mutableStateOf("") }
@@ -157,18 +157,20 @@ fun UserInfoSection() {
             Button(onClick = {
                 if (isPasswordTextFieldEnabled) {
                     coroutineScope.launch {
-                        val responseCode = accountInfoViewModel.changePassword(password)
-                        if (responseCode == "success") {
-                            password = ""
-                            showPopupMessage = "Password modificata con successo"
-                        } else {
-                            showPopupMessage = "Errore durante la modifica della password"
+                        accountInfoViewModel.changePassword(password, username) { responseCode ->
+                            if (responseCode == "success") {
+                                password = ""
+                                showPopupMessage = "Password modificata con successo"
+                            } else {
+                                showPopupMessage = "Errore durante la modifica della password"
+                            }
+                            showPopup = true
                         }
-                        showPopup = true
                     }
                 }
                 isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
             })
+
             {
                 Text(text = if (isPasswordTextFieldEnabled) "Conferma password" else "Modifica password")
             }
@@ -209,32 +211,29 @@ fun UserInfoSection() {
             Row {
                 Button(onClick = {
                     if (isUserInfoTextFieldEnabled) {
-                        coroutineScope.launch {
-                            val responseCode = accountInfoViewModel.modifyUser(
-                                user.value.id,
-                                firstName,
-                                lastName,
-                                username,
-                                email,
-                                phoneNumber
-                            )
+                        accountInfoViewModel.modifyUserData(
+                            firstName,
+                            lastName,
+                            username,
+                            email,
+                            phoneNumber
+                        ) { responseCode ->
                             showPopupMessage = if (responseCode == "success") {
                                 "Informazioni modificate con successo"
                             } else {
                                 "Errore durante la modifica delle informazioni"
                             }
-                            println(responseCode)
                             showPopup = true
                         }
                         isUserInfoTextFieldEnabled = !isUserInfoTextFieldEnabled
-                    }
-                    else {
+                    } else {
                         isUserInfoTextFieldEnabled = true
                     }
                 }) {
                     Text(text = "Modifica i tuoi dati")
                 }
             }
+
         }
     }
 
@@ -389,3 +388,4 @@ fun UserInfoSection() {
         }
     }
 }
+

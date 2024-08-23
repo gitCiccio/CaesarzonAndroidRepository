@@ -51,7 +51,7 @@ fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, notificationV
         }
         ClickableText(
             text = AnnotatedString("X"),
-            onClick = { notificationViewModel.deleteNotification(userNotificationDTO.id, true) },
+            onClick = { /*notificationViewModel.deleteNotification(userNotificationDTO.id, true)*/ },
             style = LocalTextStyle.current.copy(
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.error

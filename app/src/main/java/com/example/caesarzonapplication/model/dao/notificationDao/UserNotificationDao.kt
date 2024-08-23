@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.dao.notificationDao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,10 +10,10 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.UserNo
 @Dao
 interface UserNotificationDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(userNotification: UserNotification)
+    suspend fun addUserNotification(userNotification: UserNotification)
 
     @Query("SELECT * FROM notifiche_utente")
-    suspend fun getAllUserNotifications(): List<UserNotification>
+    fun getAllUserNotifications(): LiveData<List<UserNotification>>
 
     @Query("DELETE FROM notifiche_utente WHERE id = :id")
     suspend fun deleteUserNotificationById(id: Long)

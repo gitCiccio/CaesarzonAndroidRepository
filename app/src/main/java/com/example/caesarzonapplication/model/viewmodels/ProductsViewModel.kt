@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.entities.Product
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.google.gson.Gson

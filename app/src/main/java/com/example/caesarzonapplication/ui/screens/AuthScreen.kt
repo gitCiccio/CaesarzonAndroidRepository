@@ -2,7 +2,6 @@ package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,23 +33,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.caesarzonapplication.model.service.KeycloakService
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.model.viewmodels.AuthViewModel
+import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel) {
+fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel, logged: MutableState<Boolean>) {
 
-    var logged by rememberSaveable { mutableStateOf(false) }
-
-    val authViewModel = AuthViewModel()
 
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -75,20 +68,22 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
             onPasswordChange = { password = it },
             onConfirm = {
                 coroutineScope.launch {
-                    val responseCode = authViewModel.verifyOTP(otp, password, username)
-                    if (responseCode == "success") {
-                        showPopupMessage = "Codice OTP confermato. Password ripristinata con successo."
-                        showPopup = true
-                        navController.navigate("home")
-                    } else {
-                        showPopupMessage = "Codice OTP errato"
-                        showPopup = true
+                    accountInfoViewModel.verifyOTP(otp, password, username) { responseCode ->
+                        if (responseCode == "success") {
+                            showPopupMessage = "Codice OTP confermato. Password ripristinata con successo."
+                            showPopup = true
+                            navController.navigate("home")
+                        } else {
+                            showPopupMessage = "Codice OTP errato"
+                            showPopup = true
+                        }
                     }
                 }
             },
             onDismiss = { showOtpPopup = false }
         )
     }
+
 
     Column(
         modifier = Modifier
@@ -131,21 +126,22 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
         }
         Button(
             onClick = {
-                try {
-
-                    if (myToken != null) {
-                        if (accountInfoViewModel.getUserData() == "success") {
-                            logged = true
-                            navController.navigate("home")
+                coroutineScope.launch {
+                    try {
+                        if (basicToken != null) {
+                            val success = accountInfoViewModel.login(username, password)
+                            if (success) {
+                                navController.navigate(BottomBarScreen.Home.route)
+                            } else {
+                                errorMessage = "Username o password errati."
+                            }
                         } else {
-                            errorMessage = "Username o password errati."
+                            errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."
                         }
-                    } else {
-                        errorMessage = "Token dell'ospite non valido. Contatta l'assistenza per ricevere supporto su questo errore."
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        errorMessage = "Errore durante il login. Contatta l'assistenza per ricevere supporto su questo errore."
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    errorMessage = "Errore durante il login. Contatta l'assistenza per ricevere supporto su questo errore."
                 }
             },
             modifier = Modifier
@@ -171,12 +167,13 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
             onClick = {
                 if (username.isNotEmpty()) {
                     coroutineScope.launch {
-                        val responseFromPasswordRecovery = authViewModel.retrieveForgottenPassword(username)
-                        if (responseFromPasswordRecovery == "success") {
-                            showOtpPopup = true
-                        } else {
-                            showPopupMessage = "Problemi nell'invio dell'otp per il recupero della password. Username non valido"
-                            showPopup = true
+                        accountInfoViewModel.retrieveForgottenPassword(username) { responseFromPasswordRecovery ->
+                            if (responseFromPasswordRecovery == "success") {
+                                showOtpPopup = true
+                            } else {
+                                showPopupMessage = "Problemi nell'invio dell'OTP per il recupero della password. Username non valido"
+                                showPopup = true
+                            }
                         }
                     }
                 } else {

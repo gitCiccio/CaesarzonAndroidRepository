@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.repository.productRepository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.productDao.ProductDao
 import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 
@@ -15,22 +17,14 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    suspend fun getProductById(id: Long): Product? {
-        return try {
-            val product = productDao.getProductById(id)
-            product
-        } catch (e: Exception) {
-            null
-        }
-    }
 
-    suspend fun getAllProducts(): List<Product> {
+    fun getAllProducts(): LiveData<List<Product>> {
         return try {
             val products = productDao.getAllProducts()
             products
         } catch (e: Exception) {
             e.printStackTrace()
-            emptyList()
+            MutableLiveData(emptyList())
         }
     }
 

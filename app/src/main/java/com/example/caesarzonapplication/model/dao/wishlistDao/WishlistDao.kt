@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.dao.wishlistDao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -11,12 +12,8 @@ interface WishlistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addWishlist(wishlist: Wishlist)
 
-
-    @Query("SELECT * FROM wishlist WHERE id = :id")
-    suspend fun getWishlistById(id: Int): Wishlist?
-
     @Query("SELECT * FROM wishlist")
-    suspend fun getAllWishlist(): List<Wishlist>
+    fun getAllWishlist(): LiveData<List<Wishlist>>
 
     @Query("DELETE FROM wishlist WHERE id = :id")
     suspend fun deleteWishlistById(id: Long)

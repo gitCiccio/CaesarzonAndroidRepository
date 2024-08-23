@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.repository.wishlistRepository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.wishlistDao.WishlistProductDao
 import com.example.caesarzonapplication.model.entities.wishListEntity.WishlistProduct
 
@@ -15,23 +17,13 @@ class WishlistProductRepository(private val wishlistProductDao: WishlistProductD
         }
     }
 
-    suspend fun findAllByWishlistId(wishlistId: Long): List<WishlistProduct> {
+    fun findAllByWishlistId(wishlistId: Long): LiveData<List<WishlistProduct>> {
         return try {
             val wishlistProducts = wishlistProductDao.findAllByWishlistId(wishlistId)
             wishlistProducts
         } catch (e: Exception) {
             e.printStackTrace()
-            emptyList()
-        }
-    }
-
-    suspend fun findByProductAndWishlist(productId: String, wishlistId: Long): WishlistProduct? {
-        return try {
-            val wishlistProduct = wishlistProductDao.findByProductAndWishlistfindByProductAndWishlist(productId, wishlistId)
-            wishlistProduct
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            MutableLiveData(emptyList())
         }
     }
 

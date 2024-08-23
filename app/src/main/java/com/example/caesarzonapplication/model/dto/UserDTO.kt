@@ -1,7 +1,6 @@
 package com.example.caesarzonapplication.model.dto
 
 data class UserDTO (
-    var id : String,
     var username: String,
     var firstName : String,
     var lastName : String,

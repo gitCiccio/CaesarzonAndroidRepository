@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.repository.userRepository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.userDao.CityDataDao
 import com.example.caesarzonapplication.model.entities.userEntity.CityData
 
@@ -15,23 +17,13 @@ class CityDataRepository(private val cityDataDao: CityDataDao) {
         }
     }
 
-    suspend fun getAllCityData(): List<CityData> {
+    fun getAllCityData(): LiveData<List<CityData>> {
         return try {
             val cityData = cityDataDao.getAllCityData()
             cityData
         } catch (e: Exception) {
             e.printStackTrace()
-            emptyList()
-        }
-    }
-
-    suspend fun getCityDataById(id: Long): CityData? {
-        return try {
-            val cityData = cityDataDao.getCityDataById(id)
-            cityData
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            MutableLiveData(emptyList())
         }
     }
 

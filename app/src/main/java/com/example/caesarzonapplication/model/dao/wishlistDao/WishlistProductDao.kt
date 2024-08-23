@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.dao.wishlistDao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,10 +14,8 @@ interface WishlistProductDao {
     suspend fun addWishlistProduct(wishlistProductDao: WishlistProduct)
 
     @Query("SELECT * FROM prodotto_lista_desideri WHERE id_lista_desideri = :wishlistId")
-    suspend fun findAllByWishlistId(wishlistId: Long): List<WishlistProduct>
+    fun findAllByWishlistId(wishlistId: Long): LiveData<List<WishlistProduct>>
 
-    @Query("SELECT * FROM prodotto_lista_desideri WHERE id_prodotto = :productId AND id_lista_desideri = :wishlistId")
-    suspend fun findByProductAndWishlistfindByProductAndWishlist(productId: String, wishlistId: Long): WishlistProduct?
 
     @Query("DELETE FROM prodotto_lista_desideri WHERE id_lista_desideri = :wishlistId")
     suspend fun deleteWishListProductByWishlistId(wishlistId: Long)

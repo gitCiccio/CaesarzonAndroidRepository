@@ -46,8 +46,8 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController)
-            else AuthScreen(navController,accountInfoViewModel)
+                AccountScreen(navController, accountInfoViewModel)
+            else AuthScreen(navController,accountInfoViewModel, logged)
         }
 
         composable(route = BottomBarScreen.Cart.route) {
@@ -57,13 +57,13 @@ fun NavigationGraph(
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value)
                 FriendlistScreen(navController)
-            else AuthScreen(navController,accountInfoViewModel)
+            else AuthScreen(navController,accountInfoViewModel, logged)
         }
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
                 WishlistScreen(navController)
-            else AuthScreen(navController,accountInfoViewModel)
+            else AuthScreen(navController,accountInfoViewModel, logged)
         }
 
 

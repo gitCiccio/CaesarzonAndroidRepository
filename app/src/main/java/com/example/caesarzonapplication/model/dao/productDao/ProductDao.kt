@@ -12,11 +12,8 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addProduct(product: Product)
 
-    @Query("SELECT * FROM prodotto WHERE id = :id")
-    suspend fun getProductById(id: Long): Product?
-
     @Query("SELECT * FROM prodotto")
-    suspend fun getAllProducts(): List<Product>
+    fun getAllProducts(): LiveData<List<Product>>
 
     @Query("DELETE FROM prodotto WHERE id = :id")
     suspend fun deleteProductById(id: Long)

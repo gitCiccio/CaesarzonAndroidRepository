@@ -7,7 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.database.AppDatabase
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
-import com.example.caesarzonapplication.model.entities.Follower
+import com.example.caesarzonapplication.model.entities.userEntity.Follower
+import com.example.caesarzonapplication.model.repository.userRepository.FollowerRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -24,13 +25,15 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class FollowersViewModel(application: Application): AndroidViewModel(application) {
 
-    private val getAllFollowers: LiveData<List<Follower>>
+    private lateinit var getAllFollowers: LiveData<List<Follower>>
     private val repository: FollowerRepository
 
     init {
         val followerDao = AppDatabase.getDatabase(application).followerDao()
         repository = FollowerRepository(followerDao)
-        getAllFollowers = repository.readAllData
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllFollowers = repository.getAllFollowers()
+        }
     }
 
     fun addFollower(follower: Follower){
@@ -39,13 +42,6 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
         }
     }
 
-    fun getFollowerByUsername(username: String): Follower? {
-        return repository.getFollowerByUsername(username)
-    }
-
-    fun getFollowerById(id: String): Follower? {
-        return repository.getFollowerById(id)
-    }
 
     private var _users = mutableStateListOf<UserSearchDTO>()
 

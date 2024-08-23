@@ -37,7 +37,7 @@ class ReportRepository(private val reportDao: ReportDao) {
 
     suspend fun addReport(report: Report): Boolean {
         return try {
-            reportDao.insert(report)
+            reportDao.addReport(report)
             true
         } catch (e: Exception) {
             e.printStackTrace()
