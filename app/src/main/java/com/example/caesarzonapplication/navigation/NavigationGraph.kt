@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.ReportViewModel
 import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SearchAndBanUsersViewModel
-import com.example.caesarzonapplication.model.viewmodels.AdminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SupportRequestViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen

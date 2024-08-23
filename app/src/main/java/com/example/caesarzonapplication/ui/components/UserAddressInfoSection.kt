@@ -44,7 +44,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     label = { Text("Nome") }
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
             userData?.let {
                 TextField(
                     value = it.lastName,
@@ -52,7 +51,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     label = { Text("Cognome") }
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
             userData?.let {
                 TextField(
                     value = it.email,
@@ -60,7 +58,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     label = { Text("Email") }
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
             Box {
                 TextField(
                     value = TextFieldValue(selectedAddress),
@@ -90,12 +87,10 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(15.dp))
             Row {
                 Button(onClick = { showAddAddressDialog = true }, modifier = Modifier.weight(1f)) {
                     Text(text = "Aggiungi indirizzo")
                 }
-                Spacer(modifier = Modifier.width(15.dp))
                 Button(
                     onClick = { showRemoveAddressDialog = true },
                     modifier = Modifier.weight(1f)
@@ -103,7 +98,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     Text(text = "Rimuovi indirizzo")
                 }
             }
-            Spacer(modifier = Modifier.height(40.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TextField(
                     modifier = Modifier.width(220.dp),
@@ -112,12 +106,10 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     label = { Text("Password") },
                     enabled = false
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = { passwordVisible = !passwordVisible }) {
                     Text(softWrap = false, text = if (passwordVisible) "Nascondi" else "Mostra")
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
                 Text(text = "Modifica password")
             }
@@ -135,7 +127,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
                                 .background(Color.White, shape = MaterialTheme.shapes.medium)
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -170,44 +161,40 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                 onValueChange = { street = it },
                                 label = { Text("Via") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = houseNumber,
                                 onValueChange = { houseNumber = it },
                                 label = { Text("Numero Civico") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = city,
                                 onValueChange = { city = it },
                                 label = { Text("Città") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = zipCode,
                                 onValueChange = { zipCode = it },
                                 label = { Text("CAP") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = province,
                                 onValueChange = { province = it },
                                 label = { Text("Provincia") }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             TextField(
                                 value = region,
                                 onValueChange = { region = it },
                                 label = { Text("Regione") }
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = {
-                                val newAddress =
-                                    "${street.text} ${houseNumber.text}, ${city.text}, ${zipCode.text}, ${province.text}, ${region.text}"
-                                addresses = addresses + newAddress
-                                selectedAddress = newAddress
-                                showAddAddressDialog = false
-                            }) {
+                            Button(
+                                onClick = {
+                                    val newAddress =
+                                        "${street.text} ${houseNumber.text}, ${city.text}, ${zipCode.text}, ${province.text}, ${region.text}"
+                                    addresses = addresses + newAddress
+                                    selectedAddress = newAddress
+                                    showAddAddressDialog = false
+                                })
+                            {
                                 Text(text = "Salva")
                             }
                         }
@@ -228,7 +215,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
                                 .background(Color.White, shape = MaterialTheme.shapes.medium)
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
