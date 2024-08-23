@@ -131,6 +131,7 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
                         if (basicToken != null) {
                             val success = accountInfoViewModel.login(username, password)
                             if (success) {
+                                accountInfoViewModel.loadUSerData(username)
                                 navController.navigate(BottomBarScreen.Home.route)
                             } else {
                                 errorMessage = "Username o password errati."

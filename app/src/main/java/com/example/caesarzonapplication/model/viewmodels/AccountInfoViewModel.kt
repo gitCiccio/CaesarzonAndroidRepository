@@ -1,6 +1,8 @@
 package com.example.caesarzonapplication.model.viewmodels
 
 import android.graphics.Bitmap
+import android.media.Image
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -32,24 +34,27 @@ import java.net.URL
 class AccountInfoViewModel(private val userRepository: UserRepository, private val cardRepository: CardRepository, private val addressRepository: AddressRepository,
     private val profileImageRepository: ProfileImageRepository) : ViewModel() {
 
-    lateinit var accountInfoData: LiveData<UserDTO>
+    var userData: UserDTO? = null
 
-    lateinit var profileImage: LiveData<ProfileImage?>
+     var profileImage: Bitmap? = null
 
     private val client = OkHttpClient()
 
-    init{
-        loadUSerData()
-    }
 
-    fun loadUSerData(){
+    fun loadUSerData(username: String) {
         viewModelScope.launch {
-            accountInfoData = userRepository.getUserData()
-            cardRepository.getAllCards()
-            addressRepository.getAllAddresses()
-            profileImage = profileImageRepository.getProfileImage()
+            try {
+                userData = userRepository.getUserData(username)
+                cardRepository.getAllCards()
+                addressRepository.getAllAddresses()
+                //profileImage = profileImageRepository.getProfileImage()
+            } catch (e: Exception) {
+                // Gestisci eccezioni come desideri
+                Log.e("AccountInfoViewModel", "Errore nel caricamento dei dati utente", e)
+            }
         }
     }
+
 
     fun addUserData(user: UserRegistrationDTO){
         viewModelScope.launch {
@@ -76,7 +81,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     ) {
         viewModelScope.launch {
             try {
-                val result = doModifyUser(username, firstName, lastName, username, email)
+                val result = doModifyUser(username, firstName, lastName, phoneNumber, email)
                 callback(result)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -129,12 +134,12 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     //Fine modifica dei dati
 
     //Fase di registrazione
-    fun registerUser(firstName: String, lastName: String, username: String, email: String, credentialValue: String,callback: (result: String) -> Unit
+    fun registerUser(username: String,firstName: String, lastName: String, email: String, credentialValue: String,callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
             try {
-                doRegistration(firstName, lastName, username, email, credentialValue)
-                val user = UserRegistrationDTO(username, firstName, lastName, email, credentialValue)
+                doRegistration(username,firstName, lastName, email, credentialValue)
+                val user = UserRegistrationDTO(firstName = firstName, lastName =  lastName, username =  username, email =  email,credentialValue = credentialValue)
                 addUserData(user)
                 callback("success")
             } catch (e: Exception) {

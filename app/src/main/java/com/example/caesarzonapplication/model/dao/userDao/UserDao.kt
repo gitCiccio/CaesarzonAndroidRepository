@@ -13,8 +13,8 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addUser(user: User)
 
-    @Query("SELECT * FROM utente")
-    fun getUserData(): LiveData<User>
+    @Query("SELECT * FROM utente WHERE username = :username")
+    suspend fun getUserData(username: String): User
 
     @Query("DELETE FROM utente")
     suspend fun deleteUserData()
