@@ -35,8 +35,8 @@ class KeycloakService {
     val client = OkHttpClient()
 
 
-    suspend fun getAccessToken(username: String, password: String): TokenResponse? {
-        return withContext(Dispatchers.IO) {
+    suspend fun getAccessToken(username: String, password: String) {
+        withContext(Dispatchers.IO) {
             try {
                 val url = URL("http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token")
                 val connection = url.openConnection() as HttpURLConnection
@@ -67,10 +67,9 @@ class KeycloakService {
                 connection.disconnect()
 
                 val gson = Gson()
-                gson.fromJson(response.toString(), TokenResponse::class.java)
+                myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
             } catch (e: Exception) {
                 e.printStackTrace()
-                null
             }
         }
     }

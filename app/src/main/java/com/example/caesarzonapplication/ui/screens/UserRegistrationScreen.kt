@@ -12,9 +12,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.navigation.BottomBarScreen
-import com.example.caesarzonapplication.navigation.DetailsScreen
 
 @Composable
 fun UserRegistrationScreen(
