@@ -1,24 +1,17 @@
-package com.example.caesarzonapplication.model.viewmodels
+package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import android.graphics.Bitmap
-import android.media.Image
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
-import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
-import com.example.caesarzonapplication.model.entities.userEntity.User
-import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
-import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
-import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,34 +19,20 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 
 
-class AccountInfoViewModel(private val userRepository: UserRepository, private val cardRepository: CardRepository, private val addressRepository: AddressRepository,
-    private val profileImageRepository: ProfileImageRepository) : ViewModel() {
+class AccountInfoViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     var userData: UserDTO? = null
 
-     var profileImage: Bitmap? = null
+    var profileImage: Bitmap? = null
 
     private val client = OkHttpClient()
 
-
-    fun loadUSerData(username: String) {
-        viewModelScope.launch {
-            try {
-                userData = userRepository.getUserData(username)
-                cardRepository.getAllCards()
-                addressRepository.getAllAddresses()
-                //profileImage = profileImageRepository.getProfileImage()
-            } catch (e: Exception) {
-                // Gestisci eccezioni come desideri
-                Log.e("AccountInfoViewModel", "Errore nel caricamento dei dati utente", e)
-            }
-        }
-    }
 
 
     fun addUserData(user: UserRegistrationDTO){
@@ -63,14 +42,14 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     }
 
     // Metodo per salvare l'immagine nel database (da implementare)
-    private suspend fun saveProfileImageToDatabase(bitmap: Bitmap) {
+    suspend fun saveProfileImageToDatabase(bitmap: Bitmap) {
         // Implementa la logica per salvare l'immagine nel tuo database
         // Esempio di implementazione: salva `bitmap` come ByteArray
         // Utilizza una libreria o un approccio adatto al tuo database
     }
 
 
-    //Fase di modifica dei dati
+    //Fase di modifica dei dati, funziona
     fun modifyUserData(
         firstName: String,
         lastName: String,
@@ -81,7 +60,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     ) {
         viewModelScope.launch {
             try {
-                val result = doModifyUser(username, firstName, lastName, phoneNumber, email)
+                val result = doModifyUser(firstName, lastName, username, email, phoneNumber)
                 callback(result)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -98,13 +77,15 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         email: String,
         phoneNumber: String,
     ): String {
-        val newUserDTO = UserDTO(username, firstName, lastName, phoneNumber, email)
+        val newUserDTO = UserDTO(username, firstName, lastName, email,phoneNumber)
         val jsonObject = JSONObject()
+            .put("username", newUserDTO.username)
             .put("firstName", newUserDTO.firstName)
             .put("lastName", newUserDTO.lastName)
             .put("username", newUserDTO.username)
-            .put("email", newUserDTO.email)
             .put("phoneNumber", newUserDTO.phoneNumber)
+            .put("email", newUserDTO.email)
+
 
         val json = jsonObject.toString()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -124,6 +105,12 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 if (!response.isSuccessful) {
                     return@withContext "error: ${response.message} ${response.code}"
                 }
+                val oldUser = userRepository.getUserData(username)
+                oldUser.firstName = newUserDTO.firstName
+                oldUser.lastName = newUserDTO.lastName
+                oldUser.email = newUserDTO.email
+                oldUser.phoneNumber = newUserDTO.phoneNumber
+                userRepository.updateUser(oldUser)
                 "success"
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -133,7 +120,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     }
     //Fine modifica dei dati
 
-    //Fase di registrazione
+    //Fase di registrazione funziona
     fun registerUser(username: String,firstName: String, lastName: String, email: String, credentialValue: String,callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
@@ -160,9 +147,9 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         withContext(Dispatchers.IO) {
             val newUserDTO = UserRegistrationDTO(firstName, lastName, username, email, password)
             val jsonObject = JSONObject()
-                .put("username", newUserDTO.username)
-                .put("email", newUserDTO.email)
                 .put("firstName", newUserDTO.firstName)
+                .put("email", newUserDTO.email)
+                .put("username", newUserDTO.username)
                 .put("lastName", newUserDTO.lastName)
                 .put("credentialValue", newUserDTO.credentialValue)
 
@@ -276,16 +263,18 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
-
-    fun changePassword(password: String, username: String, callback: (result: String) -> Unit): String {
+    //con recovy 1 tutto ok
+    //con recovery 0 invio otp
+    //con recovery 2 devo aspettare aldo
+    fun changePassword(password: String, username: String, recovery: Int,callback: (result: String) -> Unit): String {
         viewModelScope.launch {
-            if(doChangePassword(password, username) == "success")
+            if(doChangePassword(password, username, recovery) == "success")
                 callback("success")
         }
         return "error"
     }
 
-    suspend fun doChangePassword(password: String, username: String): String {
+    suspend fun doChangePassword(password: String, username: String, recovery: Int): String {
         val passwordChangeDTO = PasswordChangeDTO(password, username)
         val jsonObject = JSONObject()
             .put("password", passwordChangeDTO.password)
@@ -294,7 +283,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = json.toRequestBody(mediaType)
 
-        val manageURL = URL("http://25.49.50.144:8090/user-api/password?recovery=false")
+        val manageURL = URL("http://25.49.50.144:8090/user-api/password?recovery=$recovery")
         val request = Request.Builder()
             .url(manageURL)
             .put(requestBody)
@@ -315,10 +304,11 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
-
-    suspend fun getUserData(): String {
-        return withContext(Dispatchers.IO) {
+    //Funziona
+    fun getUserData() {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
+                println("sono nel try del get data")
                 val manageURL = URL("http://25.49.50.144:8090/user-api/user")
                 val request = Request.Builder()
                     .url(manageURL)
@@ -326,11 +316,15 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                     .build()
 
                 val response = client.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    return@withContext "failed"
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@launch
                 }
 
-                val responseBody = response.body?.string()
+                println("Risposta dal server: $responseBody")
+
                 val jsonObject = JSONObject(responseBody)
 
                 val firstName = jsonObject.optString("firstName", "")
@@ -339,30 +333,32 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 val email = jsonObject.optString("email", "")
                 val phoneNumber = jsonObject.optString("phoneNumber", "")
 
-                val userDTO = UserRegistrationDTO(username, firstName, lastName, phoneNumber, email)
-                userRepository.addUser(userDTO)
-
-                "success"
+                userData = UserDTO(username, firstName, lastName, phoneNumber, email)
+                addUserData(UserRegistrationDTO(firstName, lastName, username, email, ""))
+                println("Dati utente recuperati con successo: ${userData?.username}")
             } catch (e: IOException) {
                 e.printStackTrace()
-                "error"
+                println("Errore di rete o I/O: ${e.message}")
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                println("Errore nel parsing della risposta JSON: ${e.message}")
             }
         }
     }
 
 
 
+    //funziona
     suspend fun login(username: String, password: String): Boolean {
         // Resetta il token all'inizio del login
         myToken = null
 
         // Attende la risposta della chiamata per ottenere il token
-        val result = withContext(Dispatchers.IO) {
-            KeycloakService().getAccessToken(username, password)
-        }
+        KeycloakService().getAccessToken(username, password)
 
-        return if (result != null && result.accessToken.isNotBlank()) {
-            getUserData()
+        println("$myToken")
+        return if (myToken?.accessToken != null) {
+            getUserData() // Questa dovrebbe anche essere una funzione sospesa se fa operazioni di rete
             logged.value = true
             true
         } else {
@@ -374,16 +370,13 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 }
 
 class AccountInfoViewModelFactory(
-    private val userRepository: UserRepository,
-    private val cardRepository: CardRepository,
-    private val addressRepository: AddressRepository,
-    private val profileImageRepository: ProfileImageRepository
+    private val userRepository: UserRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AccountInfoViewModel::class.java)) {
-            return AccountInfoViewModel(userRepository, cardRepository, addressRepository, profileImageRepository) as T
+            return AccountInfoViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

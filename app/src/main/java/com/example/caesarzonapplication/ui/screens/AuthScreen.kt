@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
-import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
@@ -131,7 +131,7 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
                         if (basicToken != null) {
                             val success = accountInfoViewModel.login(username, password)
                             if (success) {
-                                accountInfoViewModel.loadUSerData(username)
+                                accountInfoViewModel.getUserData()
                                 navController.navigate(BottomBarScreen.Home.route)
                             } else {
                                 errorMessage = "Username o password errati."

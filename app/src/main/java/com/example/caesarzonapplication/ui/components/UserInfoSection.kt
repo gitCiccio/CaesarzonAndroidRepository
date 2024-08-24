@@ -16,8 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
-import com.example.caesarzonapplication.model.dto.UserDTO
-import com.example.caesarzonapplication.model.viewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -160,7 +159,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 if (isPasswordTextFieldEnabled) {
                     coroutineScope.launch {
                         username?.let {
-                            accountInfoViewModel.changePassword(password, it) { responseCode ->
+                            accountInfoViewModel.changePassword(password, it, 1) { responseCode ->
                                 if (responseCode == "success") {
                                     password = ""
                                     showPopupMessage = "Password modificata con successo"
@@ -213,13 +212,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                 phoneNumber?.let { it2 ->
                                     username?.let { it3 ->
                                         email?.let { it4 ->
-                                            accountInfoViewModel.modifyUserData(
-                                                it,
-                                                it1,
-                                                it3,
-                                                it4,
-                                                it2
-                                            ) { responseCode ->
+                                            accountInfoViewModel.modifyUserData(it, it1, it3, it2, it4) { responseCode ->
                                                 showPopupMessage = if (responseCode == "success") {
                                                     "Informazioni modificate con successo"
                                                 } else {

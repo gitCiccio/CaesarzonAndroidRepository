@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.repository.userRepository
 
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.caesarzonapplication.model.dao.userDao.UserDao
@@ -12,7 +13,18 @@ class UserRepository(private val userDao: UserDao) {
     // Inserisci un nuovo utente
     suspend fun addUser(user: UserRegistrationDTO): Boolean {
         return try {
-            userDao.addUser(User(user.lastName, user.username, user.firstName,  "", user.email, user.credentialValue, ""))
+            userDao.addUser(User(user.lastName, user.username, user.firstName, "", user.email, user.credentialValue, ""))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun updateUser(user: UserDTO): Boolean {
+        return try {
+            val oldUSer = userDao.getUserData(username = user.username)
+            userDao.addUser(User(user.lastName, user.username, user.firstName, "", user.email, oldUSer.credentialValue, ""))
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -21,11 +33,11 @@ class UserRepository(private val userDao: UserDao) {
     }
 
 
+
     // Recupera i dati dell'utente
     suspend fun getUserData(username: String): UserDTO {
-        val user = userDao.getUserData(username)
-        println("utente: "+user.username
-            +" "+user.firstName+" "+user.lastName+" "+user.phoneNumber+" "+user.email)
+        val normalizedUsername = username.lowercase() // Converti l'username in minuscolo
+        val user = userDao.getUserData(normalizedUsername)
         return UserDTO(user.username, user.firstName, user.lastName, user.phoneNumber, user.email)
     }
 
