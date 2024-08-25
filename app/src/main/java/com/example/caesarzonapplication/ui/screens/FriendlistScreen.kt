@@ -1,6 +1,5 @@
 package com.example.caesarzonapplication.ui.screens
 
-import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
-import com.example.caesarzonapplication.model.viewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -40,9 +40,8 @@ enum class UsersTab {
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun FriendlistScreen(navHostController: NavHostController) {
+fun FriendlistScreen(navHostController: NavHostController, followersViewModel: FollowersViewModel) {
 
-    val followersViewModel = FollowersViewModel(application = Application())
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(UsersTab.Utenti) }
 

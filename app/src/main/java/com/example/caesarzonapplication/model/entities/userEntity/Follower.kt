@@ -9,9 +9,7 @@ import java.util.UUID
 data class Follower(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")val id: Long = 0,
-    @ColumnInfo(name = "id_amico")val id_follower: String,
-    @ColumnInfo(name = "id_username_utente2")val id_username_utente2: String,
-    @ColumnInfo(name = "username_utente2")val username2: String,
+    @ColumnInfo(name = "username_utente")val username2: String,
     @ColumnInfo(name = "amico")val friend: Boolean
 ) {
 }

@@ -75,14 +75,16 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            accountInfoViewModel.profileImage?.asImageBitmap()?.let {
-                Image(
-                    bitmap = it,
-                    contentDescription = "User Profile",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(16.dp)
-                )
+            accountInfoViewModel.profileImage.let {
+                accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let { it1 ->
+                    Image(
+                        bitmap = it1,
+                        contentDescription = "User Profile",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(16.dp)
+                    )
+                }
             }
             Button(onClick = { launcher.launch("image/*") }) {
                 Text("Carica Immagine")

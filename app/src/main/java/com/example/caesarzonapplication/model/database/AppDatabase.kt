@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.caesarzonapplication.model.dao.notificationDao.AdminNotificationDao
 import com.example.caesarzonapplication.model.dao.notificationDao.BanDao
 import com.example.caesarzonapplication.model.dao.notificationDao.ReportDao
@@ -44,7 +46,7 @@ import com.example.caesarzonapplication.model.utils.Converters
                       Product::class, ProductOrder::class, ProductImage::class,
                       Address::class, Card::class, CityData::class, Follower::class, User::class,
                       Wishlist::class, WishlistProduct::class],
-    version = 1, exportSchema = false)
+    version = 2, exportSchema = false)
 @TypeConverters(Converters::class, BitmapConverter::class)
 abstract class AppDatabase: RoomDatabase()  {
     abstract fun adminNotificationDao(): AdminNotificationDao
@@ -78,9 +80,25 @@ abstract class AppDatabase: RoomDatabase()  {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                ).addMigrations(MIGRATION_1_2)
+                    .build()
                 INSTANCE = instance
                 return instance
+            }
+        }
+        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Elimina la tabella esistente
+                db.execSQL("DROP TABLE IF EXISTS Follower")
+
+                // Crea la nuova tabella con la struttura aggiornata
+                db.execSQL("""
+            CREATE TABLE Follower (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                new_column TEXT,
+                other_column INTEGER
+            )
+        """)
             }
         }
     }
@@ -100,6 +118,8 @@ abstract class AppDatabase: RoomDatabase()  {
         wishlistDao().deleteAllWishlist()
         wishlistProductDao().deleteAllWishlistProducts()
     }
+
+
 
     /*fun closeDatabase(){
         INSTANCE?.close()
