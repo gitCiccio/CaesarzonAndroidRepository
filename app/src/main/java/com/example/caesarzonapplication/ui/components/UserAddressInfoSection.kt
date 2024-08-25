@@ -5,8 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,18 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.text.input.TextFieldValue
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 
 @Composable
 fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-
-    var addresses by remember { mutableStateOf(listOf("")) }
+    var addresses by remember { mutableStateOf(listOf("Seleziona un indirizzo")) }
     var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
     var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
     var showRemoveAddressDialog by rememberSaveable { mutableStateOf(false) }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
@@ -35,37 +32,23 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             .padding(16.dp)
     ) {
         item {
-                accountInfoViewModel.userData?.firstName?.let {
-                    TextField(
-                        value = it,
-                        onValueChange = { accountInfoViewModel.userData!!.firstName = it },
-                        label = { Text("Nome") }
-                    )
-                }
-
-            accountInfoViewModel.userData?.lastName?.let {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
                 TextField(
-                    value = it,
-                    onValueChange = { accountInfoViewModel.userData!!.lastName = it },
-                    label = { Text("Cognome") }
-                )
-            }
-            accountInfoViewModel.userData?.email?.let {
-                TextField(
-                    value = it,
-                    onValueChange = { accountInfoViewModel.userData!!.email = it },
-                    label = { Text("Email") }
-                )
-            }
-
-            Box {
-                TextField(
-                    value = TextFieldValue(selectedAddress),
+                    value = selectedAddress,
                     onValueChange = {},
                     label = { Text("Indirizzo di spedizione") },
                     enabled = false,
                     trailingIcon = {
-                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Drop-down arrow")
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Drop-down arrow",
+                            tint = if (addressDropdownExpanded) MaterialTheme.colorScheme.primary else Color.Gray,
+                            modifier = Modifier.clickable { addressDropdownExpanded = !addressDropdownExpanded }
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -87,31 +70,26 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     }
                 }
             }
-            Row {
-                Button(onClick = { showAddAddressDialog = true }, modifier = Modifier.weight(1f)) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = { showAddAddressDialog = true },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                ) {
                     Text(text = "Aggiungi indirizzo")
                 }
                 Button(
                     onClick = { showRemoveAddressDialog = true },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
                 ) {
                     Text(text = "Rimuovi indirizzo")
                 }
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextField(
-                    modifier = Modifier.width(220.dp),
-                    value = if (passwordVisible) TextFieldValue("password123") else TextFieldValue("********"),
-                    onValueChange = {},
-                    label = { Text("Password") },
-                    enabled = false
-                )
-                Button(onClick = { passwordVisible = !passwordVisible }) {
-                    Text(softWrap = false, text = if (passwordVisible) "Nascondi" else "Mostra")
-                }
-            }
-            Button(onClick = { /* Logica per salvare le informazioni aggiornate */ }) {
-                Text(text = "Modifica password")
             }
         }
 
@@ -139,7 +117,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                             ) {
                                 Text(
                                     text = "Aggiungi Indirizzo",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.headlineSmall,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Icon(
@@ -149,18 +127,29 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                         .clickable { showAddAddressDialog = false }
                                 )
                             }
-                            var street by remember { mutableStateOf(TextFieldValue("")) }
-                            var houseNumber by remember { mutableStateOf(TextFieldValue("")) }
-                            var city by remember { mutableStateOf(TextFieldValue("")) }
-                            var zipCode by remember { mutableStateOf(TextFieldValue("")) }
-                            var province by remember { mutableStateOf(TextFieldValue("")) }
-                            var region by remember { mutableStateOf(TextFieldValue("")) }
+
+                            var street by remember { mutableStateOf("") }
+                            var houseNumber by remember { mutableStateOf("") }
+                            var city by remember { mutableStateOf("") }
+                            var zipCode by remember { mutableStateOf("") }
+                            var province by remember { mutableStateOf("") }
+                            var region by remember { mutableStateOf("") }
+                            var streetError by remember { mutableStateOf("") }
+                            var cityError by remember { mutableStateOf("") }
 
                             TextField(
                                 value = street,
-                                onValueChange = { street = it },
-                                label = { Text("Via") }
+                                onValueChange = {
+                                    street = it
+                                    streetError = if (it.isEmpty()) "La via è obbligatoria" else ""
+                                },
+                                label = { Text("Via") },
+                                isError = streetError.isNotEmpty()
                             )
+                            if (streetError.isNotEmpty()) {
+                                Text(streetError, color = Color.Red)
+                            }
+
                             TextField(
                                 value = houseNumber,
                                 onValueChange = { houseNumber = it },
@@ -168,9 +157,16 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                             )
                             TextField(
                                 value = city,
-                                onValueChange = { city = it },
-                                label = { Text("Città") }
+                                onValueChange = {
+                                    city = it
+                                    cityError = if (it.isEmpty()) "La città è obbligatoria" else ""
+                                },
+                                label = { Text("Città") },
+                                isError = cityError.isNotEmpty()
                             )
+                            if (cityError.isNotEmpty()) {
+                                Text(cityError, color = Color.Red)
+                            }
                             TextField(
                                 value = zipCode,
                                 onValueChange = { zipCode = it },
@@ -188,13 +184,16 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                             )
                             Button(
                                 onClick = {
-                                    val newAddress =
-                                        "${street.text} ${houseNumber.text}, ${city.text}, ${zipCode.text}, ${province.text}, ${region.text}"
-                                    addresses = addresses + newAddress
-                                    selectedAddress = newAddress
-                                    showAddAddressDialog = false
-                                })
-                            {
+                                    if (street.isNotEmpty() && city.isNotEmpty()) {
+                                        val newAddress =
+                                            "$street $houseNumber, $city, $zipCode, $province, $region"
+                                        addresses = addresses + newAddress
+                                        selectedAddress = newAddress
+                                        showAddAddressDialog = false
+                                    }
+                                },
+                                modifier = Modifier.padding(top = 16.dp)
+                            ) {
                                 Text(text = "Salva")
                             }
                         }
@@ -227,7 +226,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                             ) {
                                 Text(
                                     text = "Rimuovi Indirizzo",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.headlineSmall,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Icon(
@@ -237,7 +236,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                         .clickable { showRemoveAddressDialog = false }
                                 )
                             }
-                            addresses.forEach { address ->
+                            addresses.filter { it != "Seleziona un indirizzo" }.forEach { address ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
@@ -249,8 +248,10 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                             selectedAddress = addresses[0]
                                         }
                                         if (addresses.isEmpty()) {
-                                            selectedAddress = ""
+                                            addresses = listOf("Seleziona un indirizzo")
+                                            selectedAddress = addresses[0]
                                         }
+                                        showRemoveAddressDialog = false
                                     }) {
                                         Icon(
                                             Icons.Filled.Close,
