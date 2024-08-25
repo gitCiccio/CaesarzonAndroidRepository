@@ -25,6 +25,7 @@ class ReportViewModel : ViewModel() {
         searchReports()
     }
 
+
     fun searchReports(){
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = URL("http://25.49.50.144:8090/notify-api/report?num=0");
