@@ -146,6 +146,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     suspend fun doAddAddress(address: AddressDTO){
+        println("so in doAddAddress")
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
@@ -153,12 +154,13 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         val json = gson.toJson(address)
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-
+        println("valore del token: ${myToken?.accessToken}")
         withContext(Dispatchers.IO){
+            println("sono nel withContext della doAddress")
             try{
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-
+                println("response code: ${response.code}Ina Casa")
                 if(!response.isSuccessful || responseBody.isNullOrEmpty()){
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
