@@ -1,16 +1,25 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
+import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
+import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import com.example.caesarzonapplication.model.utils.BitmapConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,11 +34,12 @@ import java.io.IOException
 import java.net.URL
 
 
-class AccountInfoViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AccountInfoViewModel(private val userRepository: UserRepository, private val imageRepository: ProfileImageRepository) : ViewModel() {
 
     var userData: UserDTO? = null
 
-    var profileImage: Bitmap? = null
+    //Carico l'immagine profilo
+    var profileImage: LiveData<ProfileImage?> = imageRepository.getProfileImage()
 
     private val client = OkHttpClient()
 
@@ -41,54 +51,74 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
         }
     }
 
-    // Metodo per salvare l'immagine nel database (da implementare)
-    suspend fun saveProfileImageToDatabase(bitmap: Bitmap) {
-        // Implementa la logica per salvare l'immagine nel tuo database
-        // Esempio di implementazione: salva `bitmap` come ByteArray
-        // Utilizza una libreria o un approccio adatto al tuo database
+
+    //Fase di modifica dei dati, funziona
+  
+    fun modifyUserData(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+        callback: (result: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val result = doModifyUser(firstName, lastName, username, email, phoneNumber)
+                callback(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+        }
     }
 
 
-    //Fase di modifica dei dati, funziona
-    fun modifyUserData(firstName: String, lastName: String, username: String, email: String, phoneNumber: String ) {
-        viewModelScope.launch {
-            val newUserDTO = UserDTO(username, firstName, lastName, email, phoneNumber)
-            val jsonObject = JSONObject()
-                .put("username", newUserDTO.username)
-                .put("firstName", newUserDTO.firstName)
-                .put("lastName", newUserDTO.lastName)
-                .put("username", newUserDTO.username)
-                .put("phoneNumber", newUserDTO.phoneNumber)
-                .put("email", newUserDTO.email)
+    suspend fun doModifyUser(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+    ): String {
+        val newUserDTO = UserDTO(username, firstName, lastName, email,phoneNumber)
+        val jsonObject = JSONObject()
+            .put("username", newUserDTO.username)
+            .put("firstName", newUserDTO.firstName)
+            .put("lastName", newUserDTO.lastName)
+            .put("username", newUserDTO.username)
+            .put("phoneNumber", newUserDTO.phoneNumber)
+            .put("email", newUserDTO.email)
 
-            val json = jsonObject.toString()
-            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-            val requestBody = json.toRequestBody(mediaType)
 
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
-            val request = Request.Builder()
-                .url(manageURL)
-                .put(requestBody)
-                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                .build()
+        val json = jsonObject.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
 
-            withContext(Dispatchers.IO) {
-                try {
-                    val client = OkHttpClient()
-                    val response = client.newCall(request).execute()
-                    if (!response.isSuccessful) {
-                        return@withContext
-                    }
-                    val oldUser = userRepository.getUserData(username)
-                    oldUser.firstName = newUserDTO.firstName
-                    oldUser.lastName = newUserDTO.lastName
-                    oldUser.email = newUserDTO.email
-                    oldUser.phoneNumber = newUserDTO.phoneNumber
-                    userRepository.updateUser(oldUser)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    "error: ${e.message}"
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+        val request = Request.Builder()
+            .url(manageURL)
+            .put(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "error: ${response.message} ${response.code}"
                 }
+                val oldUser = userRepository.getUserData(username)
+                oldUser.firstName = newUserDTO.firstName
+                oldUser.lastName = newUserDTO.lastName
+                oldUser.email = newUserDTO.email
+                oldUser.phoneNumber = newUserDTO.phoneNumber
+                userRepository.updateUser(oldUser)
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error: ${e.message}"
             }
         }
     }
@@ -340,20 +370,23 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
         }
     }
 
-    fun updateProfileImage() {
-        TODO("Not yet implemented")
+    //Caricamento immagine profilo
+    fun updateImageProfile(image: Bitmap){
+        viewModelScope.launch {
+            imageRepository.insertProfileImage(ProfileImage(username = userData!!.username, profilePicture = image))
+        }
     }
 
-}
 
 class AccountInfoViewModelFactory(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val imageRepository: ProfileImageRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AccountInfoViewModel::class.java)) {
-            return AccountInfoViewModel(userRepository) as T
+            return AccountInfoViewModel(userRepository, imageRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

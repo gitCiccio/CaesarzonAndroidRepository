@@ -56,6 +56,7 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                         .tabIndicatorOffset(it[selectedTab])
                 ) }
         ) {
+
             accountTabs.forEachIndexed { index, tab ->
                 Tab(
                     text = { Text(text = tab.name) },
@@ -73,6 +74,18 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                         .wrapContentSize()
                         .padding(horizontal = 8.dp)
                 )
+
+            accountInfoViewModel.profileImage.let {
+                accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let { it1 ->
+                    Image(
+                        bitmap = it1,
+                        contentDescription = "User Profile",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(16.dp)
+                    )
+                }
+
             }
         }
         when (selectedTab) {

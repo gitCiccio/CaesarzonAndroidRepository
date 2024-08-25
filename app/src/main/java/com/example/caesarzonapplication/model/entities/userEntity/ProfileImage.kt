@@ -10,6 +10,6 @@ class ProfileImage(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = "username")val username: String,
-    @ColumnInfo(name = "foto", typeAffinity = ColumnInfo.BLOB)val profilePicture: Bitmap
+    @ColumnInfo(name = "foto", typeAffinity = ColumnInfo.BLOB) var profilePicture: Bitmap?
 ) {
 }

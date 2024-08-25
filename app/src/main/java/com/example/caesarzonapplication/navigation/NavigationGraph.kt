@@ -13,6 +13,7 @@ import com.example.caesarzonapplication.model.viewmodels.adminViewModels.ReportV
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SupportRequestViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -37,6 +38,7 @@ fun NavigationGraph(
     logged: MutableState<Boolean>,
     productsViewModel: ProductsViewModel,
     accountInfoViewModel: AccountInfoViewModel,
+    followerViewModel: FollowersViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -56,7 +58,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value)
-                FriendlistScreen(navController)
+                FriendlistScreen(navController, followerViewModel)
             else AuthScreen(navController,accountInfoViewModel, logged)
         }
 

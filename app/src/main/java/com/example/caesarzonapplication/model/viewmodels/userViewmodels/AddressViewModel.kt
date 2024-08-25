@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.CityDataDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
@@ -27,15 +28,15 @@ import java.util.UUID
 class AddressViewModel(private val addressRepository: AddressRepository, private val cityDataRepository: CityDataRepository): ViewModel() {
 
     private val client = OkHttpClient()
-    var addresses: ArrayList<Address> = ArrayList()
-    var cityData: ArrayList<CityData> = ArrayList()
+    var addresses: ArrayList<AddressDTO> = ArrayList()
+    var cityData: ArrayList<CityDataDTO> = ArrayList()
 
     lateinit var addressesUuid: List<UUID>
 
     //caricamento in locale
     fun getAllAddressesAndCityData(){
-        addresses = addressRepository.getAllAddresses() as ArrayList<Address>
-        cityData = cityDataRepository.getAllCityData() as ArrayList<CityData>//da capire se server
+        addresses = addressRepository.getAllAddresses() as ArrayList<AddressDTO>
+        cityData = cityDataRepository.getAllCityData() as ArrayList<CityDataDTO>//da capire se server
     }
 
     //chiamata al server per ricevere gli indirizzi
@@ -57,8 +58,8 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 val gson = Gson()
                 //serve per deserializzare la stringa JSON in una lista di oggetti Address
                 val listType = object :  TypeToken<List<UUID>>() {}.type
-                addresses = gson.fromJson(responseBody, listType)
-                println("Indirizzi recuperati con successo: ${addresses.size}")
+                addressesUuid = gson.fromJson(responseBody, listType)
+                println("Indirizzi recuperati con successo: ${addressesUuid.size}")
 
             }catch (e: Exception){
                 e.printStackTrace()
@@ -90,7 +91,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                     println("Risposta dal server: $responseBody")
                     val gson = Gson()
                     val valType = object : TypeToken<Address>() {}.type
-                    val address = gson.fromJson<Address>(responseBody, valType)
+                    val address = gson.fromJson<AddressDTO>(responseBody, valType)
 
                     addresses.add(address)
                     addressRepository.addAddress(address)
@@ -134,7 +135,17 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         }
     }
 
-    suspend fun addAddress(address: AddressDTO){
+    fun addAddress(address: AddressDTO){
+        viewModelScope.launch {
+            try{
+                doAddAddress(address)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun doAddAddress(address: AddressDTO){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
@@ -154,7 +165,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
                 //val gson = Gson()
-                val address = Address(id = 0, address_id = address.id, streetName = address.roadName, streetNumber = address.houseNumber, roadType = address.roadType, city = address.city.id.toLong())
                 addresses.add(address)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){

@@ -3,6 +3,7 @@ package com.example.caesarzonapplication.model.repository.userRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.userDao.AddressDao
+import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
 
 class AddressRepository(private val addressDao: AddressDao) {
@@ -20,8 +21,9 @@ class AddressRepository(private val addressDao: AddressDao) {
 
 
     // Inserisci un nuovo indirizzo
-    suspend fun addAddress(address: Address): Boolean {
+    suspend fun addAddress(address: AddressDTO): Boolean {
         return try{
+            val address = Address(id = 0, address_id = address.id, streetName = address.roadName, streetNumber = address.houseNumber, roadType = address.roadType, city = address.city.id.toLong())
             addressDao.addAddress(address)
             true
         }catch (e: Exception){

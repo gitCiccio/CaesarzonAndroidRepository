@@ -22,5 +22,4 @@ data class Product(
     @ColumnInfo(name = "sport") val sport: String,
     @ColumnInfo(name = "ultima_aggiunta") val lastModified: LocalDate,
     @ColumnInfo(name = "quantita") val quantity: Int,
-    @ColumnInfo(name = "disponibilità") val category: String,
 )

@@ -1,14 +1,18 @@
-package com.example.caesarzonapplication.model.viewmodels
+package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.database.AppDatabase
+import com.example.caesarzonapplication.model.dto.FollowerDTO
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Follower
 import com.example.caesarzonapplication.model.repository.userRepository.FollowerRepository
+import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
+import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -23,22 +27,19 @@ import java.net.URL
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-class FollowersViewModel(application: Application): AndroidViewModel(application) {
+class FollowersViewModel(private val followerRepository: FollowerRepository): ViewModel() {
 
     private lateinit var getAllFollowers: LiveData<List<Follower>>
-    private val repository: FollowerRepository
 
     init {
-        val followerDao = AppDatabase.getDatabase(application).followerDao()
-        repository = FollowerRepository(followerDao)
-        viewModelScope.launch(Dispatchers.IO) {
-            getAllFollowers = repository.getAllFollowers()
+        viewModelScope.launch{
+            getAllFollowers = followerRepository.getAllFollowers()
         }
     }
 
-    fun addFollower(follower: Follower){
-        viewModelScope.launch(Dispatchers.IO){
-            repository.addFollower(follower)
+    fun addFollower(follower: FollowerDTO){
+        viewModelScope.launch{
+            followerRepository.addFollower(follower)
         }
     }
 
@@ -64,7 +65,7 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
     init {
         //loadFollowers(0, false)
         //loadFriends(0, true)
-        loadMyFakeUsers()
+        //loadMyFakeUsers()
     }
 
 
@@ -79,6 +80,7 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
             if (existingFollower == null) {
                 _followers.add(it)
                 _newFollowersAndFriends.add(it)
+                //followerRepository.addFollower(FollowerDTO())
             }
         }
 
@@ -127,7 +129,6 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
         _newFollowersAndFriends.add(follower)
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
     fun searchUsers(username: String) {
         _users.clear()
         if(username.isEmpty()) return
@@ -153,11 +154,11 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
                 for(i in 0 until jsonResponse.length()){
                     val jsonObject = jsonResponse.getJSONObject(i)
                     val username = jsonObject.getString("username")
-                    val profilePictureBase64 = jsonObject.getString("profilePicture")
+                    //val profilePictureBase64 = jsonObject.getString("profilePicture") prendere in una seconda chiamata
                     val isFriend = jsonObject.getBoolean("isFriend")
                     val follower = jsonObject.getBoolean("follower")
 
-                    val profilePicBytes = Base64.decode(profilePictureBase64)
+                    //val profilePicBytes = Base64.decode(profilePictureBase64)
 
                     //val profilePicture: Bitmap = BitmapFactory.decodeByteArray(profilePicBytes, 0, profilePicBytes.size)
                     val userSearchDTO = UserSearchDTO(
@@ -359,4 +360,16 @@ class FollowersViewModel(application: Application): AndroidViewModel(application
 
             _users.addAll(fakeUsers)
         }
+}
+class FollowersViewModelFactory(
+    private val followerRepository: FollowerRepository
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(FollowersViewModel::class.java)) {
+            return FollowersViewModel(followerRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }
