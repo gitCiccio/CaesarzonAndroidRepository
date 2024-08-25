@@ -1,16 +1,25 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.UserDTO
 import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
+import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
+import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
+import com.example.caesarzonapplication.model.utils.BitmapConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,11 +34,12 @@ import java.io.IOException
 import java.net.URL
 
 
-class AccountInfoViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AccountInfoViewModel(private val userRepository: UserRepository, private val imageRepository: ProfileImageRepository) : ViewModel() {
 
     var userData: UserDTO? = null
 
-    var profileImage: Bitmap? = null
+    //Carico l'immagine profilo
+    var profileImage: LiveData<ProfileImage?> = imageRepository.getProfileImage()
 
     private val client = OkHttpClient()
 
@@ -39,13 +49,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
         viewModelScope.launch {
             userRepository.addUser(user)
         }
-    }
-
-    // Metodo per salvare l'immagine nel database (da implementare)
-    suspend fun saveProfileImageToDatabase(bitmap: Bitmap) {
-        // Implementa la logica per salvare l'immagine nel tuo database
-        // Esempio di implementazione: salva `bitmap` come ByteArray
-        // Utilizza una libreria o un approccio adatto al tuo database
     }
 
 
@@ -367,16 +370,24 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
         }
     }
 
+    //Caricamento immagine profilo
+    fun updateImageProfile(image: Bitmap){
+        viewModelScope.launch {
+            imageRepository.insertProfileImage(ProfileImage(username = userData!!.username, profilePicture = image))
+        }
+    }
+
 }
 
 class AccountInfoViewModelFactory(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val imageRepository: ProfileImageRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AccountInfoViewModel::class.java)) {
-            return AccountInfoViewModel(userRepository) as T
+            return AccountInfoViewModel(userRepository, imageRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

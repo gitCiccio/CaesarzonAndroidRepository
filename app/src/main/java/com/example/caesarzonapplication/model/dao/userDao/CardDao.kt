@@ -15,10 +15,13 @@ interface CardDao {
     suspend fun addCard(card: Card)
 
     @Query("SELECT * FROM carte")
-    fun getAllCards(): LiveData<List<Card>>
+    fun getAllCards(): List<Card>
 
     @Query("DELETE FROM carte WHERE id = :id")
     suspend fun deleteCardById(id: Long)
+
+    @Query("DELETE FROM carte WHERE id_carta = :id")
+    suspend fun deleteCardByUuid(id: String)
 
     @Query("DELETE FROM carte")
     fun deleteAllCards()
