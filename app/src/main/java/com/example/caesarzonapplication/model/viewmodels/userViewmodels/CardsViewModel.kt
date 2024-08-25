@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.CardDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
@@ -132,7 +133,18 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
         }
     }
 
-    suspend fun addCard(card: CardDTO){
+
+    fun addCard(card: CardDTO){
+        viewModelScope.launch {
+            try{
+                doAddCard(card)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun doAddCard(card: CardDTO){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
@@ -167,7 +179,7 @@ class CardsViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CardsViewModelFactory::class.java)) {
+        if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
             return CardsViewModel(cardRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

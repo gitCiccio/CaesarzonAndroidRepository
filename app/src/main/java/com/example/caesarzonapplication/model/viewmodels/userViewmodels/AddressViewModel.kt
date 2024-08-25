@@ -31,12 +31,16 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     var addresses: ArrayList<AddressDTO> = ArrayList()
     var cityData: ArrayList<CityDataDTO> = ArrayList()
 
-    lateinit var addressesUuid: List<UUID>
+     var addressesUuid: List<UUID> = emptyList()
 
+
+    init{
+        getAllAddressesAndCityData()
+    }
     //caricamento in locale
     fun getAllAddressesAndCityData(){
-        addresses = addressRepository.getAllAddresses() as ArrayList<AddressDTO>
-        cityData = cityDataRepository.getAllCityData() as ArrayList<CityDataDTO>//da capire se server
+        getUuidAddressesFromServer()
+        getAddressesFromServer(addressesUuid)//da capire se server
     }
 
     //chiamata al server per ricevere gli indirizzi
@@ -171,6 +175,82 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
+            }
+        }
+    }
+    //riesco a prendere i suggerimenti di città
+     fun getCityTip(cityTip: String) {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/city?sugg=$cityTip")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}") // Assicurati che il token non sia nullo
+            .build()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    //return@launch emptyList<String>()
+                }
+
+                println("Risposta dal server: $responseBody")
+
+                // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
+                val gson = Gson()
+                val listType = object : TypeToken<List<String>>() {}.type
+                val cityList: List<String> = gson.fromJson(responseBody, listType)
+
+                // Stampa ogni città ottenuta
+                cityList.forEach { city ->
+                    println(city)
+                }
+
+                //return@withContext cityList
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Errore durante la chiamata: ${e.message}")
+                //return@withContext emptyList<String>()
+            }
+        }
+    }
+
+    //Deve tornare un city data dto con tutte le informazioni
+    fun getFullCityData(cityName: String){
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/city-data?city=$cityName")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}") // Assicurati che il token non sia nullo
+            .build()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    //return@launch emptyList<String>()
+                }
+
+                println("Risposta dal server: $responseBody")
+
+                // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
+                val gson = Gson()
+                val listType = object : TypeToken<List<CityDataDTO>>() {}.type
+                val cityList: List<String> = gson.fromJson(responseBody, listType)
+
+                // Stampa ogni città ottenuta
+                cityList.forEach { city ->
+                    println(city)
+                }
+
+                //return@withContext cityList
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Errore durante la chiamata: ${e.message}")
+                //return@withContext emptyList<String>()
             }
         }
     }

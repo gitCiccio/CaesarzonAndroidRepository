@@ -164,6 +164,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                                 onValueChange = {
                                     city = it
                                     cityError = if (it.isEmpty()) "La città è obbligatoria" else ""
+                                    addressViewModel.getCityTip(city)
                                 },
                                 label = { Text("Città") },
                                 isError = cityError.isNotEmpty()
@@ -193,7 +194,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                                             "$street $houseNumber, $city, $zipCode, $province, $region"
                                         addresses = addresses + newAddress
                                         selectedAddress = newAddress
-                                        val newCityDataDTO = CityDataDTO("", city, zipCode, region, province)
+                                        val newCityDataDTO = CityDataDTO(0, city, zipCode, region, province)
                                         val newAddressDTO = AddressDTO("", street, houseNumber, "", newCityDataDTO)
                                         showAddAddressDialog = false
                                         addressViewModel.addAddress(newAddressDTO)
