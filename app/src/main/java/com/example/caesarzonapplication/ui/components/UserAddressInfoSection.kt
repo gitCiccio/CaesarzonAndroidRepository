@@ -15,10 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.caesarzonapplication.model.dto.AddressDTO
+import com.example.caesarzonapplication.model.dto.CityDataDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 
 @Composable
-fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
+fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressViewModel: AddressViewModel) {
+
 
     var addresses by remember { mutableStateOf(listOf("Seleziona un indirizzo")) }
     var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
@@ -189,7 +193,10 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                             "$street $houseNumber, $city, $zipCode, $province, $region"
                                         addresses = addresses + newAddress
                                         selectedAddress = newAddress
+                                        val newCityDataDTO = CityDataDTO("", city, zipCode, region, province)
+                                        val newAddressDTO = AddressDTO("", street, houseNumber, "", newCityDataDTO)
                                         showAddAddressDialog = false
+                                        addressViewModel.addAddress(newAddressDTO)
                                     }
                                 },
                                 modifier = Modifier.padding(top = 16.dp)
