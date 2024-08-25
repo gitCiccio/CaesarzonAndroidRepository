@@ -75,7 +75,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            accountInfoViewModel.profileImage?.asImageBitmap()?.let {
+            accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let {
                 Image(
                     bitmap = it,
                     contentDescription = "User Profile",
@@ -96,7 +96,9 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     .padding(4.dp)
                     .background(Color.White, CircleShape)
             )
-            Button(onClick = { accountInfoViewModel.updateProfileImage() }) {
+            Button(onClick = {
+                //accountInfoViewModel.updateProfileImage()
+                }) {
                 Text("Carica Immagine")
             }
         }
@@ -239,7 +241,14 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                             lastName ?: "",
                             username ?: "",
                              email?: "",
-                        phoneNumber ?: ""
+                        phoneNumber ?: "",
+                            callback = {
+                                showPopupMessage = if (it == "success") {
+                                    "Dati modificati con successo"
+                                } else {
+                                    "Errore durante la modifica dei dati"
+                                }
+                            }
                         )
                         isUserInfoTextFieldEnabled = false
                     } else {

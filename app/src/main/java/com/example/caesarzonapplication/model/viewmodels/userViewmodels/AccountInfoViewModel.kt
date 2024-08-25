@@ -44,8 +44,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     private val client = OkHttpClient()
 
 
-
-    fun addUserData(user: UserRegistrationDTO){
+    fun addUserData(user: UserRegistrationDTO) {
         viewModelScope.launch {
             userRepository.addUser(user)
         }
@@ -53,7 +52,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 
 
     //Fase di modifica dei dati, funziona
-  
+
     fun modifyUserData(
         firstName: String,
         lastName: String,
@@ -81,7 +80,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         email: String,
         phoneNumber: String,
     ): String {
-        val newUserDTO = UserDTO(username, firstName, lastName, email,phoneNumber)
+        val newUserDTO = UserDTO(username, firstName, lastName, email, phoneNumber)
         val jsonObject = JSONObject()
             .put("username", newUserDTO.username)
             .put("firstName", newUserDTO.firstName)
@@ -124,12 +123,24 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     }
 
     //Fase di registrazione funziona
-    fun registerUser(username: String,firstName: String, lastName: String, email: String, credentialValue: String,callback: (result: String) -> Unit
+    fun registerUser(
+        username: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        credentialValue: String,
+        callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
             try {
-                doRegistration(username,firstName, lastName, email, credentialValue)
-                val user = UserRegistrationDTO(firstName = firstName, lastName =  lastName, username =  username, email =  email,credentialValue = credentialValue)
+                doRegistration(username, firstName, lastName, email, credentialValue)
+                val user = UserRegistrationDTO(
+                    firstName = firstName,
+                    lastName = lastName,
+                    username = username,
+                    email = email,
+                    credentialValue = credentialValue
+                )
                 addUserData(user)
                 callback("success")
             } catch (e: Exception) {
@@ -179,7 +190,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     //Fine fase di registrazione
 
 
-
     //Inizio recupero password
     fun retrieveForgottenPassword(username: String, callback: (result: String) -> Unit) {
         viewModelScope.launch {
@@ -226,12 +236,17 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 
     //verifica otp
 
-    fun verifyOTP(otp: String, password: String, username: String, callback: (result: String) -> Unit){
+    fun verifyOTP(
+        otp: String,
+        password: String,
+        username: String,
+        callback: (result: String) -> Unit
+    ) {
         viewModelScope.launch {
-            try{
+            try {
                 doVerifyOTP(otp, password, username)
                 callback("success")
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 callback("error: ${e.message}")
             }
@@ -266,12 +281,18 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
+
     //con recovy 1 tutto ok
     //con recovery 0 invio otp
     //con recovery 2 devo aspettare aldo
-    fun changePassword(password: String, username: String, recovery: Int,callback: (result: String) -> Unit): String {
+    fun changePassword(
+        password: String,
+        username: String,
+        recovery: Int,
+        callback: (result: String) -> Unit
+    ): String {
         viewModelScope.launch {
-            if(doChangePassword(password, username, recovery) == "success")
+            if (doChangePassword(password, username, recovery) == "success")
                 callback("success")
         }
         return "error"
@@ -307,6 +328,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
+
     //Funziona
     fun getUserData() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -350,7 +372,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     }
 
 
-
     //funziona
     suspend fun login(username: String, password: String): Boolean {
         // Resetta il token all'inizio del login
@@ -371,12 +392,17 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     }
 
     //Caricamento immagine profilo
-    fun updateImageProfile(image: Bitmap){
+    fun updateImageProfile(image: Bitmap) {
         viewModelScope.launch {
-            imageRepository.insertProfileImage(ProfileImage(username = userData!!.username, profilePicture = image))
+            imageRepository.insertProfileImage(
+                ProfileImage(
+                    username = userData!!.username,
+                    profilePicture = image
+                )
+            )
         }
     }
-
+}
 
 class AccountInfoViewModelFactory(
     private val userRepository: UserRepository,

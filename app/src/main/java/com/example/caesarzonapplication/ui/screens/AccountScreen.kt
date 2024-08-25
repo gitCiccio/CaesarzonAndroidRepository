@@ -1,9 +1,11 @@
 package com.example.caesarzonapplication.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ScrollableTabRow
@@ -17,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
@@ -54,9 +57,9 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                     modifier = Modifier
                         .fillMaxWidth()
                         .tabIndicatorOffset(it[selectedTab])
-                ) }
+                )
+            }
         ) {
-
             accountTabs.forEachIndexed { index, tab ->
                 Tab(
                     text = { Text(text = tab.name) },
@@ -64,7 +67,7 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                     onClick = { selectedTab = index },
                     icon = {
                         Icon(
-                            imageVector = if(index == selectedTab) tab.selectedIcon else tab.unselectedIcon,
+                            imageVector = if (index == selectedTab) tab.selectedIcon else tab.unselectedIcon,
                             contentDescription = tab.name,
                         )
                     },
@@ -74,27 +77,15 @@ fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInf
                         .wrapContentSize()
                         .padding(horizontal = 8.dp)
                 )
-
-            accountInfoViewModel.profileImage.let {
-                accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let { it1 ->
-                    Image(
-                        bitmap = it1,
-                        contentDescription = "User Profile",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(16.dp)
-                    )
-                }
-
             }
-        }
-        when (selectedTab) {
-            0 -> UserInfoSection(accountInfoViewModel)
-            1 -> UserAddressInfoSection(accountInfoViewModel)
-            2 -> PaymentManagementSection()
-            3 -> OrderManagementSection()
-            4 -> ReturnsSection()
-            5 -> SupportSection()
+            when (selectedTab) {
+                0 -> UserInfoSection(accountInfoViewModel)
+                1 -> UserAddressInfoSection(accountInfoViewModel)
+                2 -> PaymentManagementSection()
+                3 -> OrderManagementSection()
+                4 -> ReturnsSection()
+                5 -> SupportSection()
+            }
         }
     }
 }
