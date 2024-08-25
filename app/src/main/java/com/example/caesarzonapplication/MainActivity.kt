@@ -60,7 +60,8 @@ class MainActivity : ComponentActivity() {
                     accountInfoViewModel = accountInfoViewModel,
                     productsViewModel = productsViewModel,
                     followersViewModel = followersViewModel,
-                    addressViewModel = addressViewModel
+                    addressViewModel = addressViewModel,
+                    cardsViewModel = cardViewModel,
                 )
             }
         }
