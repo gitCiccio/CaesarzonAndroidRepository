@@ -50,75 +50,48 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
 
 
     //Fase di modifica dei dati, funziona
-    fun modifyUserData(
-        firstName: String,
-        lastName: String,
-        username: String,
-        email: String,
-        phoneNumber: String,
-        callback: (result: String) -> Unit
-    ) {
+    fun modifyUserData(firstName: String, lastName: String, username: String, email: String, phoneNumber: String ) {
         viewModelScope.launch {
-            try {
-                val result = doModifyUser(firstName, lastName, username, email, phoneNumber)
-                callback(result)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                callback("error: ${e.message}")
-            }
-        }
-    }
+            val newUserDTO = UserDTO(username, firstName, lastName, email, phoneNumber)
+            val jsonObject = JSONObject()
+                .put("username", newUserDTO.username)
+                .put("firstName", newUserDTO.firstName)
+                .put("lastName", newUserDTO.lastName)
+                .put("username", newUserDTO.username)
+                .put("phoneNumber", newUserDTO.phoneNumber)
+                .put("email", newUserDTO.email)
 
+            val json = jsonObject.toString()
+            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val requestBody = json.toRequestBody(mediaType)
 
-    suspend fun doModifyUser(
-        firstName: String,
-        lastName: String,
-        username: String,
-        email: String,
-        phoneNumber: String,
-    ): String {
-        val newUserDTO = UserDTO(username, firstName, lastName, email,phoneNumber)
-        val jsonObject = JSONObject()
-            .put("username", newUserDTO.username)
-            .put("firstName", newUserDTO.firstName)
-            .put("lastName", newUserDTO.lastName)
-            .put("username", newUserDTO.username)
-            .put("phoneNumber", newUserDTO.phoneNumber)
-            .put("email", newUserDTO.email)
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
+            val request = Request.Builder()
+                .url(manageURL)
+                .put(requestBody)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
 
-
-        val json = jsonObject.toString()
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val requestBody = json.toRequestBody(mediaType)
-
-        val manageURL = URL("http://25.49.50.144:8090/user-api/user")
-        val request = Request.Builder()
-            .url(manageURL)
-            .put(requestBody)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-            .build()
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val client = OkHttpClient()
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    return@withContext "error: ${response.message} ${response.code}"
+            withContext(Dispatchers.IO) {
+                try {
+                    val client = OkHttpClient()
+                    val response = client.newCall(request).execute()
+                    if (!response.isSuccessful) {
+                        return@withContext
+                    }
+                    val oldUser = userRepository.getUserData(username)
+                    oldUser.firstName = newUserDTO.firstName
+                    oldUser.lastName = newUserDTO.lastName
+                    oldUser.email = newUserDTO.email
+                    oldUser.phoneNumber = newUserDTO.phoneNumber
+                    userRepository.updateUser(oldUser)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    "error: ${e.message}"
                 }
-                val oldUser = userRepository.getUserData(username)
-                oldUser.firstName = newUserDTO.firstName
-                oldUser.lastName = newUserDTO.lastName
-                oldUser.email = newUserDTO.email
-                oldUser.phoneNumber = newUserDTO.phoneNumber
-                userRepository.updateUser(oldUser)
-                "success"
-            } catch (e: IOException) {
-                e.printStackTrace()
-                "error: ${e.message}"
             }
         }
     }
-    //Fine modifica dei dati
 
     //Fase di registrazione funziona
     fun registerUser(username: String,firstName: String, lastName: String, email: String, credentialValue: String,callback: (result: String) -> Unit
@@ -365,6 +338,10 @@ class AccountInfoViewModel(private val userRepository: UserRepository) : ViewMod
             println("Errore di login: credenziali non valide.")
             false
         }
+    }
+
+    fun updateProfileImage() {
+        TODO("Not yet implemented")
     }
 
 }

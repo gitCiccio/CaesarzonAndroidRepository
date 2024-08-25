@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -49,35 +50,57 @@ fun OrderManagementSection() {
 
         LazyColumn {
             items(orders) { order ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)
-                        .padding(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expandedOrder = if (expandedOrder == order) null else order },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = order,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(
-                            imageVector = if (expandedOrder == order) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                            contentDescription = null
-                        )
-                    }
-                    if (expandedOrder == order) {
-                        Text(text = "Dettagli dell'ordine: $order")
-                        Text(text = "Prodotto 1: Descrizione, Prezzo, Quantità")
-                        Text(text = "Prodotto 2: Descrizione, Prezzo, Quantità")
-
-                    }
-                }
+                OrderItem(
+                    order = order,
+                    isExpanded = expandedOrder == order,
+                    onOrderClick = { expandedOrder = if (expandedOrder == order) null else order }
+                )
+                HorizontalDivider(thickness = 1.dp, color = Color.Gray)
             }
         }
     }
 }
+
+@Composable
+fun OrderItem(order: String, isExpanded: Boolean, onOrderClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(8.dp)
+            .animateContentSize()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onOrderClick() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = order,
+                modifier = Modifier.weight(1f),
+                fontWeight = FontWeight.SemiBold
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = null
+            )
+        }
+        if (isExpanded) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OrderDetails(order = order)
+        }
+    }
+}
+
+@Composable
+fun OrderDetails(order: String) {
+    Column(modifier = Modifier.padding(start = 16.dp)) {
+        Text(text = "Dettagli dell'ordine: $order", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = "Prodotto 1: Descrizione, Prezzo, Quantità")
+        Text(text = "Prodotto 2: Descrizione, Prezzo, Quantità")
+
+    }
+}
+

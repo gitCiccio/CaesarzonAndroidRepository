@@ -16,7 +16,7 @@ import java.util.UUID
 
 class ReportViewModel : ViewModel() {
 
-    val client = OkHttpClient()
+    private val client = OkHttpClient()
 
     private val _reports = mutableStateListOf<ReportDTO>()
     val reports: List<ReportDTO> get() = _reports
