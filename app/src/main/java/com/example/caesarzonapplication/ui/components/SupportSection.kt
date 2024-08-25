@@ -1,6 +1,9 @@
 package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -8,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupportSection() {
 
@@ -31,9 +33,9 @@ fun SupportSection() {
 
     Column {
         Text(text = "Invia richiesta", style = MaterialTheme.typography.bodyMedium)
-        ExposedDropdownMenuBox(
+        DropdownMenu(
             expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+            onDismissRequest = { expanded = !expanded }
         ) {
             TextField(
                 value = selectedReason,
@@ -41,13 +43,14 @@ fun SupportSection() {
                 label = { Text("Motivo") },
                 readOnly = true,
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    if (expanded)
+                        Icons.Filled.ArrowUpward
+                    else Icons.Filled.ArrowDropDown
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor()
             )
-            ExposedDropdownMenu(
+            DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {

@@ -53,6 +53,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 
 
     //Fase di modifica dei dati, funziona
+  
     fun modifyUserData(
         firstName: String,
         lastName: String,
@@ -121,7 +122,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
-    //Fine modifica dei dati
 
     //Fase di registrazione funziona
     fun registerUser(username: String,firstName: String, lastName: String, email: String, credentialValue: String,callback: (result: String) -> Unit
@@ -377,7 +377,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 
-}
 
 class AccountInfoViewModelFactory(
     private val userRepository: UserRepository,

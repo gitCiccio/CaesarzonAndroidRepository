@@ -23,8 +23,6 @@ import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
 
 class MainActivity : ComponentActivity() {
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          val productsViewModel: ProductsViewModel by viewModels()
