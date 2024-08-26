@@ -16,8 +16,8 @@ interface SupportDao {
     @Query("SELECT * FROM richiesta_supporto")
     fun getAllSupport(): LiveData<List<Support>>
 
-    @Query("DELETE FROM richiesta_supporto WHERE id = :id")
-    suspend fun deleteSupportById(id: Long)
+    @Query("DELETE FROM richiesta_supporto WHERE id_richiesta_di_supporto = :id")
+    suspend fun deleteSupportById(id: String)
 
     @Query("DELETE FROM richiesta_supporto")
     fun deleteAllSupport()

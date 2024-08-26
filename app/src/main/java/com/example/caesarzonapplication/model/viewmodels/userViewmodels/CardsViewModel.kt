@@ -124,7 +124,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
                 println("Risposta dal server: $responseBody")
 
-                cardRepository.deleteCardById(card.id.toLong())
+                cardRepository.deleteCardById(card.id)
                 println("Indirizzo eliminato con successo")
             }
         }catch (e: Exception){

@@ -5,7 +5,7 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.Report
 
 class ReportRepository(private val reportDao: ReportDao) {
 
-    suspend fun countByUsernameUser2AndReviewId(username: String, reviewId: Long): Int {
+    suspend fun countByUsernameUser2AndReviewId(username: String, reviewId: String): Int {
         return try {
             val count = reportDao.countByUsernameUser2AndReviewId(username, reviewId)
             count
@@ -15,7 +15,7 @@ class ReportRepository(private val reportDao: ReportDao) {
         }
     }
 
-    suspend fun deleteByReviewId(reviewId: Long): Boolean {
+    suspend fun deleteByReviewId(reviewId: String): Boolean {
         return try {
             reportDao.deleteByReviewId(reviewId)
             true
@@ -25,7 +25,7 @@ class ReportRepository(private val reportDao: ReportDao) {
         }
     }
 
-    suspend fun findByReviewId(reviewId: Long): Report? {
+    suspend fun findByReviewId(reviewId: String): Report? {
         return try {
             val report = reportDao.findByReviewId(reviewId)
             report

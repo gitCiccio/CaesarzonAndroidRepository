@@ -7,8 +7,8 @@ import java.util.UUID
 
 @Entity(tableName = "follower")
 data class Follower(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "id")val id: String,
     @ColumnInfo(name = "username_utente")val username2: String,
     @ColumnInfo(name = "amico")val friend: Boolean
 ) {

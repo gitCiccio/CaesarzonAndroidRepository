@@ -18,10 +18,10 @@ interface AdminNotificationDao {
     fun getAllAdminNotifications(): LiveData<List<AdminNotification>>
 
     @Query("DELETE FROM notifiche_admin WHERE id_segnalazione = :reportId")
-    suspend fun deleteAdminReportById(reportId: Long)
+    suspend fun deleteAdminReportById(reportId: String)
 
     @Query("DELETE FROM notifiche_admin WHERE id_richiesta_di_supporto = :supportId")
-    suspend fun deleteAdminSupportById(supportId: Long)
+    suspend fun deleteAdminSupportById(supportId: String)
 
     @Query("DELETE FROM notifiche_admin")
      fun deleteAllAdminNotifications()

@@ -29,7 +29,7 @@ class ProfileImageRepository(private val profileImageDao: ProfileImageDao) {
     }
 
     // Elimina un'immagine profilo per ID
-    suspend fun deleteProfileImageById(id: Long): Boolean {
+    suspend fun deleteProfileImageById(id: String): Boolean {
         return try {
             profileImageDao.deleteProfileImageById(id)
             true

@@ -7,8 +7,7 @@ import java.time.LocalDate
 
 @Entity(tableName = "Ban")
 data class Ban(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_ban")val banId: String,
     @ColumnInfo(name = "motivo")val reason: String,
     @ColumnInfo(name = "data_inizio")val startDate: LocalDate,

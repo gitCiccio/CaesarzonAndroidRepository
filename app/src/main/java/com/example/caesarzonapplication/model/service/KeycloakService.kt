@@ -28,7 +28,7 @@ class KeycloakService {
         var myToken: TokenResponse? = null
         var basicToken: TokenResponse? = null
         val isAdmin = mutableStateOf(false)
-        val logged = mutableStateOf(true)
+        val logged = mutableStateOf(false)
 
     }
 

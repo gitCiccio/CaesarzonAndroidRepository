@@ -26,7 +26,7 @@ class SupportRepository(private val supportDao: SupportDao) {
         }
     }
 
-    suspend fun deleteSupportById(id: Long): Boolean {
+    suspend fun deleteSupportById(id: String): Boolean {
         return try {
             supportDao.deleteSupportById(id)
             true

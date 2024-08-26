@@ -6,8 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "wishlist")
 data class Wishlist(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_lista_desideri") val productId: String,
     @ColumnInfo(name = "nome") val name: String,
     @ColumnInfo(name = "visibilità")val visibility: Boolean
