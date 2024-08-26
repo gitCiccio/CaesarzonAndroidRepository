@@ -29,9 +29,11 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     private val client = OkHttpClient()
     var addresses: ArrayList<AddressDTO> = ArrayList()
-    //var cityData: ArrayList<CityDataDTO> = ArrayList() forse non serve
+    var cityData: ArrayList<String> = ArrayList()
+    var addressesUuid: List<UUID> = emptyList()
+    var cityDataDTO: CityDataDTO? = null
+    val gson = Gson()
 
-     var addressesUuid: List<UUID> = emptyList()
 
 
     init{
@@ -59,7 +61,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                val gson = Gson()
                 //serve per deserializzare la stringa JSON in una lista di oggetti Address
                 val listType = object :  TypeToken<List<UUID>>() {}.type
                 addressesUuid = gson.fromJson(responseBody, listType)
@@ -93,7 +94,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                     }
 
                     println("Risposta dal server: $responseBody")
-                    val gson = Gson()
                     val valType = object : TypeToken<Address>() {}.type
                     val address = gson.fromJson<AddressDTO>(responseBody, valType)
 
@@ -170,7 +170,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                //val gson = Gson()
                 addresses.add(address)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
                 addressRepository.addAddress(address)//Aggiunge l'indirizzo al db in locale
                 println("Indirizzo aggiunto con successo")
@@ -180,7 +179,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         }
     }
     //riesco a prendere i suggerimenti di città
-     fun getCityTip(cityTip: String) {
+     fun getCityTip(cityTip: String){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/city?sugg=$cityTip")
         val request = Request.Builder()
             .url(manageUrl)
@@ -194,26 +193,20 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    //return@launch emptyList<String>()
+                    return@launch
                 }
 
                 println("Risposta dal server: $responseBody")
 
                 // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
-                val gson = Gson()
                 val listType = object : TypeToken<List<String>>() {}.type
-                val cityList: List<String> = gson.fromJson(responseBody, listType)
+                cityData = gson.fromJson(responseBody, listType)
 
-                // Stampa ogni città ottenuta
-                cityList.forEach { city ->
-                    println(city)
-                }
 
-                //return@withContext cityList
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
-                //return@withContext emptyList<String>()
+                return@launch
             }
         }
     }
@@ -232,26 +225,24 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    //return@launch emptyList<String>()
+                    return@launch
                 }
 
                 println("Risposta dal server: $responseBody")
 
                 // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
                 val gson = Gson()
-                val listType = object : TypeToken<List<CityDataDTO>>() {}.type
-                val cityList: List<String> = gson.fromJson(responseBody, listType)
+                val listType = object : TypeToken<CityDataDTO>() {}.type
+                cityDataDTO = gson.fromJson(responseBody, listType)
 
                 // Stampa ogni città ottenuta
-                cityList.forEach { city ->
-                    println(city)
-                }
+
 
                 //return@withContext cityList
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
-                //return@withContext emptyList<String>()
+                return@launch
             }
         }
     }

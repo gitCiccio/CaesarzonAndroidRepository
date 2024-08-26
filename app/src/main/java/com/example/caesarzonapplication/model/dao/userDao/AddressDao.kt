@@ -20,8 +20,8 @@ interface AddressDao {
     suspend fun addAddress(address: Address)
 
     //Elimina un indirizzo
-    @Query("DELETE FROM indirizzo WHERE id = :id")
-    suspend fun deleteById(id: Long)
+    @Query("DELETE FROM indirizzo WHERE id_indirizzo = :id")
+    suspend fun deleteById(id: String)
 
     @Query("DELETE FROM indirizzo WHERE id_dati_comune = :id")
     suspend fun deleteAddressByCityId(id: String)

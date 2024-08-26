@@ -11,21 +11,20 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = Product::class,
-            parentColumns = ["id"],
-            childColumns = ["id_prodtto"],
+            parentColumns = ["id_prodotto"], // Should refer to Product's primary key
+            childColumns = ["ref_prodotto"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("id_prodtto")]
+    indices = [Index("ref_prodotto")] // Corrected the typo
 )
 data class ProductOrder(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
-    @ColumnInfo(name = "id_ordine_rpdotto")val prodcutOrderId: String,
-    @ColumnInfo(name = "id_prodtto")val productId: Long,
-    @ColumnInfo(name = "totale")val total: Double,
-    @ColumnInfo(name = "id_ordine")val orderId: String,
-    @ColumnInfo(name = "quantità")val quantity: Int,
-    @ColumnInfo(name = "per_dopo")val buyLater: Boolean,
-    @ColumnInfo(name = "taglia")val size: String
+    @PrimaryKey
+    @ColumnInfo(name = "id_ordine_prodotto") val productOrderId: String,
+    @ColumnInfo(name = "ref_prodotto") val productId: String,
+    @ColumnInfo(name = "totale") val total: Double,
+    @ColumnInfo(name = "id_ordine") val orderId: String,
+    @ColumnInfo(name = "quantità") val quantity: Int,
+    @ColumnInfo(name = "per_dopo") val buyLater: Boolean,
+    @ColumnInfo(name = "taglia") val size: String
 )

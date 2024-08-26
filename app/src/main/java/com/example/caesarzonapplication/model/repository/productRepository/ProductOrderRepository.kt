@@ -31,7 +31,7 @@ class ProductOrderRepository(private val productOrderDao: ProductOrderDao) {
     }
 
     // Elimina un ordine prodotto per id
-    suspend fun deleteProductOrderById(id: Long): Boolean {
+    suspend fun deleteProductOrderById(id: String): Boolean {
         return try {
             productOrderDao.deleteProductOrderById(id)
             true

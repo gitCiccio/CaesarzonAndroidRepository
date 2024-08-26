@@ -7,8 +7,7 @@ import java.util.UUID
 
 @Entity(tableName = "carte")
 data class Card(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_carta")val id_carta: String,
     @ColumnInfo(name = "numero_carta")val cardNumber: String,
     @ColumnInfo(name = "titolare")val owner: String,

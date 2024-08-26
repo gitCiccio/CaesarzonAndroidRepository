@@ -6,7 +6,7 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.Suppor
 
 class AdminNotificationRepository(private val adminNotificationDao: AdminNotificationDao) {
 
-    suspend fun deleteByReportId(id: Long): Boolean {
+    suspend fun deleteByReportId(id: String): Boolean {
         return try {
             adminNotificationDao.deleteAdminReportById(id)
             true
@@ -18,7 +18,7 @@ class AdminNotificationRepository(private val adminNotificationDao: AdminNotific
 
     suspend fun deleteBySupport(support: Support): Boolean{
         return try {
-            adminNotificationDao.deleteAdminSupportById(support.id)
+            adminNotificationDao.deleteAdminSupportById(support.support_id)
             true
         } catch (e: Exception) {
             e.printStackTrace()
