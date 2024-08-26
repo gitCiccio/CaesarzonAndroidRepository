@@ -96,7 +96,8 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     .padding(4.dp)
                     .background(Color.White, CircleShape)
             )
-            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) {
+            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) 
+           {
                 Text("Carica Immagine")
             }
         }
@@ -254,7 +255,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                 showPopup = true
                             } else
                                 showPopupMessage = "Errore durante la modifica dei dati"
-
                         }
                         isUserInfoTextFieldEnabled = false
                     } else

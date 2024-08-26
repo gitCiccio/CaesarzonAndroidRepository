@@ -95,7 +95,6 @@ class KeycloakService {
                     )
                 }"
             }
-
             val requestBody =
                 params.toRequestBody("application/x-www-form-urlencoded".toMediaType())
             val request = Request.Builder()
@@ -103,7 +102,6 @@ class KeycloakService {
                 .post(requestBody)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build()
-
             try {
                 val response = client.newCall(request).execute()
                 println("Response code: ${response.code}")

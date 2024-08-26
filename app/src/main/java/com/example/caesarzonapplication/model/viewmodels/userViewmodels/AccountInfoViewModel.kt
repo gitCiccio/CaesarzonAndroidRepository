@@ -402,8 +402,8 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             )
         }
     }
-
 }
+
 class AccountInfoViewModelFactory(
     private val userRepository: UserRepository,
     private val imageRepository: ProfileImageRepository

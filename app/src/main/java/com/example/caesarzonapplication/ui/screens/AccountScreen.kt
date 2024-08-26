@@ -51,21 +51,21 @@ val accountTabs = listOf(
 
 var selectedTab by remember { mutableIntStateOf(0) }
 
-Column(
-    modifier = Modifier.fillMaxSize()
-) {
-    ScrollableTabRow(
-        selectedTabIndex = selectedTab,
-        edgePadding = 5.dp,
-        containerColor = TabRowDefaults.secondaryContainerColor,
-        indicator = {
-            TabRowDefaults.SecondaryIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .tabIndicatorOffset(it[selectedTab])
-            ) }
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ScrollableTabRow(
+            selectedTabIndex = selectedTab,
+            edgePadding = 5.dp,
+            containerColor = TabRowDefaults.secondaryContainerColor,
+            indicator = {
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .tabIndicatorOffset(it[selectedTab])
+                )
+            }
         ) {
-
             accountTabs.forEachIndexed { index, tab ->
                 Tab(
                     text = { Text(text = tab.name) },
