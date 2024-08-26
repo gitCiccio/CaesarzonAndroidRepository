@@ -6,9 +6,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDate
 @Entity(tableName = "segnala")
 data class Report(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
-
+    @PrimaryKey
     @ColumnInfo(name = "id_segnalazione") val id_segnalazione: String,
 
     @ColumnInfo(name = "data_segnalazione") val reportDate: LocalDate,  // Richiede un TypeConverter

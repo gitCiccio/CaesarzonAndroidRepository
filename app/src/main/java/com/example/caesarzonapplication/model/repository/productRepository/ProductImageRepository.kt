@@ -29,7 +29,7 @@ class ProductImageRepository(private val productImageDao: ProductImageDao) {
     }
 
     // Elimina un'immagine di prodotto per ID
-    suspend fun deleteProductImageById(id: Long): Boolean {
+    suspend fun deleteProductImageById(id: String): Boolean {
         return try {
             productImageDao.deleteProductImageById(id)
             true

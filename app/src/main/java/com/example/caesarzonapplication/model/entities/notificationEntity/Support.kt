@@ -6,9 +6,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDate
 @Entity(tableName = "richiesta_supporto")
 data class Support(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
-
+    @PrimaryKey
     @ColumnInfo(name = "id_richiesta_di_supporto") val support_id: String,
 
     @ColumnInfo(name = "tipo") val type: String,

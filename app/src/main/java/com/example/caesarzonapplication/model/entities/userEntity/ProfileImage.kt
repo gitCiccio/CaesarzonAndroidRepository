@@ -7,8 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "foto_utente")
 class ProfileImage(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "username")val username: String,
     @ColumnInfo(name = "foto", typeAffinity = ColumnInfo.BLOB) var profilePicture: Bitmap?
 ) {

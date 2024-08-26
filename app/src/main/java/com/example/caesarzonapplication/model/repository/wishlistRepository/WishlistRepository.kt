@@ -29,7 +29,7 @@ class WishlistRepository(private val wishlistDao: WishlistDao) {
         }
     }
 
-    suspend fun deleteWishlistById(id: Long): Boolean {
+    suspend fun deleteWishlistById(id: String): Boolean {
         return try {
             wishlistDao.deleteWishlistById(id)
             true

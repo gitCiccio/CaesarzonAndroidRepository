@@ -10,7 +10,7 @@ class CardRepository(private val cardDao: CardDao) {
 
     suspend fun addCard(card: CardDTO): Boolean {
         return try {
-            val card = Card(id = 0, id_carta = card.id, cardNumber = card.cardNumber, owner = card.owner, cvv = card.cvv, expirationDate = card.expirationDate, balance = card.balance)
+            val card = Card(id_carta = card.id, cardNumber = card.cardNumber, owner = card.owner, cvv = card.cvv, expirationDate = card.expirationDate, balance = card.balance)
             cardDao.addCard(card)
             true
         } catch (e: Exception) {
@@ -33,7 +33,7 @@ class CardRepository(private val cardDao: CardDao) {
     }
 
 
-    suspend fun deleteCardById(id: Long): Boolean {
+    suspend fun deleteCardById(id: String): Boolean {
         return try {
             cardDao.deleteCardById(id)
             true

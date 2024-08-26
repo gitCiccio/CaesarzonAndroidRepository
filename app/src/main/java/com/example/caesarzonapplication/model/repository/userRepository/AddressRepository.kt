@@ -24,7 +24,7 @@ class AddressRepository(private val addressDao: AddressDao) {
                         houseNumber = it.streetNumber,
                         roadType = it.roadType,
                         city = CityDataDTO(
-                            it.city.id,
+                            it.city.id_city_data.toLong(),
                             it.city.city,
                             it.city.cap,
                             it.city.region,
@@ -46,13 +46,12 @@ class AddressRepository(private val addressDao: AddressDao) {
         println("sono in addAddress")
         return try{
             val newAddress =
-                Address(id = 0,
+                Address(
                     address_id = address.id,
                     streetName = address.roadName,
                     streetNumber = address.houseNumber,
                     roadType = address.roadType,
-                    city = CityData(0,
-                        address.city.id.toString(),
+                    city = CityData(address.city.id.toString(),
                         address.city.city,
                         address.city.cap,
                         address.city.region,
