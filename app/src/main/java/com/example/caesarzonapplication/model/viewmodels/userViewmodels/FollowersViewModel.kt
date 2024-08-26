@@ -14,10 +14,16 @@ import com.example.caesarzonapplication.model.repository.userRepository.Follower
 import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -30,6 +36,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 class FollowersViewModel(private val followerRepository: FollowerRepository): ViewModel() {
 
     private lateinit var getAllFollowers: LiveData<List<Follower>>
+
+    val client = OkHttpClient()
 
     init {
         viewModelScope.launch{
@@ -63,8 +71,10 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
 
 
     init {
-        //loadFollowers(0, false)
-        //loadFriends(0, true)
+        viewModelScope.launch {
+            loadFollowersAndFriends(0, false)
+            loadFollowersAndFriends(0, true)
+        }
         //loadMyFakeUsers()
     }
 
@@ -80,11 +90,41 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
             if (existingFollower == null) {
                 _followers.add(it)
                 _newFollowersAndFriends.add(it)
-                //followerRepository.addFollower(FollowerDTO())
             }
         }
-
+        viewModelScope.launch {
+            doAddFollower(follower)
+        }
     }
+
+    //Da provare domani
+    suspend fun doAddFollower(follower: UserSearchDTO){
+        val manageURL = URL("http://25.49.50.144:8090/user-api/followers")
+        val JSON = "application/json; charset=utf-8".toMediaType()
+
+        val gson = Gson()
+        val json = gson.toJson(follower)
+        val requestBody = json.toRequestBody(JSON)
+        val request = Request.Builder().url(manageURL).post(requestBody).addHeader("Authorization", "Bearer ${KeycloakService.myToken}").build()
+
+        withContext(Dispatchers.IO){
+            println("Snono nel try dell'aggiunta del follower")
+            try{
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+                println("response code: ${response.code}")
+                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                }
+                println("Risposta dal server: $responseBody")
+                println("follower Aggiunto con successo")
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+
 
     fun removeFollower(follower: UserSearchDTO) {
         // Trova l'utente con lo stesso username del follower
@@ -109,6 +149,30 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
             // Aggiungi l'utente aggiornato a _newFollowersAndFriends
             _newFollowersAndFriends.add(it)
         }
+        viewModelScope.launch {
+            doRemoveFollower(follower)
+        }
+    }
+
+    suspend fun doRemoveFollower(follower: UserSearchDTO){
+        val manageURL = URL("http://25.49.50.144:8090/user-api/followers/${follower.username}")
+        val request = Request.Builder().url(manageURL).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        withContext(Dispatchers.IO){
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                }
+                println("Risposta dal server: $responseBody")
+                println("Follower eliminato con successo")
+                followerRepository.deleteFollowerByUsername(follower.username)
+            }catch (e: Exception){
+                e.printStackTrace()
+                println("Errore nell'eliminazione del follower")
+            }
+        }
     }
 
     fun toggleFriendStatus(follower: UserSearchDTO) {
@@ -128,7 +192,7 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
         }
         _newFollowersAndFriends.add(follower)
     }
-
+    //da vedere domani
     fun searchUsers(username: String) {
         _users.clear()
         if(username.isEmpty()) return
@@ -178,88 +242,47 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
         }
     }
 
-
+    //Inserire nell'init per il caricamento dei dati
     //TODO GET PEr ottenere la lista di username dei follower, booleana per indicare se un follower è amico o meno e immagine di profilo, sarà una loadDeiFollower
-    fun loadFollowers(flw: Int, friend: Boolean){//flw è l'indice, mentre friend indica se voglio i follower o meno
-        CoroutineScope(Dispatchers.IO).launch {
-            val friendStatus = friend
-            val manageURL = URL("http://25.49.50.144:8090/user-api/followers?flw=$flw&friend=$friendStatus")//FIXME da vedere se l'api è giusta
-            val connection = manageURL.openConnection() as HttpURLConnection
+    suspend fun loadFollowersAndFriends(flw: Int, friend: Boolean){//flw è l'indice, mentre friend indica se voglio i follower o meno
+            val manageURL = URL("http://25.49.50.144:8090/user-api/followers?flw=$flw&friend=$friend")//FIXME da vedere se l'api è giusta
+            val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}") // Assicurati che il token non sia nullo
+                .build()
 
-            try{
-                connection.requestMethod = "GET"
+            withContext(Dispatchers.IO){
+                try{
+                    val response = client.newCall(request).execute()
+                    val responseBody = response.body?.string()
+                    println("response code: ${response.code}")
 
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                val response = StringBuilder()
-                var line: String?
+                    if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                        println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    }else{
+                        val jsonResponse = JSONArray(responseBody)
+                        println("Response Body: $jsonResponse")
 
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
-                }
-                reader.close()
+                        for (i in 0 until jsonResponse.length()) {
+                            val jsonObject = jsonResponse.getJSONObject(i)
+                            val username = jsonObject.getString("username")
+                            val friendStatus = jsonObject.getBoolean("isFriend")
+                            val profilePictureBase64 = jsonObject.getString("profilePicture")
 
-                println("Response Code: ${connection.responseCode}")
-                if(connection.responseCode == HttpURLConnection.HTTP_OK){
-                    val jsonResponse = JSONArray(response.toString())
-                    println("Response Body: $jsonResponse")
-                    for(i in 0 until jsonResponse.length()){
-                        val jsonObject = jsonResponse.getJSONObject(i)
-                        val username = jsonObject.getString("username")
-                        val friendStatus = jsonObject.getBoolean("isFriend")
-                        val profilePictureBase64 = jsonObject.getString("profilePicture")
-
-                        _followers.add(UserSearchDTO(username, profilePictureBase64, false, true))
+                            if (friend) {
+                                _friends.add(UserSearchDTO(username, profilePictureBase64, friendStatus, true))
+                            } else {
+                                _followers.add(UserSearchDTO(username, profilePictureBase64, friendStatus, true))
+                            }
+                        }
                     }
-                }else{
-                    println("Error: ${connection.responseMessage}")
-                }
 
-            }finally {
-                connection.disconnect()
+                }catch (e: Exception){
+                    e.printStackTrace()
+                    println("Errore nel caricamento dei follower e amici")
+                }
             }
-        }
     }
 
-    fun loadFriends(flw: Int, friend: Boolean){
-        CoroutineScope(Dispatchers.IO).launch {
-            val friendStatus = friend
-            val manageURL = URL("http://25.49.50.144:8090/user-api/followers?flw=$flw&friend=$friendStatus")//FIXME da vedere se l'api è giusta
-            val connection = manageURL.openConnection() as HttpURLConnection
-
-            try{
-                connection.requestMethod = "GET"
-
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                val response = StringBuilder()
-                var line: String?
-
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
-                }
-                reader.close()
-
-                println("Response Code: ${connection.responseCode}")
-                if(connection.responseCode == HttpURLConnection.HTTP_OK){
-                    val jsonResponse = JSONArray(response.toString())
-                    println("Response Body: "+jsonResponse)
-                    for(i in 0 until jsonResponse.length()){
-                        val jsonObject = jsonResponse.getJSONObject(i)
-                        val username = jsonObject.getString("username")
-                        val friendStatus = jsonObject.getBoolean("isFriend")
-                        val profilePictureBase64 = jsonObject.getString("profilePicture")
-
-                        _friends.add(UserSearchDTO(username, profilePictureBase64, true, true))
-                    }
-                }else{
-                    println("Error: ${connection.responseMessage}")
-                }
-
-            }finally {
-                connection.disconnect()
-            }
-        }
-    }
-
+        //Fai domani
         //TODO POST per modificare lo stato di un follower, amico o non amico, passiamo username
         fun updateFollowerStatus(followesAndFriends: List<UserSearchDTO>) {
             val manageURL = URL("http://25.49.50.144:8090/user-api/followers")
@@ -295,43 +318,7 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
             }
         }
 
-        //TODO DELETE per rimuovere un follower, passiamo username
-        fun deleteFollower(followesAndFriends: UserSearchDTO) {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/followers")
-            val connection = manageURL.openConnection() as HttpURLConnection
-            connection.requestMethod = "DELETE"
-            connection.doOutput = true
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("Accept", "application/json")
-            connection.setRequestProperty("Authorization", "Bearer ${KeycloakService.myToken}")
 
-            CoroutineScope(Dispatchers.IO).launch{
-
-                try{
-                    val usernamesToDelete = listOf(followesAndFriends.username)
-
-                    val gson = Gson()
-                    val jsonInputString = gson.toJson(usernamesToDelete)
-
-                    connection.outputStream.use { outputStream ->
-                        val writer = OutputStreamWriter(outputStream, "UTF-8")
-                        writer.write(jsonInputString)
-                        writer.flush()
-                    }
-
-                    val responseCode = connection.responseCode
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        println("Follower deleted successfully")
-                    } else {
-                        println("Error deleting follower: ${connection.responseMessage}")}
-                }catch (e: Exception){
-                    println("Error: ${e.message}")
-                }
-                finally {
-                    connection.disconnect()
-                }
-            }
-        }
         //TODO Fake medotdhs
         fun loadMyFakeUsers() {
             val fakeUsers = listOf(

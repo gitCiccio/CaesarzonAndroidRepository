@@ -29,9 +29,9 @@ class FollowerRepository(private val followerDao: FollowerDao) {
     }
 
 
-    suspend fun deleteFollowerById(id: Long): Boolean {
+    suspend fun deleteFollowerByUsername(username: String): Boolean {
         return try {
-            followerDao.deleteFollowerById(id)
+            followerDao.deleteFollowerByUsername(username)
             true
         } catch (e: Exception) {
             e.printStackTrace()

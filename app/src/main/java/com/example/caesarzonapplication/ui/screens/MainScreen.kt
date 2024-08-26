@@ -23,8 +23,9 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationBottomBar
@@ -36,8 +37,9 @@ fun MainScreen(
     navController: NavHostController,
     accountInfoViewModel: AccountInfoViewModel,
     productsViewModel: ProductsViewModel,
-    notificationViewModel: NotificationViewModel,
-    followersViewModel: FollowersViewModel
+    followersViewModel: FollowersViewModel,
+    addressViewModel: AddressViewModel,
+    cardsViewModel: CardsViewModel
 ){
 
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
@@ -91,7 +93,9 @@ fun MainScreen(
                     logged = logged,
                     productsViewModel = productsViewModel,
                     accountInfoViewModel = accountInfoViewModel,
-                    followerViewModel = followersViewModel
+                    followerViewModel = followersViewModel,
+                    addressViewModel = addressViewModel,
+                    cardViewModel = cardsViewModel
                 )
             }
         }

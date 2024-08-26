@@ -16,10 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.caesarzonapplication.model.dto.CardDTO
 import com.example.caesarzonapplication.model.utils.CardUtils
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 
 @Composable
-fun PaymentManagementSection() {
+fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
 
     var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
     var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
@@ -100,6 +102,8 @@ fun PaymentManagementSection() {
                             paymentMethods = paymentMethods + maskedCardNumber
                             showAddPaymentDialog = false
                             errorMessage = null
+                            val card = CardDTO("",maskedCardNumber, cardHolderName.text, expirationDate.text, cvc.text, balance = 0.0)
+                            cardsViewModel.addCard(card)
                         } else {
                             errorMessage = "Dati della carta non validi"
                         }

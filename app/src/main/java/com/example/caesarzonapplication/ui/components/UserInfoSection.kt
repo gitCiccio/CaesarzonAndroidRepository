@@ -96,9 +96,8 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     .padding(4.dp)
                     .background(Color.White, CircleShape)
             )
-            Button(onClick = {
-                //accountInfoViewModel.updateProfileImage()
-                }) {
+            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) 
+           {
                 Text("Carica Immagine")
             }
         }
@@ -188,7 +187,11 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 modifier = Modifier.fillMaxWidth()
             )
             if (phoneNumberError.isNotEmpty()) {
-                Text(phoneNumberError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                Text(
+                    phoneNumberError,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
 
@@ -215,12 +218,17 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         if (isPasswordTextFieldEnabled) {
                             coroutineScope.launch {
                                 username?.let {
-                                    accountInfoViewModel.changePassword(password, it, 1) { responseCode ->
+                                    accountInfoViewModel.changePassword(
+                                        password,
+                                        it,
+                                        1
+                                    ) { responseCode ->
                                         if (responseCode == "success") {
                                             password = ""
                                             showPopupMessage = "Password modificata con successo"
                                         } else {
-                                            showPopupMessage = "Errore durante la modifica della password"
+                                            showPopupMessage =
+                                                "Errore durante la modifica della password"
                                         }
                                         showPopup = true
                                     }
@@ -234,26 +242,24 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 }
 
                 Button(onClick = {
-                    if (isUserInfoTextFieldEnabled)
-                    {
+                    if (isUserInfoTextFieldEnabled) {
                         accountInfoViewModel.modifyUserData(
                             firstName ?: "",
                             lastName ?: "",
                             username ?: "",
-                             email?: "",
-                        phoneNumber ?: "",
-                            callback = {
-                                showPopupMessage = if (it == "success") {
-                                    "Dati modificati con successo"
-                                } else {
-                                    "Errore durante la modifica dei dati"
-                                }
-                            }
-                        )
+                            email ?: "",
+                            phoneNumber ?: ""
+                        ) {
+                            if (it == "success") {
+                                showPopupMessage = "Dati modificati con successo"
+                                showPopup = true
+                            } else
+                                showPopupMessage = "Errore durante la modifica dei dati"
+                        }
                         isUserInfoTextFieldEnabled = false
-                    } else {
+                    } else
                         isUserInfoTextFieldEnabled = true
-                    }
+
                 }) {
                     Text(text = if (isUserInfoTextFieldEnabled) "Salva" else "Modifica Info")
                 }
