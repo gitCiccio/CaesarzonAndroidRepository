@@ -104,11 +104,11 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     //Funzione per eliminare indirizzo
     fun deleteCard(card: CardDTO){
         CoroutineScope(Dispatchers.IO).launch {
-            doDeleteAddress(card)
+            doDeleteCard(card)
         }
     }
 
-    suspend fun doDeleteAddress(card: CardDTO) {
+    suspend fun doDeleteCard(card: CardDTO) {
 
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${card.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
@@ -165,6 +165,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 println("Risposta dal server: $responseBody")
                 //val gson = Gson()
                 cards.add(card)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
+                cardRepository.addCard(card)//Aggiunge l'indirizzo al db in locale
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
