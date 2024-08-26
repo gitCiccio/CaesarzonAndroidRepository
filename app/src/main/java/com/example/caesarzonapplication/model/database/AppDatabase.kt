@@ -46,7 +46,7 @@ import com.example.caesarzonapplication.model.utils.Converters
                       Product::class, ProductOrder::class, ProductImage::class,
                       Address::class, Card::class, CityData::class, Follower::class, User::class,
                       Wishlist::class, WishlistProduct::class],
-    version = 2, exportSchema = false)
+    version = 3, exportSchema = false)
 @TypeConverters(Converters::class, BitmapConverter::class)
 abstract class AppDatabase: RoomDatabase()  {
     abstract fun adminNotificationDao(): AdminNotificationDao
@@ -80,25 +80,29 @@ abstract class AppDatabase: RoomDatabase()  {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).addMigrations(MIGRATION_1_2)
+                ).addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 return instance
             }
         }
-        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Elimina la tabella esistente
-                db.execSQL("DROP TABLE IF EXISTS Follower")
+                // Droppa la vecchia tabella indirizzo
+                db.execSQL("DROP TABLE IF EXISTS indirizzo")
 
-                // Crea la nuova tabella con la struttura aggiornata
+                // Crea la nuova tabella indirizzo con la struttura aggiornata
                 db.execSQL("""
-            CREATE TABLE Follower (
-                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                new_column TEXT,
-                other_column INTEGER
-            )
-        """)
+                    CREATE TABLE indirizzo (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        id_indirizzo TEXT NOT NULL,
+                        nome_strada TEXT NOT NULL,
+                        numero_civico TEXT NOT NULL,
+                        tipo_strada TEXT NOT NULL,
+                        id_dati_comune TEXT NOT NULL,
+                        FOREIGN KEY(id_dati_comune) REFERENCES CityData(id)
+                    )
+                """)
             }
         }
     }

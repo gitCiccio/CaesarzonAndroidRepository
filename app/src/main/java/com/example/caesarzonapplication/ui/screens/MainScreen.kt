@@ -25,6 +25,7 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationBottomBar
@@ -37,7 +38,8 @@ fun MainScreen(
     accountInfoViewModel: AccountInfoViewModel,
     productsViewModel: ProductsViewModel,
     followersViewModel: FollowersViewModel,
-    addressViewModel: AddressViewModel
+    addressViewModel: AddressViewModel,
+    cardsViewModel: CardsViewModel
 ){
 
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
@@ -92,7 +94,8 @@ fun MainScreen(
                     productsViewModel = productsViewModel,
                     accountInfoViewModel = accountInfoViewModel,
                     followerViewModel = followersViewModel,
-                    addressViewModel = addressViewModel
+                    addressViewModel = addressViewModel,
+                    cardViewModel = cardsViewModel
                 )
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.navigation.AccountTabRow
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
@@ -30,7 +31,11 @@ import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
 
 @Composable
-fun AccountScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel, addressViewModel: AddressViewModel) {
+fun AccountScreen(
+    navController: NavController,
+    accountInfoViewModel: AccountInfoViewModel,
+    addressViewModel: AddressViewModel,
+    cardViewModel: CardsViewModel) {
 
 val accountTabs = listOf(
     AccountTabRow.Profile,
@@ -79,7 +84,7 @@ Column(
         when (selectedTab) {
             0 -> UserInfoSection(accountInfoViewModel)
             1 -> UserAddressInfoSection(accountInfoViewModel = accountInfoViewModel, addressViewModel = addressViewModel)
-            2 -> PaymentManagementSection()
+            2 -> PaymentManagementSection(cardViewModel)
             3 -> OrderManagementSection()
             4 -> ReturnsSection()
             5 -> SupportSection()

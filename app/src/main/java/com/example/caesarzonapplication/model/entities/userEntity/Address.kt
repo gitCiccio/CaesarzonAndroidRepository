@@ -14,7 +14,7 @@ data class Address(
     @ColumnInfo(name = "nome_strada")val streetName: String,
     @ColumnInfo(name = "numero_civico")val streetNumber: String,
     @ColumnInfo(name = "tipo_strada")val roadType: String,
-    @ColumnInfo(name = "id_dati_comune")val city: Long,
+    @ColumnInfo(name = "id_dati_comune")val city: CityData,
     ){
 
 }
