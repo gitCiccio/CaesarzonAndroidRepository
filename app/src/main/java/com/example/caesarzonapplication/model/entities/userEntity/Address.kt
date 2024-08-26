@@ -8,8 +8,7 @@ import java.util.UUID
 @Entity(
     tableName = "indirizzo")
 data class Address(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_indirizzo")val address_id: String,
     @ColumnInfo(name = "nome_strada")val streetName: String,
     @ColumnInfo(name = "numero_civico")val streetNumber: String,

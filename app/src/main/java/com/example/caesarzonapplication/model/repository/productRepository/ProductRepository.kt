@@ -28,7 +28,7 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    suspend fun deleteProductById(id: Long): Boolean {
+    suspend fun deleteProductById(id: String): Boolean {
         return try {
             productDao.deleteProductById(id)
             true

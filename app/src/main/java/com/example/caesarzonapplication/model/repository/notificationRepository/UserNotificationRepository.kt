@@ -27,7 +27,7 @@ class UserNotificationRepository(private val userNotificationDao: UserNotificati
         }
     }
 
-    suspend fun deleteUserNotificationById(id: Long): Boolean {
+    suspend fun deleteUserNotificationById(id: String): Boolean {
         return try {
             userNotificationDao.deleteUserNotificationById(id)
             true

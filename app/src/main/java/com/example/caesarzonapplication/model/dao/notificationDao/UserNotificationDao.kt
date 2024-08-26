@@ -15,8 +15,8 @@ interface UserNotificationDao {
     @Query("SELECT * FROM notifiche_utente")
     fun getAllUserNotifications(): LiveData<List<UserNotification>>
 
-    @Query("DELETE FROM notifiche_utente WHERE id = :id")
-    suspend fun deleteUserNotificationById(id: Long)
+    @Query("DELETE FROM notifiche_utente WHERE id_notifiche_utente = :id")
+    suspend fun deleteUserNotificationById(id: String)
 
     @Query("DELETE FROM notifiche_utente")
     fun deleteAllUserNotifications()

@@ -7,8 +7,7 @@ import java.time.LocalDate
 
 @Entity(tableName = "notifiche_utente")
 data class UserNotification(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_notifiche_utente")val id_username_notification: String,
     @ColumnInfo(name = "data")val localDate: LocalDate,
     @ColumnInfo(name = "descrizione")val subject: String,

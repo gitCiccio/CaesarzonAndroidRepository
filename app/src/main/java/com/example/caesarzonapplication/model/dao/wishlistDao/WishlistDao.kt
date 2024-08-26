@@ -15,8 +15,8 @@ interface WishlistDao {
     @Query("SELECT * FROM wishlist")
     fun getAllWishlist(): LiveData<List<Wishlist>>
 
-    @Query("DELETE FROM wishlist WHERE id = :id")
-    suspend fun deleteWishlistById(id: Long)
+    @Query("DELETE FROM wishlist WHERE id_lista_desideri = :id")
+    suspend fun deleteWishlistById(id: String)
 
     @Query("DELETE FROM wishlist")
     fun deleteAllWishlist()

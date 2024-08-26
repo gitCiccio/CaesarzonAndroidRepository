@@ -8,8 +8,7 @@ import java.time.LocalDate
 
 @Entity(tableName = "prodotto")
 data class Product(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long = 0,
+    @PrimaryKey
     @ColumnInfo(name = "id_prodotto") val productId: String,
     @ColumnInfo(name = "descrizione") val description: String,
     @ColumnInfo(name = "nome") val name: String,

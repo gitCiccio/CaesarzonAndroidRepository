@@ -17,7 +17,7 @@ class WishlistProductRepository(private val wishlistProductDao: WishlistProductD
         }
     }
 
-    fun findAllByWishlistId(wishlistId: Long): LiveData<List<WishlistProduct>> {
+    fun findAllByWishlistId(wishlistId: String): LiveData<List<WishlistProduct>> {
         return try {
             val wishlistProducts = wishlistProductDao.findAllByWishlistId(wishlistId)
             wishlistProducts
@@ -27,7 +27,7 @@ class WishlistProductRepository(private val wishlistProductDao: WishlistProductD
         }
     }
 
-    suspend fun deleteWishListProductByWishlistId(wishlistId: Long): Boolean {
+    suspend fun deleteWishListProductByWishlistId(wishlistId:String): Boolean {
         return try {
             wishlistProductDao.deleteWishListProductByWishlistId(wishlistId)
             true

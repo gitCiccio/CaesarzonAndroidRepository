@@ -16,8 +16,8 @@ interface ProductOrderDao {
     @Query("SELECT * FROM ordine_prodotto")
     fun getAllProductOrders(): LiveData<List<ProductOrder>>
 
-    @Query("DELETE FROM ordine_prodotto WHERE id = :id")
-    suspend fun deleteProductOrderById(id: Long)
+    @Query("DELETE FROM ordine_prodotto WHERE id_ordine_prodotto = :id")
+    suspend fun deleteProductOrderById(id: String)
 
     @Query("DELETE FROM ordine_prodotto")
     fun deleteAllProductOrders()

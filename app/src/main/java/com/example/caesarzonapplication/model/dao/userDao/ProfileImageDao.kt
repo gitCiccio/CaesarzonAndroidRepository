@@ -20,8 +20,8 @@ interface ProfileImageDao {
 
 
     // Elimina un'immagine profilo per ID
-    @Query("DELETE FROM foto_utente WHERE id = :id")
-    suspend fun deleteProfileImageById(id: Long)
+    @Query("DELETE FROM foto_utente WHERE  username = :username")
+    suspend fun deleteProfileImageById(username: String)
 
     // Elimina tutte le immagini profilo
     @Query("DELETE FROM foto_utente")

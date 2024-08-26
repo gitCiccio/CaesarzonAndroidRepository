@@ -19,8 +19,8 @@ interface ProductImageDao {
     fun getProductImagesByProductId(productId: String): LiveData<List<ProductImage>>
 
     // Elimina un'immagine di prodotto per ID
-    @Query("DELETE FROM foto_prodotti WHERE id = :id")
-    suspend fun deleteProductImageById(id: Long)
+    @Query("DELETE FROM foto_prodotti WHERE id_foto_prodotto = :id")
+    suspend fun deleteProductImageById(id: String)
 
     // Elimina tutte le immagini di prodotto
     @Query("DELETE FROM foto_prodotti")

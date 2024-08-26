@@ -27,7 +27,7 @@ class CityDataRepository(private val cityDataDao: CityDataDao) {
         }
     }
 
-    suspend fun deleteCityDataById(id: Long): Boolean {
+    suspend fun deleteCityDataById(id: String): Boolean {
         return try {
             cityDataDao.deleteCityDataById(id)
             true
