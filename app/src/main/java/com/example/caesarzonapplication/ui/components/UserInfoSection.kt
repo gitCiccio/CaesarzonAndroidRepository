@@ -218,17 +218,12 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         if (isPasswordTextFieldEnabled) {
                             coroutineScope.launch {
                                 username?.let {
-                                    accountInfoViewModel.changePassword(
-                                        password,
-                                        it,
-                                        1
-                                    ) { responseCode ->
+                                    accountInfoViewModel.changePassword(password, it, 1) { responseCode ->
                                         if (responseCode == "success") {
                                             password = ""
                                             showPopupMessage = "Password modificata con successo"
                                         } else {
-                                            showPopupMessage =
-                                                "Errore durante la modifica della password"
+                                            showPopupMessage = "Errore durante la modifica della password"
                                         }
                                         showPopup = true
                                     }
@@ -259,7 +254,6 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         isUserInfoTextFieldEnabled = false
                     } else
                         isUserInfoTextFieldEnabled = true
-
                 }) {
                     Text(text = if (isUserInfoTextFieldEnabled) "Salva" else "Modifica Info")
                 }
