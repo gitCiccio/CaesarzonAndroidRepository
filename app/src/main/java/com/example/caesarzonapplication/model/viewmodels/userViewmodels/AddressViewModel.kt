@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
+import com.example.caesarzonapplication.model.dto.CityDataDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CityDataRepository
@@ -31,11 +32,10 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     var cityDataDTO: CityDataDTO? = null
     val gson = Gson()
 
-
-
     init{
         getAllAddressesAndCityData()
     }
+
     //caricamento in locale
     fun getAllAddressesAndCityData(){
         getUuidAddressesFromServer()
@@ -232,10 +232,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 val listType = object : TypeToken<CityDataDTO>() {}.type
                 cityDataDTO = gson.fromJson(responseBody, listType)
 
-                // Stampa ogni città ottenuta
-
-
-                //return@withContext cityList
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")

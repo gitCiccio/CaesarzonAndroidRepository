@@ -109,8 +109,10 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
             var region by remember { mutableStateOf("") }
             var isFormValid by remember { mutableStateOf(false) }
 
+            var cityDataDTO by remember { mutableStateOf(addressViewModel.cityDataDTO) }
+
             LaunchedEffect(street, city) {
-                isFormValid = street.isNotEmpty() && city.isNotEmpty()
+                isFormValid = street.isNotEmpty() && city.isNotEmpty() && cityDataDTO != null
             }
 
             Dialog(onDismissRequest = {showAddAddressDialog = false} ) {
@@ -153,15 +155,14 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                         )
                     }
                     item{
-                        var filteredCities by remember { mutableStateOf(emptyList<CityDataDTO>()) }
+                        var filteredCities by remember { mutableStateOf(emptyList<String>()) }
                         OutlinedTextField(
                             value = city,
                             onValueChange = { input ->
                                 city = input
-                                filteredCities = if (input.isNotEmpty()) {
-                                    addressViewModel.cityData.filter { it.city.contains(input, ignoreCase = true) }
-                                } else {
-                                    emptyList()
+                                addressViewModel.getCityTip(city)
+                                if (input.isNotEmpty()) {
+                                    filteredCities = addressViewModel.cityData
                                 }
                                 addressDropdownExpanded = filteredCities.isNotEmpty()
                             },
@@ -174,9 +175,13 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                         ) {
                             filteredCities.forEach { cityData ->
                                 DropdownMenuItem(
-                                    text = { Text(text = cityData.city) },
+                                    text = { Text(text = cityData) },
                                     onClick = {
-                                        city = cityData.city
+                                        city = cityData
+                                        addressViewModel.getFullCityData(city)
+                                        zipCode= addressViewModel.cityDataDTO?.cap.toString()
+                                        province = addressViewModel.cityDataDTO?.province.toString()
+                                        region = addressViewModel.cityDataDTO?.region.toString()
                                         addressDropdownExpanded = false
                                     }
                                 )
@@ -211,13 +216,24 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                         Button(
                             onClick = {
                                 if (isFormValid) {
-                                    val newAddress = AddressDTO("", street, houseNumber, "", CityDataDTO("", city, zipCode, region, province))
-                                    addresses.add(newAddress)
+                                    val newAddress = cityDataDTO?.let {
+                                        AddressDTO("", street, houseNumber, roadType,
+                                            it
+                                        )
+                                    }
+                                    if (newAddress != null) {
+                                        addresses.add(newAddress)
+                                    }
                                     selectedAddress = newAddress
-                                    val newCityDataDTO = CityDataDTO("", city, zipCode, region, province)
-                                    val newAddressDTO = AddressDTO("", street, houseNumber, "", newCityDataDTO)
+                                    val newAddressDTO = cityDataDTO?.let {
+                                        AddressDTO("", street, houseNumber, roadType,
+                                            it
+                                        )
+                                    }
                                     showAddAddressDialog = false
-                                    addressViewModel.addAddress(newAddressDTO)
+                                    if (newAddressDTO != null) {
+                                        addressViewModel.addAddress(newAddressDTO)
+                                    }
                                 }
                             },
                             enabled = isFormValid,
