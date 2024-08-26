@@ -17,8 +17,8 @@ interface FollowerDao {
     fun getAllFollowers(): LiveData<List<Follower>>
 
 
-    @Query("DELETE FROM follower WHERE id = :id")
-    suspend fun deleteFollowerById(id: Long)
+    @Query("DELETE FROM follower WHERE username_utente = :username")
+    suspend fun deleteFollowerByUsername(username: String)
 
     @Query("DELETE FROM follower")
     fun deleteAllFollowers()

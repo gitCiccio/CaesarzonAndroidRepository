@@ -29,7 +29,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     private val client = OkHttpClient()
     var addresses: ArrayList<AddressDTO> = ArrayList()
-    var cityData: ArrayList<CityDataDTO> = ArrayList()
+    //var cityData: ArrayList<CityDataDTO> = ArrayList() forse non serve
 
      var addressesUuid: List<UUID> = emptyList()
 
@@ -109,15 +109,15 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     //Funzione per eliminare indirizzo
-    fun deleteAddress(address: Address){
+    fun deleteAddress(address: AddressDTO){
         CoroutineScope(Dispatchers.IO).launch {
             doDeleteAddress(address)
         }
     }
 
-    suspend fun doDeleteAddress(address: Address) {
+    suspend fun doDeleteAddress(address: AddressDTO) {
 
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${address.address_id}")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${address.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         try{
@@ -130,7 +130,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                addressRepository.deleteById(address.id)
+                addressRepository.deleteAddressByCityId(address)
                 println("Indirizzo eliminato con successo")
             }
         }catch (e: Exception){
@@ -164,7 +164,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
             try{
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                println("response code: ${response.code}Ina Casa")
+                println("response code: ${response.code}")
                 if(!response.isSuccessful || responseBody.isNullOrEmpty()){
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
@@ -172,6 +172,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 println("Risposta dal server: $responseBody")
                 //val gson = Gson()
                 addresses.add(address)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
+                addressRepository.addAddress(address)//Aggiunge l'indirizzo al db in locale
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
