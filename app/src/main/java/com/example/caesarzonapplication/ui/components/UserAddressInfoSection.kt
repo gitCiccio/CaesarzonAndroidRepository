@@ -18,16 +18,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.CityDataDTO
+import com.example.caesarzonapplication.model.entities.userEntity.Address
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 
 @Composable
 fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressViewModel: AddressViewModel) {
 
-    var addresses by remember { mutableStateOf(listOf("Seleziona un indirizzo")) }
-    var selectedAddress by rememberSaveable { mutableStateOf(addresses[0]) }
+    var addresses = addressViewModel.addresses
+    var selectedAddress by rememberSaveable { mutableStateOf(addresses.getOrNull(0)) }
     var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
-    var showRemoveAddressDialog by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
     Column(
@@ -36,17 +36,14 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
             .padding(16.dp)
     ) {
         Text("Gestione Indirizzi", style = MaterialTheme.typography.headlineMedium)
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Dropdown Menu per selezionare l'indirizzo
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         ) {
             TextField(
-                value = selectedAddress,
+                value = (selectedAddress?.roadName + " " + selectedAddress?.houseNumber + " " + selectedAddress?.city?.city).takeIf { it.isNotBlank() } ?: "Nessun indirizzo disponibile",
                 onValueChange = {},
                 label = { Text("Indirizzo di spedizione") },
                 enabled = false,
@@ -69,7 +66,7 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
             ) {
                 addresses.forEach { address ->
                     DropdownMenuItem(
-                        text = { Text(text = address) },
+                        text = { Text(text = address.roadName+" "+address.houseNumber+" "+address.city.city) },
                         onClick = {
                             selectedAddress = address
                             addressDropdownExpanded = false
@@ -78,8 +75,6 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                 }
             }
         }
-
-        // Pulsanti per aggiungere e rimuovere indirizzi
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
@@ -93,8 +88,8 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                 Text(text = "Aggiungi indirizzo")
             }
             Button(
-                onClick = { showRemoveAddressDialog = true },
-                enabled = addresses.size > 1, // Non permettere la rimozione se c'è solo l'indirizzo placeholder
+                onClick = { selectedAddress?.let { addressViewModel.deleteAddress(it) } },
+                enabled = addresses.size > 0,
                 modifier = Modifier
                     .weight(1f)
                     .padding(4.dp)
@@ -119,90 +114,105 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
             }
 
             Dialog(onDismissRequest = {showAddAddressDialog = false} ) {
-                Box(
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .background(Color.White, shape = MaterialTheme.shapes.medium)
                         .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    item{
                         Text(
                             text = "Aggiungi Indirizzo",
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-
-                        // Form input fields
+                    }
+                    item{
                         TextField(
                             value = street,
                             onValueChange = { street = it },
                             label = { Text("Via") },
-                            isError = street.isEmpty(),
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
-                        if (street.isEmpty()) {
-                            Text("La via è obbligatoria", color = Color.Red)
-                        }
+                    }
+                    item{
                         TextField(
                             value = roadType,
                             onValueChange = { roadType = it },
                             label = { Text("Tipologia via") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                    item{
                         TextField(
                             value = houseNumber,
                             onValueChange = { houseNumber = it },
-                            label = { Text("Numero Civico") },
+                            label = { Text("Numero civico") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
-                        TextField(
+                    }
+                    item{
+                        var filteredCities by remember { mutableStateOf(emptyList<CityDataDTO>()) }
+                        OutlinedTextField(
                             value = city,
-                            onValueChange = { city = it },
-                            label = { Text("Città") },
-                            isError = city.isEmpty(),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
+                            onValueChange = { input ->
+                                city = input
+                                filteredCities = if (input.isNotEmpty()) {
+                                    addressViewModel.cityData.filter { it.city.contains(input, ignoreCase = true) }
+                                } else {
+                                    emptyList()
+                                }
+                                addressDropdownExpanded = filteredCities.isNotEmpty()
+                            },
+                            label = { Text("Inserisci città") },
+                            singleLine = true
                         )
-                        if (city.isEmpty()) {
-                            Text("La città è obbligatoria", color = Color.Red)
+                        DropdownMenu(
+                            expanded = addressDropdownExpanded,
+                            onDismissRequest = { addressDropdownExpanded = false },
+                        ) {
+                            filteredCities.forEach { cityData ->
+                                DropdownMenuItem(
+                                    text = { Text(text = cityData.city) },
+                                    onClick = {
+                                        city = cityData.city
+                                        addressDropdownExpanded = false
+                                    }
+                                )
+                            }
                         }
+                    }
+                    item{
                         TextField(
                             value = zipCode,
                             onValueChange = { zipCode = it },
                             label = { Text("CAP") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                    item{
                         TextField(
                             value = province,
                             onValueChange = { province = it },
                             label = { Text("Provincia") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                    item{
                         TextField(
                             value = region,
                             onValueChange = { region = it },
                             label = { Text("Regione") },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
                         )
-
-                        // Save button
+                    }
+                    item{
                         Button(
                             onClick = {
                                 if (isFormValid) {
-                                    val newAddress = "$street $houseNumber, $city, $zipCode, $province, $region"
-                                    addresses = addresses + newAddress
+                                    val newAddress = AddressDTO("", street, houseNumber, "", CityDataDTO("", city, zipCode, region, province))
+                                    addresses.add(newAddress)
                                     selectedAddress = newAddress
                                     val newCityDataDTO = CityDataDTO("", city, zipCode, region, province)
                                     val newAddressDTO = AddressDTO("", street, houseNumber, "", newCityDataDTO)
@@ -211,55 +221,9 @@ fun UserAddressInfoSection(accountInfoViewModel: AccountInfoViewModel, addressVi
                                 }
                             },
                             enabled = isFormValid,
-                            modifier = Modifier.padding(top = 16.dp)
-                        ) {
-                            Text(text = "Salva")
-                        }
-                    }
-                }
-            }
-        }
-
-        // Dialogo per rimuovere un indirizzo
-        if (showRemoveAddressDialog) {
-            Dialog(onDismissRequest = {showRemoveAddressDialog=false}) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White, shape = MaterialTheme.shapes.medium)
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Rimuovi Indirizzo",
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            modifier = Modifier.padding(top = 16.dp),
+                            content = {Text(text = "Salva")}
                         )
-
-                        LazyColumn {
-                            items(addresses) { address ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp)
-                                ) {
-                                    Text(text = address, modifier = Modifier.weight(1f))
-                                    IconButton(onClick = { addressViewModel.deleteAddress(address) }) {
-                                        Icon(
-                                            Icons.Filled.Close,
-                                            contentDescription = "Rimuovi"
-                                        )
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }

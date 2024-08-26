@@ -6,10 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.CityDataDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
-import com.example.caesarzonapplication.model.entities.userEntity.CityData
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CityDataRepository
-import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -105,15 +103,15 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     //Funzione per eliminare indirizzo
-    fun deleteAddress(address: Address){
+    fun deleteAddress(address: AddressDTO){
         CoroutineScope(Dispatchers.IO).launch {
-            doDeleteAddress(address)
+            doDeleteAddress(address.id)
         }
     }
 
-    suspend fun doDeleteAddress(address: Address) {
+    suspend fun doDeleteAddress(address: String) {
 
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${address.address_id}")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${address}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         try{
@@ -126,7 +124,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                addressRepository.deleteById(address.id)
+                addressRepository.deleteById(address.toLong())
                 println("Indirizzo eliminato con successo")
             }
         }catch (e: Exception){
