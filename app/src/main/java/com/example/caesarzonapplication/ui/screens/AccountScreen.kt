@@ -83,7 +83,7 @@ Column(
         }
         when (selectedTab) {
             0 -> UserInfoSection(accountInfoViewModel)
-            1 -> UserAddressInfoSection(accountInfoViewModel = accountInfoViewModel, addressViewModel = addressViewModel)
+            1 -> UserAddressInfoSection(addressViewModel)
             2 -> PaymentManagementSection(cardViewModel)
             3 -> OrderManagementSection()
             4 -> ReturnsSection()

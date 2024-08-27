@@ -34,7 +34,6 @@ class KeycloakService {
 
     val client = OkHttpClient()
 
-
     suspend fun getAccessToken(username: String, password: String) {
         withContext(Dispatchers.IO) {
             try {
@@ -79,13 +78,13 @@ class KeycloakService {
         CoroutineScope(Dispatchers.IO).launch {
             val manageUrl =
                 "http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token"
-            val passwordGuest = "CiaoSonoguest69!"
+            val passwordGuest = "Mascalzone1"
 
             // Encode the parameters
             val params = listOf(
                 "client_id" to "caesar-app",
                 "grant_type" to "password",
-                "username" to "guest",
+                "username" to "Guest",
                 "password" to passwordGuest
             ).joinToString("&") { (key, value) ->
                 "${URLEncoder.encode(key, StandardCharsets.UTF_8.name())}=${

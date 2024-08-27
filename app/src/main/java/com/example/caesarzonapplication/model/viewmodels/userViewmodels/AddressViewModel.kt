@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,6 +15,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -20,16 +24,23 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
-import java.util.ArrayList
 import java.util.UUID
 
 class AddressViewModel(private val addressRepository: AddressRepository, private val cityDataRepository: CityDataRepository): ViewModel() {
 
     private val client = OkHttpClient()
-    var addresses: ArrayList<AddressDTO> = ArrayList()
-    var cityData: ArrayList<String> = ArrayList()
+
+    private val _addresses: MutableStateFlow<List<AddressDTO>> = MutableStateFlow(emptyList())
+    val addresses: StateFlow<List<AddressDTO>> = _addresses
+
+    private val _cityData = MutableLiveData<List<String>>()
+    val cityData: LiveData<List<String>> = _cityData
+
     var addressesUuid: List<UUID> = emptyList()
-    var cityDataDTO: CityDataDTO? = null
+
+    private val _cityDataDTO = MutableLiveData<CityDataDTO?>(null)
+    val cityDataDTO: LiveData<CityDataDTO?> = _cityDataDTO
+
     val gson = Gson()
 
     init{
@@ -94,9 +105,9 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                     val valType = object : TypeToken<Address>() {}.type
                     val address = gson.fromJson<AddressDTO>(responseBody, valType)
 
-                    addresses.add(address)
+                    addresses.value.toMutableList().add(address)
                     addressRepository.addAddress(address)
-                    println("Indirizzi recuperati con successo: ${addresses.size}")
+                    println("Indirizzi recuperati con successo: ${addresses.value.size}")
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -167,8 +178,8 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                addresses.add(address)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
-                addressRepository.addAddress(address)//Aggiunge l'indirizzo al db in locale
+                addresses.value.toMutableList().add(address)
+                addressRepository.addAddress(address)
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
@@ -197,9 +208,9 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
                 val listType = object : TypeToken<List<String>>() {}.type
-                cityData = gson.fromJson(responseBody, listType)
+                val cityList = gson.fromJson<List<String>>(responseBody, listType)
 
-
+                _cityData.postValue(cityList)
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
@@ -227,11 +238,12 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
 
-                // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
-                val gson = Gson()
                 val listType = object : TypeToken<CityDataDTO>() {}.type
-                cityDataDTO = gson.fromJson(responseBody, listType)
+                val cityData = gson.fromJson<CityDataDTO>(responseBody, listType)
 
+
+
+                _cityDataDTO.postValue(cityData)
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
