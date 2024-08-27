@@ -34,7 +34,6 @@ class KeycloakService {
 
     val client = OkHttpClient()
 
-
     suspend fun getAccessToken(username: String, password: String) {
         withContext(Dispatchers.IO) {
             try {

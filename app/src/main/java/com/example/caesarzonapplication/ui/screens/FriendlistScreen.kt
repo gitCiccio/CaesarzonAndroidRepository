@@ -101,7 +101,6 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                 Icon(imageVector = Icons.Filled.Search, contentDescription = "search_button")
             }
         }
-        Spacer(modifier = Modifier.height(180.dp))
         ScrollableTabRow(
             selectedTabIndex = selectedTab.ordinal,
             edgePadding = 30.dp,
