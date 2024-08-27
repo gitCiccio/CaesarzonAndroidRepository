@@ -61,8 +61,10 @@ fun NavigationGraph(
         }
 
         composable(route = BottomBarScreen.Friends.route) {
-            if(logged.value)
+            if(logged.value) {
+                followerViewModel.loadAllFollowers()
                 FriendlistScreen(navController, followerViewModel)
+            }
             else AuthScreen(navController,accountInfoViewModel, logged)
         }
 

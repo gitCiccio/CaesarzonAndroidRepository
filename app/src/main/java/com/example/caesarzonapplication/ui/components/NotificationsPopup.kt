@@ -1,9 +1,7 @@
 package com.example.caesarzonapplication.ui.components
 
 import AdminNotificationTab
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 
 @Composable
 fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit) {
