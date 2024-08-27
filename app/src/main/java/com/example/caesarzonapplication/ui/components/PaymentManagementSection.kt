@@ -17,21 +17,21 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.caesarzonapplication.model.dto.CardDTO
-import com.example.caesarzonapplication.model.utils.CardUtils
+//import com.example.caesarzonapplication.model.utils.CardUtils
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 
 @Composable
 fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
 
-    var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
-    var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
-    var expirationDate by remember { mutableStateOf(TextFieldValue("")) }
-    var cvc by remember { mutableStateOf(TextFieldValue("")) }
+    var cardNumber by remember { mutableStateOf("") }
+    var cardHolderName by remember { mutableStateOf("") }
+    var expirationDate by remember { mutableStateOf("") }
+    var cvc by remember { mutableStateOf("") }
     var paymentMethods by rememberSaveable { mutableStateOf(listOf("**** **** **** 1234", "**** **** **** 5678")) }
     var showAddPaymentDialog by rememberSaveable { mutableStateOf(false) }
     var showRemovePaymentDialog by rememberSaveable { mutableStateOf(false) }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-    val cardUtils = CardUtils()
+    //val cardUtils = CardUtils()
 
     LazyColumn {
         item {
@@ -89,7 +89,7 @@ fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
                     TextField(
                         value = expirationDate,
                         onValueChange = { expirationDate = it },
-                        label = { Text("Data di Scadenza (MM/AA)") }
+                        label = { Text("Data di Scadenza (AAAA-MM)") }
                     )
                     TextField(
                         value = cvc,
@@ -97,7 +97,9 @@ fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
                         label = { Text("CVC") }
                     )
                     Button(onClick = {
-                        if (cardUtils.validateCreditCardDetails(cardNumber.text, expirationDate.text, cvc.text)) {
+                        val card = CardDTO("",cardNumber, cardHolderName, cvv = cvc ,expirationDate, balance = 0.0)
+                        cardsViewModel.addCard(card)
+                        /*if (cardUtils.validateCreditCardDetails(cardNumber.text, expirationDate.text, cvc.text)) {
                             val maskedCardNumber = cardUtils.maskCreditCard(cardNumber.text)
                             paymentMethods = paymentMethods + maskedCardNumber
                             showAddPaymentDialog = false
@@ -106,7 +108,7 @@ fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
                             cardsViewModel.addCard(card)
                         } else {
                             errorMessage = "Dati della carta non validi"
-                        }
+                        }*/
                     }) {
                         Text(text = "Salva")
                     }
@@ -133,11 +135,11 @@ fun PaymentManagementSection(cardsViewModel: CardsViewModel) {
 
 @Composable
 fun PaymentMethodItem(method: String) {
-    val cardUtils = CardUtils()
-    Text(
-        text = cardUtils.maskCreditCard(method),
-        modifier = Modifier.padding(8.dp)
-    )
+    //val cardUtils = CardUtils()
+    //Text(
+        //text = cardUtils.maskCreditCard(method),
+        //modifier = Modifier.padding(8.dp)
+    //)
 }
 @Composable
 fun AddPaymentButton(onClick: () -> Unit) {
@@ -153,7 +155,7 @@ fun RemovePaymentButton(onClick: () -> Unit) {
 }
 @Composable
 fun RemovePaymentDialog(paymentMethods: List<String>, onRemove: (String) -> Unit, onDismiss: () -> Unit) {
-    val cardUtils = CardUtils()
+    //val cardUtils = CardUtils()
 
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -191,7 +193,7 @@ fun RemovePaymentDialog(paymentMethods: List<String>, onRemove: (String) -> Unit
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = cardUtils.maskCreditCard(method), modifier = Modifier.weight(1f))
+                        //Text(text = cardUtils.maskCreditCard(method), modifier = Modifier.weight(1f))
                         IconButton(onClick = { onRemove(method) }) {
                             Icon(
                                 Icons.Filled.Close,

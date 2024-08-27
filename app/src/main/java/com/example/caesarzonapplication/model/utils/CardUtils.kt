@@ -1,5 +1,5 @@
 package com.example.caesarzonapplication.model.utils
-
+/*
 class CardUtils {
 
     fun maskCreditCard(cardNumber: String): String {
@@ -33,3 +33,4 @@ class CardUtils {
         return true
     }
 }
+*/

@@ -110,7 +110,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
     suspend fun doDeleteCard(card: CardDTO) {
 
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${card.id}")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/card/${card.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         try{
@@ -125,7 +125,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 println("Risposta dal server: $responseBody")
 
                 cardRepository.deleteCardById(card.id)
-                println("Indirizzo eliminato con successo")
+                println("Carta eliminato con successo")
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -143,9 +143,9 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
             }
         }
     }
-
+    //funzione per aggiungere la carta funziona
     suspend fun doAddCard(card: CardDTO){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/card")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
         val gson = Gson()

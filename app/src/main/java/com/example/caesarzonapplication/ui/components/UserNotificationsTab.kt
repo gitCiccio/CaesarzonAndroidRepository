@@ -11,8 +11,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
-import java.util.UUID
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 
 @Composable
 fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, notificationViewModel: NotificationViewModel) {

@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -258,7 +257,7 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersViewMode
 
 @Composable
 fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersViewModel, navHostController: NavHostController) {
-    var isFriend by rememberSaveable { mutableStateOf(user.friendStatus) }
+    var isFriend by rememberSaveable { mutableStateOf(user.friend) }
     Row(
         modifier = Modifier
             .fillMaxWidth()

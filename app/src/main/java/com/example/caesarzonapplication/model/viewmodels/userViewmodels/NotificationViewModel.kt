@@ -1,23 +1,9 @@
-package com.example.caesarzonapplication.model.viewmodels
+package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
-import com.example.caesarzonapplication.model.dto.UserNotificationDTO
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
-import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.IOException
-import java.net.URL
-import java.util.UUID
 
 class NotificationViewModel: ViewModel() {
-
+    //porssimo viewmodel che gestisce le notifiche
     /*private val notifyRepository: NotifyRepository = NotifyRepository()
     val adminNotification: StateFlow<List<AdminNotificationDTO>> get() = notifyRepository.notificationAdmin
     val userNotification : StateFlow<List<UserNotificationDTO>> get() = notifyRepository.userNotification

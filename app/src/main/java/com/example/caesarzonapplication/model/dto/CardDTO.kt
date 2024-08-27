@@ -5,7 +5,7 @@ data class CardDTO(
     val cardNumber: String,
     val owner: String,
     val cvv: String,
-    val expirationDate: String,
+    val expiryDate: String,
     val balance: Double
 ) {
 }

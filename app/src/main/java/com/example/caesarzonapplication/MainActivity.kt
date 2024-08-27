@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.database.AppDatabase
-import com.example.caesarzonapplication.model.entities.userEntity.Card
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CityDataRepository
@@ -16,7 +15,7 @@ import com.example.caesarzonapplication.model.repository.userRepository.UserRepo
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
-import com.example.caesarzonapplication.model.viewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModelFactory

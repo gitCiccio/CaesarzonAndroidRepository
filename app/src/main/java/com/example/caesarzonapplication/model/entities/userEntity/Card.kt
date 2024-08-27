@@ -12,7 +12,7 @@ data class Card(
     @ColumnInfo(name = "numero_carta")val cardNumber: String,
     @ColumnInfo(name = "titolare")val owner: String,
     @ColumnInfo(name = "cvv")val cvv: String,
-    @ColumnInfo(name = "data_scadenza")val expirationDate: String,
+    @ColumnInfo(name = "data_scadenza")val expiryDate: String,
     @ColumnInfo(name = "saldo")val balance: Double
 ) {
 }

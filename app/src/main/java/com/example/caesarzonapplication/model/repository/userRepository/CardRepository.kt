@@ -10,7 +10,7 @@ class CardRepository(private val cardDao: CardDao) {
 
     suspend fun addCard(card: CardDTO): Boolean {
         return try {
-            val card = Card(id_carta = card.id, cardNumber = card.cardNumber, owner = card.owner, cvv = card.cvv, expirationDate = card.expirationDate, balance = card.balance)
+            val card = Card(id_carta = card.id, cardNumber = card.cardNumber, owner = card.owner, cvv = card.cvv, expiryDate= card.expiryDate, balance = card.balance)
             cardDao.addCard(card)
             true
         } catch (e: Exception) {
@@ -23,7 +23,7 @@ class CardRepository(private val cardDao: CardDao) {
             val cards = cardDao.getAllCards()
             val cardsDTO = mutableListOf<CardDTO>()
             for(card in cards){
-                cardsDTO.add(CardDTO(card.id_carta, card.cardNumber, card.owner, card.cvv, card.expirationDate, card.balance))
+                cardsDTO.add(CardDTO(card.id_carta, card.cardNumber, card.owner, card.cvv, card.expiryDate, card.balance))
             }
             return MutableLiveData(cardsDTO)
         } catch (e: Exception) {
