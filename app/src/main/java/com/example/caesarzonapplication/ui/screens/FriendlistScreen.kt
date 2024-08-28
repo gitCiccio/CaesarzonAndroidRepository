@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +44,10 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(UsersTab.Utenti) }
+
+    LaunchedEffect(Unit){
+        followersViewModel.loadAllFollowers()
+    }
 
     Column {
         Box(
@@ -105,8 +110,11 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
             selectedTabIndex = selectedTab.ordinal,
             edgePadding = 30.dp,
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    Modifier.tabIndicatorOffset(tabPositions[selectedTab.ordinal])
+                SecondaryIndicator(
+                    Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTab.ordinal]),
+                    height = 3.dp,
+                    color = Color.Black
                 )
             },
             modifier = Modifier.fillMaxWidth()
@@ -115,7 +123,10 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                 Tab(
                     text = { Text(text = tab.name) },
                     selected = selectedTab == tab,
-                    onClick = { selectedTab = tab },
+                    onClick = {
+                        selectedTab = tab
+                        searchQuery = ""
+                        followersViewModel.saveChanges() },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
@@ -128,9 +139,11 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                             .fillMaxSize()
                             .padding(8.dp)
                     ) {
-                        items(followersViewModel.users.filter {
-                            it.username.contains(searchQuery, ignoreCase = true)
-                        }) { userSearchDTO ->
+                        items(
+                            items = followersViewModel.users.filter { it.username.contains(searchQuery, ignoreCase = true) },
+                            key = { it.username }
+                        )
+                        { userSearchDTO ->
                             UserRow(userSearchDTO, followersViewModel, navHostController)
                         }
                     }
@@ -153,9 +166,10 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                             .fillMaxSize()
                             .padding(8.dp)
                     ) {
-                        items(followersViewModel.followers.filter {
-                            it.username.contains(searchQuery, ignoreCase = true)
-                        }) { user ->
+                        items(
+                            items = followersViewModel.followers.filter { it.username.contains(searchQuery, ignoreCase = true) },
+                            key = { it.username }
+                        ) { user ->
                             FriendsRow(user, followersViewModel, navHostController)
                         }
                     }
@@ -178,9 +192,10 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                             .fillMaxSize()
                             .padding(8.dp)
                     ) {
-                        items(followersViewModel.friends.filter {
-                            it.username.contains(searchQuery, ignoreCase = true)
-                        })
+                        items(
+                            items = followersViewModel.friends.filter { it.username.contains(searchQuery, ignoreCase = true) },
+                            key = { it.username }
+                        )
                         { user ->
                             FriendsRow(user, followersViewModel, navHostController)
                         }
@@ -199,12 +214,18 @@ fun FriendlistScreen(navHostController: NavHostController, followersViewModel: F
                     )
                 }
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 
+
 @Composable
-fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersViewModel, navHostController: NavHostController) {
+fun UserRow(
+    user: UserSearchDTO,
+    followersAndFriendsViewModel: FollowersViewModel,
+    navHostController: NavHostController
+) {
     var isFollower by rememberSaveable { mutableStateOf(user.follower) }
     Row(
         modifier = Modifier
@@ -255,7 +276,11 @@ fun UserRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersViewMode
 }
 
 @Composable
-fun FriendsRow(user: UserSearchDTO, followersAndFriendsViewModel: FollowersViewModel, navHostController: NavHostController) {
+fun FriendsRow(
+    user: UserSearchDTO,
+    followersAndFriendsViewModel: FollowersViewModel,
+    navHostController: NavHostController
+) {
     var isFriend by rememberSaveable { mutableStateOf(user.friend) }
     Row(
         modifier = Modifier
