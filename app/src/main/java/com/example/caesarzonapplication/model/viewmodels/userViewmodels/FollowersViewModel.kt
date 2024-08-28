@@ -35,10 +35,8 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
     val gson = Gson()
 
     init {
-        println("Sono nell'init")
         viewModelScope.launch{
             getAllFollowers = followerRepository.getAllFollowers()
-
         }
     }
 
@@ -54,15 +52,9 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
     private var _friends = mutableStateListOf<UserSearchDTO>()
     val friends: List<UserSearchDTO> get() = _friends
 
-    private val _newFollowersAndFriends = mutableListOf<UserSearchDTO>()
-    //capire come fare
-    //private val _deletedFollowersAndFriends = mutableListOf<FollowerDTO>()
-    //Lista degli amici che mi gestisco dopo che ho i follower
+    private val newFollowers = mutableListOf<UserSearchDTO>()
 
-
-    //Aggiunta del follower ok
     fun addFollower(follower: UserSearchDTO) {
-        // Update the state of the users who become followers
         val user = _users.find { it.username == follower.username }
         user?.let {
             it.follower = true
@@ -70,26 +62,21 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
             val existingFollower = _followers.find { it.username == follower.username }
             if (existingFollower == null) {
                 _followers.add(it)
-                _newFollowersAndFriends.add(it)
+                newFollowers.add(it)
             }
-        }
-        viewModelScope.launch {
-            doAddFollower(follower)
         }
     }
 
-    //Da provare domani
-    suspend fun doAddFollower(follower: UserSearchDTO){
+    suspend fun doAddFollower(){
         val manageURL = URL("http://25.49.50.144:8090/user-api/followers")
-        val JSON = "application/json; charset=utf-8".toMediaType()
+        val jsonType = "application/json; charset=utf-8".toMediaType()
 
         val gson = Gson()
-        val json = gson.toJson(listOf(follower))
-        val requestBody = json.toRequestBody(JSON)
+        val json = gson.toJson(newFollowers)
+        val requestBody = json.toRequestBody(jsonType)
         val request = Request.Builder().url(manageURL).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         withContext(Dispatchers.IO){
-            println("Snono nel try dell'aggiunta del follower")
             try{
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
@@ -97,38 +84,18 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
                 if(!response.isSuccessful || responseBody.isNullOrEmpty()){
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
-                println("Risposta dal server: $responseBody")
-                println("follower Aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
 
-
-
     fun removeFollower(follower: UserSearchDTO) {
-        // Trova l'utente con lo stesso username del follower
-        val user = _users.find { it.username == follower.username }
-        if (user != null) {
-            println("Username: ${user.username}, status follower: ${user.follower}, status friend: ${user.friend}")
-        }
-        // Se l'utente è trovato, esegui le operazioni richieste
-        user?.let {
-            // Controlla e aggiorna il friend status se necessario
-            if (it.friend) {
-                println("Username: ${user.username}, status follower: ${user.follower}, status friend: ${user.friend}")
-                it.friend = false
-                _friends.removeIf { friend -> friend.username == it.username }
+        if(follower in _followers){
+            _followers.remove(follower)
+            if(follower in _friends) {
+                _friends.remove(follower)
             }
-
-            // Aggiorna il follower status
-            it.follower = false
-            println("Username: ${user.username}, new status follower: ${user.follower}, new status friend: ${user.friend}")
-            _followers.removeIf { follower -> follower.username == it.username }
-
-            // Aggiungi l'utente aggiornato a _newFollowersAndFriends
-            _newFollowersAndFriends.add(it)
         }
         viewModelScope.launch {
             doRemoveFollower(follower)
@@ -157,39 +124,15 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
     }
 
     fun toggleFriendStatus(follower: UserSearchDTO) {
-        println("Inside toggleFriendStatus")
-        println("Username: ${follower.username}, status follower: ${follower.follower}, status friend: ${follower.friend}")
-
-        // Trova l'utente nella lista _users e aggiorna direttamente l'oggetto trovato
-        val user = _users.find { it.username == follower.username }
-        user?.let {
-            // Inverti lo stato di friendStatus
-            it.friend = !it.friend
-            println("Username: ${it.username}, status follower: ${it.follower}, status friend: ${it.friend}")
-
-            // Aggiorna la lista _friends in base al nuovo stato di friendStatus
-            if (it.friend) {
-                if (!_friends.contains(it)) {
-                    _friends.add(it)
-                }
-            } else {
-                _friends.remove(it)
-            }
-
-            // Aggiorna la lista _newFollowersAndFriends
-            val existingIndex = _newFollowersAndFriends.indexOfFirst { nf -> nf.username == it.username }
-            if (existingIndex >= 0) {
-                _newFollowersAndFriends[existingIndex] = it
-            } else {
-                _newFollowersAndFriends.add(it)
-            }
-
-            // Chiama la funzione per aggiornare lo stato nel server
-            updateFollowerStatus(_newFollowersAndFriends)
+        follower.friend = !follower.friend
+        if(follower in _friends){
+            _friends.remove(follower)
+        }
+        else{
+            _friends.add(follower)
         }
     }
 
-    //da vedere domani
     fun searchUsers(username: String) {
         _users.clear()
         if (username.isEmpty()) return
@@ -197,7 +140,6 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
         val manageURL = URL("http://25.49.50.144:8090/user-api/users/$username")
         val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
         try {
-
             val response = client.newCall(request).execute()
             val responseBody = response.body?.string()
 
@@ -207,15 +149,13 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
 
             val listUsername = object : TypeToken<List<String>>() {}.type
             for (user in gson.fromJson<List<String>>(responseBody, listUsername)) {
-                val userSearchDto = UserSearchDTO(user,  "",false, false)
+                val userSearchDto = UserSearchDTO(user,  "",follower = false, friend = false)
                 _users.add(userSearchDto)
             }
-
         }
         catch (e: Exception) {
             println("Error: ${e.message}")
         }
-
     }
 
     fun loadAllFollowers()
@@ -232,17 +172,9 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
         }
     }
 
-    fun updateFollowerStatus(followersAndFriends: List<UserSearchDTO>){
-        viewModelScope.launch {
-            doUpdateFollowerStatus(followersAndFriends)
-        }
-    }
-    //Inserire nell'init per il caricamento dei dati
-    //TODO GET PEr ottenere la lista di username dei follower, booleana per indicare se un follower è amico o meno e immagine di profilo, sarà una loadDeiFollower
     suspend fun doLoadFollowersAndFriends(flw: Int, friend: Boolean) {
         val manageURL = URL("http://25.49.50.144:8090/user-api/followers?flw=$flw&friend=$friend")
         val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        println("funzione per caricare gli utenti follower e amici")
         _friends.clear()
         _followers.clear()
 
@@ -250,29 +182,24 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                println("response code: ${response.code}")
-                println("Response Body: $responseBody")
 
                 if (!response.isSuccessful) {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 } else {
                     val jsonResponse = JSONArray(responseBody)
-                    println("Response Body: $jsonResponse")
 
                     val listUsers = object : TypeToken<List<UserSearchDTO>>() {}.type
                     val users: List<UserSearchDTO> = gson.fromJson(jsonResponse.toString(), listUsers)
 
                     if (friend) {
-                        println("Sto aggiungendo gli amici")
                         _friends.addAll(users)
                     } else {
-                        println("Sto aggiungendo i follwer")
                         _followers.addAll(users)
                     }
 
                     // Foreach per inserire gli utenti usando followerRepository
                     for (user in users) {
-                        followerRepository.addFollower(FollowerDTO("","",user.username, user.friend)) // Supponendo che followerRepository abbia un metodo save()
+                        followerRepository.addFollower(FollowerDTO("","",user.username, user.friend))
                     }
                 }
             } catch (e: Exception) {
@@ -282,23 +209,18 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
         }
     }
 
-
-    //Fai domani
-        //TODO POST per modificare lo stato di un follower, amico o non amico, passiamo username
-    suspend fun doUpdateFollowerStatus(followersAndFriends: List<UserSearchDTO>) {
+    suspend fun doUpdateFollowerStatus() {
         val manageURL = "http://25.49.50.144:8090/user-api/followers"
-        println("checkStatus")
-        for (follower in followersAndFriends) {
+        for (follower in followers) {
             println("Username: ${follower.username}, status follower: ${follower.follower}, status friend: ${follower.friend}")
         }
+        val followersAndFriends = followers + friends
         withContext(Dispatchers.IO) {
             try {
-                val jsonInputString = gson.toJson(followersAndFriends) // Serializza la lista in JSON
-                println("JSON inviato: $jsonInputString")
+                val jsonInputString = gson.toJson(followersAndFriends)
                 val mediaType = "application/json; charset=utf-8".toMediaType()
-                val requestBody = jsonInputString.toRequestBody(mediaType) // Crea il RequestBody
+                val requestBody = jsonInputString.toRequestBody(mediaType)
 
-                // Costruisci la richiesta HTTP
                 val request = Request.Builder()
                     .url(manageURL)
                     .post(requestBody)
@@ -307,20 +229,28 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
                     .addHeader("Accept", "application/json")
                     .build()
 
-                // Esegui la richiesta
                 val response: Response = client.newCall(request).execute()
                 val responseCode = response.code
 
-                // Gestisci la risposta
                 if (responseCode == 200) {
                     println("Follower status updated successfully")
                 } else {
                     println("Error updating follower status: ${response.message}")
                 }
-
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
+        }
+    }
+
+    fun saveChanges() {
+        viewModelScope.launch {
+            if (newFollowers.isNotEmpty()){
+                doAddFollower()
+                newFollowers.clear()
+            }
+            doUpdateFollowerStatus()
+            println("Salvataggio effettuato")
         }
     }
 

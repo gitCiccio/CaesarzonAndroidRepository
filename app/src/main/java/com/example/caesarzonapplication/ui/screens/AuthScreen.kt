@@ -35,13 +35,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import kotlinx.coroutines.launch
 
 @Composable
-fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoViewModel, logged: MutableState<Boolean>) {
+fun AuthScreen(
+    navController: NavController,
+    accountInfoViewModel: AccountInfoViewModel,
+    followerViewModel: FollowersViewModel,
+    logged: MutableState<Boolean>
+) {
 
 
     var username by rememberSaveable { mutableStateOf("") }
@@ -132,6 +138,8 @@ fun AuthScreen(navController: NavController, accountInfoViewModel: AccountInfoVi
                             val success = accountInfoViewModel.login(username, password)
                             if (success) {
                                 accountInfoViewModel.getUserData()
+                                followerViewModel.loadAllFollowers()
+                                followerViewModel.loadAllFriends()
                                 navController.navigate(BottomBarScreen.Home.route)
                             } else {
                                 errorMessage = "Username o password errati."
