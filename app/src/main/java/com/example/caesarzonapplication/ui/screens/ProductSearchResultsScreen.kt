@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,6 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.ui.components.ProductCard
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewModel, navController: NavHostController) {
@@ -40,6 +44,8 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
     val productList by productsViewModel.productList.collectAsState(emptyList())
     var priceRange by remember { mutableStateOf(0f..100f) }
     var isClothing by remember { mutableStateOf(true) }
+    var searchJob: Job? by remember { mutableStateOf(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(query) {
         if (isCategory(query)) {
@@ -93,9 +99,14 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
                         value = priceRange.start,
                         onValueChange = { newValue ->
                             priceRange = newValue..priceRange.endInclusive
+                            searchJob?.cancel()
+
+                            searchJob = coroutineScope.launch {
+                                delay(500L)
+                                productsViewModel.searchProducts(query, priceRange.start.toDouble(), priceRange.endInclusive.toDouble(), isClothing)
+                            }
                         },
                         valueRange = 0f..100f,
-                        steps = 10,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -112,6 +123,8 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
                         checked = isClothing,
                         onCheckedChange = { isChecked ->
                             isClothing = isChecked
+                            productsViewModel.searchProducts(query, priceRange.start.toDouble(), priceRange.endInclusive.toDouble(), isClothing)
+
                         }
                     )
                 }
