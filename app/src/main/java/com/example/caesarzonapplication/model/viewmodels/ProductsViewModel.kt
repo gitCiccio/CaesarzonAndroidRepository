@@ -1,5 +1,4 @@
 package com.example.caesarzonapplication.model.viewmodels
-
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +14,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -24,7 +25,6 @@ import java.net.URL
 import java.util.UUID
 
 class ProductsViewModel: ViewModel() {
-
 
     val client = OkHttpClient()
     val gson = Gson()
@@ -43,6 +43,8 @@ class ProductsViewModel: ViewModel() {
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
 
+    private val _productList = MutableStateFlow<List<ProductSearchDTO>>(emptyList())
+    val productList: StateFlow<List<ProductSearchDTO>> = _productList
 
     fun addProductToCart(product: Product) {
         _productsInShoppingCart.add(product)
@@ -50,7 +52,7 @@ class ProductsViewModel: ViewModel() {
 
     fun getProduct(productID: UUID){
         viewModelScope.launch(Dispatchers.IO)
-         {
+        {
             val manageURL = URL("http://25.49.50.144:8090/product-api/product/$productID")
             val request = Request
                 .Builder()
@@ -77,7 +79,6 @@ class ProductsViewModel: ViewModel() {
                 e.printStackTrace()
             }
         }
-
     }
 
     suspend fun loadNewProducts() {
@@ -92,6 +93,10 @@ class ProductsViewModel: ViewModel() {
                 if (!response.isSuccessful) {
                     return@withContext
                 }
+                val responseBody = response.body?.string()
+                val productListType = object : TypeToken<List<ProductSearchDTO>>() {}.type
+                _newProducts.clear()
+                _newProducts.addAll(gson.fromJson(responseBody, productListType))
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -99,7 +104,6 @@ class ProductsViewModel: ViewModel() {
     }
 
     suspend fun loadHotProducts(){
-
         withContext(Dispatchers.IO) {
             val manageURL = URL("http://25.49.50.144:8090/product-api/product/offer")
             val request = Request.Builder()
@@ -111,34 +115,78 @@ class ProductsViewModel: ViewModel() {
                 if (!response.isSuccessful) {
                     return@withContext
                 }
+                val responseBody = response.body?.string()
+                val productListType = object : TypeToken<List<ProductSearchDTO>>() {}.type
+                _hotProducts.clear()
+                _hotProducts.addAll(gson.fromJson(responseBody, productListType))
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
     }
 
-    fun searchProducts(query: String): MutableList<ProductSearchDTO> {
-        var productList = mutableListOf<ProductSearchDTO>()
+    fun searchProducts(query: String) {
+        _productList.value = emptyList()
+
         viewModelScope.launch {
+            val manageURL = URL("http://25.49.50.144:8090/product-api/search?search-text=$query")
+            val request = Request.Builder()
+                .url(manageURL)
+                .addHeader("Authorization", "Bearer ${basicToken?.accessToken}")
+                .build()
             _isLoading.value = true
-            //val result = simulateProductSearch(query)
-            productList.clear()
-            //productList.addAll(result)
-            _isLoading.value = false
+            withContext(Dispatchers.IO) {
+                try {
+                    val response = client.newCall(request).execute()
+                    if (!response.isSuccessful) {
+                        return@withContext
+                    }
+                    val responseBody = response.body?.string()
+                    val productList: List<ProductSearchDTO> = gson.fromJson(
+                        responseBody,
+                        object : TypeToken<List<ProductSearchDTO>>() {}.type
+                    )
+                    _productList.value = productList
+                    _isLoading.value = false
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+
         }
-        return productList
+
     }
 
-    fun getProductsByCategory(category: String): MutableList<ProductSearchDTO> {
-        var productList = mutableListOf<ProductSearchDTO>()
+    fun getProductsByCategory(category: String) {
+        _productList.value = emptyList()
+
         viewModelScope.launch {
+            val manageURL = URL("http://25.49.50.144:8090/product-api/search?search-text=$category")
+            val request = Request.Builder()
+                .url(manageURL)
+                .addHeader("Authorization", "Bearer ${basicToken?.accessToken}")
+                .build()
             _isLoading.value = true
-            //val result = simulateProductSearch(query)
-            productList.clear()
-            //productList.addAll(result)
-            _isLoading.value = false
+            withContext(Dispatchers.IO) {
+                try {
+                    val response = client.newCall(request).execute()
+                    if (!response.isSuccessful) {
+                        return@withContext
+                    }
+                    val responseBody = response.body?.string()
+                    val productList: List<ProductSearchDTO> = gson.fromJson(responseBody, object : TypeToken<List<ProductSearchDTO>>() {}.type)
+                    for (product in productList) {
+                        println(product.productName)
+                    }
+                    _productList.value = productList
+                    _isLoading.value = false
+                }
+                catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+
         }
-        return productList
     }
 
 }
