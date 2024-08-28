@@ -381,6 +381,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 
         println("$myToken")
         return if (myToken?.accessToken != null) {
+
             getUserData() // Questa dovrebbe anche essere una funzione sospesa se fa operazioni di rete
             logged.value = true
             true

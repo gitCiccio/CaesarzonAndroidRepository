@@ -16,6 +16,7 @@ import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -42,7 +43,8 @@ fun NavigationGraph(
     accountInfoViewModel: AccountInfoViewModel,
     followerViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
-    cardViewModel: CardsViewModel
+    cardViewModel: CardsViewModel,
+    notificationViewModel: NotificationViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 

@@ -2,11 +2,17 @@ package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,13 +54,13 @@ fun UserNotificationsTab(userNotificationDTO: UserNotificationDTO, notificationV
                 fontSize = 14.sp
             )
         }
-        ClickableText(
-            text = AnnotatedString("X"),
-            onClick = { /*notificationViewModel.deleteNotification(userNotificationDTO.id, true)*/ },
-            style = LocalTextStyle.current.copy(
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.error
+        IconButton(onClick = {
+            notificationViewModel.deleteNotification(userNotificationDTO)}) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "Delete Notification",
+                tint = Color.Red // Colore dell'icona, opzionale
             )
-        )
+        }
     }
 }
