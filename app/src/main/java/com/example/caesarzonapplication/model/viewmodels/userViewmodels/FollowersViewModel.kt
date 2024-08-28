@@ -149,7 +149,7 @@ class FollowersViewModel(private val followerRepository: FollowerRepository): Vi
 
             val listUsername = object : TypeToken<List<String>>() {}.type
             for (user in gson.fromJson<List<String>>(responseBody, listUsername)) {
-                val userSearchDto = UserSearchDTO(user,  "",follower = false, friend = false)
+                val userSearchDto = UserSearchDTO(user,  follower = false, friend = false)
                 _users.add(userSearchDto)
             }
         }
