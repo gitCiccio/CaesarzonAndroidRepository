@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 data class UserNotificationDTO (
-    val id : UUID,
+    val id : String,
     val date : String,
     val subject : String,
     val user : String,

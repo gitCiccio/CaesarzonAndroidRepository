@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.Packaging
 
 plugins {
     alias(libs.plugins.android.application)
@@ -21,6 +22,8 @@ android {
             useSupportLibrary = true
         }
     }
+
+
 
     buildTypes {
         release {
@@ -47,6 +50,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }
@@ -75,6 +79,7 @@ dependencies {
 
     // Nuove dipendenze aggiunte dal secondo file
     implementation(libs.androidx.room.runtime)
+    implementation(libs.identity.jvm)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.adapters)
     implementation(libs.androidx.activity.compose.v172) // per inserire nuove immagini
@@ -82,6 +87,12 @@ dependencies {
     implementation(libs.android.database.sqlcipher) // per criptare i dati
     implementation(libs.androidx.sqlite)
     implementation(libs.androidx.sqlite.framework)
+
+    //dipendenze per gestire il ruolo dell'utente
+    implementation(libs.java.jwt)
+    implementation(libs.nimbus.jose.jwt)
+    implementation(libs.jackson.databind) // Jackson per la gestione JSON
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

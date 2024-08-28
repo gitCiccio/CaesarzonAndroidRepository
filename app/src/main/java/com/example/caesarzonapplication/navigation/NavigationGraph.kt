@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
@@ -7,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.ReportViewModel
@@ -16,6 +18,7 @@ import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -42,7 +45,8 @@ fun NavigationGraph(
     accountInfoViewModel: AccountInfoViewModel,
     followerViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
-    cardViewModel: CardsViewModel
+    cardViewModel: CardsViewModel,
+    notificationViewModel: NotificationViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -99,28 +103,24 @@ fun NavigationGraph(
 
 
         composable(
-            route = DetailsScreen.ProductDetailsScreen.route + "/{productId}",
+            route = DetailsScreen.ProductDetailsScreen.route+"/{productId}",
             arguments = listOf(navArgument("productId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val productId = UUID.fromString(backStackEntry.arguments?.getString("productId"))
-            if (productId != null)
-                ProductDetailsScreen(productID = productId, navController, productsViewModel, isAdmin)
+            val productId = backStackEntry.arguments?.getString("productId")
+            if (productId != null) {
+                    val uuid = UUID.fromString(productId)
+                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, isAdmin)
+            } else {
+                Log.e("NavigationError", "productId is null")
+            }
         }
 
-        composable(route = DetailsScreen.ProductSearchResultsScreen.route+"/{query}",
-            arguments = listOf(navArgument("query") { type = NavType.StringType })
+        composable(route = DetailsScreen.ProductSearchResultsScreen.route+"/{parameter}",
+            arguments = listOf(navArgument("parameter") { type = NavType.StringType })
         ) { backStackEntry ->
-            val query = backStackEntry.arguments?.getString("query") ?: ""
-            if (query != "")
-                ProductSearchResultsScreen(query, productsViewModel, navController)
-        }
-
-        composable(route = DetailsScreen.ProductSearchResultsScreen.route+"/{category}",
-            arguments = listOf(navArgument("category"){ type = NavType.StringType })
-        ) { backStackEntry ->
-            val category = backStackEntry.arguments?.getString("category") ?: ""
-            if (category != "")
-                ProductSearchResultsScreen(category, productsViewModel, navController)
+            val parameter = backStackEntry.arguments?.getString("parameter") ?: ""
+            if (parameter.isNotEmpty())
+                ProductSearchResultsScreen(parameter, productsViewModel, navController)
         }
 
         composable(route = DetailsScreen.UserPageDetailsScreen.route) {

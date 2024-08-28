@@ -1,6 +1,5 @@
 package com.example.caesarzonapplication.ui.components
 
-import AdminNotificationTab
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,18 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
 import com.example.caesarzonapplication.model.dto.UserNotificationDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit) {
+fun NotificationsPopup(
+    notificationViewModel: NotificationViewModel,
+    notifications: StateFlow<List<UserNotificationDTO>>, onDismissRequest: () -> Unit) {
 
-    val notificationViewModel = NotificationViewModel()
 
-    if (notifications.isEmpty()) {
-        return
-    }
+
 
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
@@ -43,14 +41,14 @@ fun NotificationsPopup(notifications: List<Any>, onDismissRequest: () -> Unit) {
                             .fillMaxWidth()
                     )
                 }
-                if (notifications.isEmpty()) {
+                if (notifications.value.isEmpty()) {
                     item {
                         Text(text = "Non ci sono notifiche disponibili.")
                     }
                 } else {
-                    items(notifications) { notification ->
+                    items(notifications.value) { notification ->
                         when (notification) {
-                            is AdminNotificationDTO -> AdminNotificationTab(notification, notificationViewModel)
+                            //is AdminNotificationDTO -> AdminNotificationTab(notification, notificationViewModel)
                             is UserNotificationDTO -> UserNotificationsTab(notification, notificationViewModel)
                             else -> error("Tipo di notifica sconosciuto")
                         }

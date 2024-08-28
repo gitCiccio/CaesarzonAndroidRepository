@@ -5,12 +5,12 @@ sealed class DetailsScreen(
     val title: String,
 ) {
     data object ProductDetailsScreen : DetailsScreen(
-        route = "productDetails/{productId}",
+        route = "productDetails",
         title = "PRODUCTDETAILS",
     )
 
     data object ProductSearchResultsScreen : DetailsScreen(
-        route = "productSearchResults/{productId}",
+        route = "productSearchResults",
         title = "PRODUCTSEARCHRESULTS",
     )
 
