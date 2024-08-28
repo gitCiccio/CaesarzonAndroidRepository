@@ -162,7 +162,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
-        val gson = Gson()
         val json = gson.toJson(address)
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
@@ -191,7 +190,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         val manageUrl = URL("http://25.49.50.144:8090/user-api/city?sugg=$cityTip")
         val request = Request.Builder()
             .url(manageUrl)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}") // Assicurati che il token non sia nullo
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}") // Assicurati che il token non sia nullo
             .build()
 
         CoroutineScope(Dispatchers.IO).launch {

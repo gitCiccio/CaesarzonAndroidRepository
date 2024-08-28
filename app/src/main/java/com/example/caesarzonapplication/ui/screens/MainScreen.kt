@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,9 +28,11 @@ import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationGraph
+import com.example.caesarzonapplication.ui.components.NotificationsPopup
 import com.example.caesarzonapplication.ui.components.SearchBar
 
 @Composable
@@ -39,13 +42,13 @@ fun MainScreen(
     productsViewModel: ProductsViewModel,
     followersViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
-    cardsViewModel: CardsViewModel
+    cardsViewModel: CardsViewModel,
+    notificationViewModel: NotificationViewModel
 ){
 
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
-    var userNotifications by rememberSaveable { mutableStateOf(listOf<String>()) }
-    //val userNotifications by notificationViewModel, da reinserire
-
+    val notifications by notificationViewModel.userNotification.collectAsState()
+    notificationViewModel.getNotification()
     Scaffold(
         topBar = { SearchBar(navController) },
         bottomBar =
@@ -58,8 +61,15 @@ fun MainScreen(
         floatingActionButton = {
             if(logged.value){
                 FloatingActionButton(
-                    onClick =  { showNotificationsPopup = !showNotificationsPopup },
-                    containerColor = Color(100,104,208),
+                    onClick = {
+                        showNotificationsPopup = !showNotificationsPopup
+                        // Carica le notifiche solo quando si apre il popup
+                        if (showNotificationsPopup) {
+                            notificationViewModel.getNotification()
+                            notificationViewModel.updateNotification()
+                        }
+                    },
+                    containerColor = Color(100, 104, 208),
                     contentColor = Color(238, 137, 60),
                     shape = CircleShape,
                     content = {
@@ -69,9 +79,9 @@ fun MainScreen(
                         .padding(bottom = 20.dp)
                         .padding(end = 16.dp)
                 )
-                if (userNotifications.isNotEmpty()) {
+                if (notifications.isNotEmpty()) {
                     Text(
-                        text = "${userNotifications.size}",
+                        text = "${notifications.size}",
                         color = Color.White,
                         modifier = Modifier
                             .background(Color.Red, shape = CircleShape)
@@ -79,7 +89,16 @@ fun MainScreen(
                             .padding(bottom = 22.dp),
                     )
                 }
-            } },
+                // Mostra il popup delle notifiche se showNotificationsPopup è true
+                if (showNotificationsPopup) {
+                    NotificationsPopup(
+                        notificationViewModel = notificationViewModel,
+                        notifications = notificationViewModel.userNotification,
+                        onDismissRequest = { showNotificationsPopup = false }
+                    )
+                }
+            }
+        },
         content = { padding ->
             Column(
                 modifier = Modifier
@@ -95,8 +114,10 @@ fun MainScreen(
                     accountInfoViewModel = accountInfoViewModel,
                     followerViewModel = followersViewModel,
                     addressViewModel = addressViewModel,
-                    cardViewModel = cardsViewModel
+                    cardViewModel = cardsViewModel,
+                    notificationViewModel = notificationViewModel
                 )
+
             }
         }
     )
