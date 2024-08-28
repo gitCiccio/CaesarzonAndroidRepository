@@ -96,7 +96,8 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                     .padding(4.dp)
                     .background(Color.White, CircleShape)
             )
-            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) {
+            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) 
+           {
                 Text("Carica Immagine")
             }
         }
@@ -217,17 +218,12 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         if (isPasswordTextFieldEnabled) {
                             coroutineScope.launch {
                                 username?.let {
-                                    accountInfoViewModel.changePassword(
-                                        password,
-                                        it,
-                                        1
-                                    ) { responseCode ->
+                                    accountInfoViewModel.changePassword(password, it, 1) { responseCode ->
                                         if (responseCode == "success") {
                                             password = ""
                                             showPopupMessage = "Password modificata con successo"
                                         } else {
-                                            showPopupMessage =
-                                                "Errore durante la modifica della password"
+                                            showPopupMessage = "Errore durante la modifica della password"
                                         }
                                         showPopup = true
                                     }
@@ -254,12 +250,10 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                                 showPopup = true
                             } else
                                 showPopupMessage = "Errore durante la modifica dei dati"
-
                         }
                         isUserInfoTextFieldEnabled = false
                     } else
                         isUserInfoTextFieldEnabled = true
-
                 }) {
                     Text(text = if (isUserInfoTextFieldEnabled) "Salva" else "Modifica Info")
                 }

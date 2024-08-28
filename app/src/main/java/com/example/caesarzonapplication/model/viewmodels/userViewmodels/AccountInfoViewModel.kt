@@ -52,7 +52,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
 
 
     //Fase di modifica dei dati, funziona
-
     fun modifyUserData(
         firstName: String,
         lastName: String,
@@ -402,7 +401,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             )
         }
     }
-
 }
 class AccountInfoViewModelFactory(
     private val userRepository: UserRepository,

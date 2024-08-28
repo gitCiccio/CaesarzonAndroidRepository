@@ -34,7 +34,6 @@ class KeycloakService {
 
     val client = OkHttpClient()
 
-
     suspend fun getAccessToken(username: String, password: String) {
         withContext(Dispatchers.IO) {
             try {
@@ -95,7 +94,6 @@ class KeycloakService {
                     )
                 }"
             }
-
             val requestBody =
                 params.toRequestBody("application/x-www-form-urlencoded".toMediaType())
             val request = Request.Builder()
@@ -103,7 +101,6 @@ class KeycloakService {
                 .post(requestBody)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build()
-
             try {
                 val response = client.newCall(request).execute()
                 println("Response code: ${response.code}")

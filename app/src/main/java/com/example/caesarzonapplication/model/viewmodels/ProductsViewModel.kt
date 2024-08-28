@@ -43,9 +43,6 @@ class ProductsViewModel: ViewModel() {
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
 
-    init{
-        KeycloakService().getBasicToken()
-    }
 
     fun addProductToCart(product: Product) {
         _productsInShoppingCart.add(product)
