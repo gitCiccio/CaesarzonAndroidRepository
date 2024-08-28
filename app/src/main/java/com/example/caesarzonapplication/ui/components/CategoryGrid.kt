@@ -32,9 +32,9 @@ fun CategoryGrid(navController: NavController){
         "Tennis" to R.drawable.ic_tennis,
         "Nuoto" to R.drawable.ic_nuoto,
         "Calcio" to R.drawable.ic_calcio,
-        "Lotta" to R.drawable.ic_lotta,
+        "Arti Marziali" to R.drawable.ic_lotta,
         "Ciclismo" to R.drawable.ic_ciclismo,
-        "Sciismo" to R.drawable.ic_sciismo
+        "Sci" to R.drawable.ic_sciismo
     )
 
     LazyRow(

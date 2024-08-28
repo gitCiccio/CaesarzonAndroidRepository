@@ -2,6 +2,7 @@ package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +17,8 @@ import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 
 @Composable
 fun HorizontalProductSection(title: String, products: List<ProductSearchDTO>, navController: NavHostController) {
-    Column(modifier = Modifier.padding(16.dp)){
+    Column(modifier = Modifier
+        .padding(16.dp)){
         Text(text=title, style= MaterialTheme.typography.titleLarge, color= MaterialTheme.colorScheme.primary)
         LazyRow {
             items(products){product->

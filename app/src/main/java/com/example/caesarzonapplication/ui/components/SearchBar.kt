@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
+import com.example.caesarzonapplication.navigation.DetailsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,16 +84,17 @@ fun SearchBar(navController: NavHostController){
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        navController.navigate("ProductSearchResultsScreen/${textFieldValue}")
+                        navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue")
+                               println(textFieldValue)},
+                    onDone = {
+                        textFieldValue = ""
                     }
                 ),
                 singleLine = true,
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            textFieldValue = ""
-                            navController.navigate("ProductSearchResultsScreen/${textFieldValue}")
-                        },
+                            navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue")},
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
                             .size(50.dp)
