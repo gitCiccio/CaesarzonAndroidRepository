@@ -2,17 +2,14 @@ package com.example.caesarzonapplication.model.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
 import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
-import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -125,11 +122,10 @@ class ProductsViewModel: ViewModel() {
         }
     }
 
-    fun searchProducts(query: String) {
+    fun searchProducts(query: String, minPrice: Double, maxPrice: Double, isClothing: Boolean) {
         _productList.value = emptyList()
-
         viewModelScope.launch {
-            val manageURL = URL("http://25.49.50.144:8090/product-api/search?search-text=$query")
+            val manageURL = URL("http://25.49.50.144:8090/product-api/search?search-text=$query&min-price=$minPrice&max-price=$maxPrice&is-clothing=$isClothing")
             val request = Request.Builder()
                 .url(manageURL)
                 .addHeader("Authorization", "Bearer ${basicToken?.accessToken}")
