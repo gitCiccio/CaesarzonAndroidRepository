@@ -84,8 +84,8 @@ fun SearchBar(navController: NavHostController){
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue")
-                               println(textFieldValue)},
+                        if (textFieldValue.isNotEmpty())
+                            navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue") },
                     onDone = {
                         textFieldValue = ""
                     }
@@ -94,7 +94,8 @@ fun SearchBar(navController: NavHostController){
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue")},
+                            if (textFieldValue.isNotEmpty())
+                                navController.navigate(DetailsScreen.ProductSearchResultsScreen.route+"/$textFieldValue")},
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
                             .size(50.dp)
