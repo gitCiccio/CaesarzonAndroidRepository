@@ -14,11 +14,14 @@ import com.example.caesarzonapplication.model.repository.userRepository.CityData
 import com.example.caesarzonapplication.model.repository.userRepository.FollowerRepository
 import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
+import com.example.caesarzonapplication.model.repository.wishlistRepository.WishlistRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
@@ -58,7 +61,9 @@ class MainActivity : ComponentActivity() {
         }
         val reviewViewModel: ReviewViewModel by viewModels()
 
-        val wishlistViewModel: ProductsViewModel by viewModels()
+        val wishlistViewModel: WishlistViewModel by viewModels<WishlistViewModel>{
+            WishlistViewModelFactory(WishlistRepository(AppDatabase.getDatabase(this).wishlistDao()))
+        }
 
         setContent{
             CaesarzonApplicationTheme{
@@ -74,7 +79,8 @@ class MainActivity : ComponentActivity() {
                     cardsViewModel = cardViewModel,
                     notificationViewModel = notificationViewModel,
                     supportRequestsViewModel = supportRequestsViewModel,
-                    reviewViewModel = reviewViewModel
+                    reviewViewModel = reviewViewModel,
+                    wishlistViewModel = wishlistViewModel
                 )
             }
         }

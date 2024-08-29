@@ -12,6 +12,7 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.*
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
@@ -43,7 +44,8 @@ fun NavigationGraph(
     addressViewModel: AddressViewModel,
     cardViewModel: CardsViewModel,
     supportRequestViewModel: SupportRequestsViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    wishlistViewModel: WishlistViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
