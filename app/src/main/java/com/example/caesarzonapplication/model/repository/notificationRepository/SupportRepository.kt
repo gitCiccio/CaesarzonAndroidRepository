@@ -67,5 +67,3 @@ class SupportRepository(private val supportDao: SupportDao) {
         }
     }
 }
-
-

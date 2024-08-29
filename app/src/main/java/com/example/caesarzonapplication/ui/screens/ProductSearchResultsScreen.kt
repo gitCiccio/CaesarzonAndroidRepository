@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.ui.components.LoadBar
 import com.example.caesarzonapplication.ui.components.ProductCard
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,17 +62,7 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
             .padding(16.dp)
     ) {
         if (productsViewModel.isLoading.value) {
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize())
-            }
+            LoadBar()
         } else {
             if (productList.isEmpty()) {
                 println("Errore nella ricerca")

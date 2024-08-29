@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.media.Image
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,12 +38,16 @@ import java.net.URL
 
 class AccountInfoViewModel(private val userRepository: UserRepository, private val imageRepository: ProfileImageRepository) : ViewModel() {
 
-    var userData: UserDTO? = null
+    companion object{
+        var userData: UserDTO? = null
+    }
 
-    //Carico l'immagine profilo
     var profileImage: LiveData<ProfileImage?> = imageRepository.getProfileImage()
 
     private val client = OkHttpClient()
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> get() = _isLoading
 
 
     fun addUserData(user: UserRegistrationDTO) {
@@ -50,8 +56,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 
-
-    //Fase di modifica dei dati, funziona
     fun modifyUserData(
         firstName: String,
         lastName: String,
@@ -61,6 +65,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val result = doModifyUser(firstName, lastName, username, email, phoneNumber)
                 callback(result)
@@ -68,9 +73,9 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 e.printStackTrace()
                 callback("error: ${e.message}")
             }
+            _isLoading.value = false
         }
     }
-
 
     suspend fun doModifyUser(
         firstName: String,
@@ -87,7 +92,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             .put("username", newUserDTO.username)
             .put("phoneNumber", newUserDTO.phoneNumber)
             .put("email", newUserDTO.email)
-
 
         val json = jsonObject.toString()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -131,6 +135,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 doRegistration(username, firstName, lastName, email, credentialValue)
                 val user = UserRegistrationDTO(
@@ -146,9 +151,9 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 e.printStackTrace()
                 callback("error: ${e.message}")
             }
+            _isLoading.value = false
         }
     }
-
 
     private suspend fun doRegistration(
         firstName: String,
@@ -186,12 +191,10 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
-    //Fine fase di registrazione
 
-
-    //Inizio recupero password
     fun retrieveForgottenPassword(username: String, callback: (result: String) -> Unit) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val result = doRetrieveForgottenPassword(username)
                 callback(result)
@@ -199,6 +202,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 e.printStackTrace()
                 callback("error: ${e.message}")
             }
+            _isLoading.value = false
         }
     }
 
@@ -231,9 +235,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             }
         }
     }
-    //Fine recupero password
-
-    //verifica otp
 
     fun verifyOTP(
         otp: String,
@@ -242,6 +243,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         callback: (result: String) -> Unit
     ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 doVerifyOTP(otp, password, username)
                 callback("success")
@@ -249,6 +251,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 e.printStackTrace()
                 callback("error: ${e.message}")
             }
+            _isLoading.value = false
         }
     }
 
@@ -291,9 +294,16 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         callback: (result: String) -> Unit
     ): String {
         viewModelScope.launch {
-            if (doChangePassword(password, username, recovery) == "success")
+            _isLoading.value = true
+            if (doChangePassword(password, username, recovery) == "success"){
+                _isLoading.value = false
                 callback("success")
+            }else{
+                _isLoading.value = false
+                return@launch
+            }
         }
+        _isLoading.value = false
         return "error"
     }
 
@@ -328,9 +338,9 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 
-    //Funziona
     fun getUserData() {
         CoroutineScope(Dispatchers.IO).launch {
+            _isLoading.value = true
             try {
                 println("sono nel try del get data")
                 val manageURL = URL("http://25.49.50.144:8090/user-api/user")
@@ -367,11 +377,10 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 e.printStackTrace()
                 println("Errore nel parsing della risposta JSON: ${e.message}")
             }
+            _isLoading.value = false
         }
     }
 
-
-    //funziona
     suspend fun login(username: String, password: String): Boolean {
         // Resetta il token all'inizio del login
         myToken = null
@@ -403,6 +412,7 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 }
+
 class AccountInfoViewModelFactory(
     private val userRepository: UserRepository,
     private val imageRepository: ProfileImageRepository

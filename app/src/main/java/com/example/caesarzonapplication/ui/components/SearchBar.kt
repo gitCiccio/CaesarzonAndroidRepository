@@ -142,7 +142,10 @@ fun SearchBar(navController: NavHostController, notificationViewModel: Notificat
                 )
                 if (logged.value) {
                     searchBarWidth = 215
-                    Box(modifier = Modifier.align(Alignment.TopEnd)) {
+                    Box(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
                         FloatingActionButton(
                             onClick = {
                                 showNotificationsPopup = !showNotificationsPopup
@@ -156,7 +159,8 @@ fun SearchBar(navController: NavHostController, notificationViewModel: Notificat
                             contentColor = Color.White,
                             shape = CircleShape,
                             modifier = Modifier
-                                .size(48.dp),
+                                .size(45.dp)
+                                .padding(top = 10.dp),
                             elevation = FloatingActionButtonDefaults.elevation(
                                 defaultElevation = 2.dp,
                                 pressedElevation = 4.dp
@@ -184,7 +188,6 @@ fun SearchBar(navController: NavHostController, notificationViewModel: Notificat
                             }
                         }
                     }
-
                     if (showNotificationsPopup) {
                         NotificationsPopup(
                             notificationViewModel = notificationViewModel,
