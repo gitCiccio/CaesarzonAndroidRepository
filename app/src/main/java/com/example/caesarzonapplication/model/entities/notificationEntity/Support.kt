@@ -9,6 +9,8 @@ data class Support(
     @PrimaryKey
     @ColumnInfo(name = "id_richiesta_di_supporto") val support_id: String,
 
+    @ColumnInfo(name = "username") val username: String,
+
     @ColumnInfo(name = "tipo") val type: String,
 
     @ColumnInfo(name = "testo") val text: String,

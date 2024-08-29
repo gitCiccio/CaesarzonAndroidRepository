@@ -14,7 +14,7 @@ import java.io.IOException
 import java.net.URL
 import java.util.UUID
 
-class ReportViewModel : ViewModel() {
+class AdminReportViewModel : ViewModel() {
 
     private val client = OkHttpClient()
 

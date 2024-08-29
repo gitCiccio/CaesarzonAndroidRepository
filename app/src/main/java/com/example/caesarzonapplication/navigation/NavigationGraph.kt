@@ -76,7 +76,7 @@ fun NavigationGraph(
 
         if(isAdmin.value) {
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
-            val reportViewModel = ReportViewModel()
+            val reportViewModel = AdminReportViewModel()
             val supportRequestViewModel = SupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 

@@ -5,18 +5,15 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.ImageProductDTO
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.dto.ProductSearchWithImage
 import com.example.caesarzonapplication.model.dto.ProductWithImage
-import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.utils.BitmapConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,8 +23,6 @@ import okhttp3.Request
 import java.io.IOException
 import java.net.URL
 import java.util.UUID
-import android.util.Base64
-
 
 
 class ProductsViewModel: ViewModel() {
@@ -39,22 +34,22 @@ class ProductsViewModel: ViewModel() {
     //private val _productsInShoppingCart = mutableStateListOf<Product>()
     //val productInShoppingCart: List<Product> get() = _productsInShoppingCart
 
-    val selectedProduct = mutableStateOf<ProductDTO?>(null)
+    var selectedProduct = mutableStateOf<ProductWithImage?>(null)
 
-    private val _newProducts = mutableStateListOf<ProductWithImage>()
-    val newProducts: List<ProductWithImage> get() = _newProducts
+    private val _newProducts = mutableStateListOf<ProductSearchWithImage>()
+    val newProducts: List<ProductSearchWithImage> get() = _newProducts
 
 
-    private val _hotProducts = mutableStateListOf<ProductWithImage>()
-    val hotProducts: List<ProductWithImage> get() = _hotProducts
+    private val _hotProducts = mutableStateListOf<ProductSearchWithImage>()
+    val hotProducts: List<ProductSearchWithImage> get() = _hotProducts
 
 
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
 
-    private val _productList = MutableStateFlow<List<ProductWithImage>>(emptyList())
-    val productList: StateFlow<List<ProductWithImage>> = _productList
+    private val _productList = MutableStateFlow<List<ProductSearchWithImage>>(emptyList())
+    val productList: StateFlow<List<ProductSearchWithImage>> = _productList
 
     /*fun addProductToCart(product: Product) {
         _productsInShoppingCart.add(product)
@@ -80,9 +75,9 @@ class ProductsViewModel: ViewModel() {
                     val responseBody = response.body?.string()
 
                     val productDTO = gson.fromJson(responseBody, ProductDTO::class.java)
-                    println("prodotto preso response: "+response.message+" "+response.code)
-                    selectedProduct.value = productDTO
-                    println("Prodotto : "+productDTO.name)
+                    val image = loadProductImage(productDTO.id)
+                    selectedProduct.value = ProductWithImage(productDTO, image)
+
                 }
 
             }catch (e: IOException){
@@ -116,7 +111,7 @@ class ProductsViewModel: ViewModel() {
 
                 for(product in newProducts){
                     val image = loadProductImage(product.productId.toString())
-                    _newProducts.add(ProductWithImage(product, image))
+                    _newProducts.add(ProductSearchWithImage(product, image))
                 }
 
             } catch (e: IOException) {
@@ -181,7 +176,7 @@ class ProductsViewModel: ViewModel() {
                 _hotProducts.clear()
                for (product in newProducts) {
                    val image =loadProductImage(product.productId.toString())
-                   _hotProducts.add(ProductWithImage(product, image))
+                   _hotProducts.add(ProductSearchWithImage(product, image))
                }
 
             } catch (e: IOException) {
@@ -214,7 +209,7 @@ class ProductsViewModel: ViewModel() {
 
                     for(product in newProducts){
                         val image = loadProductImage(product.productId.toString())
-                        _productList.value += ProductWithImage(product, image)
+                        _productList.value += ProductSearchWithImage(product, image)
                     }
 
                 } catch (e: IOException) {
@@ -253,7 +248,7 @@ class ProductsViewModel: ViewModel() {
 
                     for(product in newProducts){
                         val image = loadProductImage(product.productId.toString())
-                        _productList.value += ProductWithImage(product, image)
+                        _productList.value += ProductSearchWithImage(product, image)
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
