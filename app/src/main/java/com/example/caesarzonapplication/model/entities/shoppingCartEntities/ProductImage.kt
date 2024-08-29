@@ -7,18 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "foto_prodotti",
-    foreignKeys = [
-        ForeignKey(
-            entity = Product::class,
-            parentColumns = ["id_prodotto"], // Corrected to match Product primary key
-            childColumns = ["id_prodotto"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index("id_prodotto")]
-)
+@Entity(tableName = "foto_prodotti")
 class ProductImage(
     @PrimaryKey
     @ColumnInfo(name = "id_foto_prodotto") val id: String,

@@ -3,7 +3,7 @@ package com.example.caesarzonapplication.model.dto
 import java.util.UUID
 
 data class ProductDTO(
-    val id: UUID,
+    val id: String,
     val name: String,
     val description: String,
     val brand: String,

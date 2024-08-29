@@ -55,7 +55,7 @@ class AdminProductViewModel {
         /*TODO*/
     }
 
-    fun deleteProduct(productID: UUID){
+    fun deleteProduct(productID: String){
         println("id del prodtto: "+productID)
         val manageURL = URL("http://25.49.50.144:8090/product-api/product?productID=$productID")
 

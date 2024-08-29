@@ -6,48 +6,51 @@ import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.dto.ProductWithImage
 import com.example.caesarzonapplication.model.entities.shoppingCartEntities.Product
 import kotlinx.coroutines.launch
-
+/*
 class ShoppingCartViewModel: ViewModel() {
-    private val _productsInShoppingCart = mutableStateListOf<Product>()
+/*
+}
+private val _productsInShoppingCart = mutableStateListOf<ProductWithImage>()
 
-    private var _buyLaterProducts = mutableStateListOf<Product>()
+private var _buyLaterProducts = mutableStateListOf<ProductWithImage>()
 
-    val productInShoppingCart = mutableStateListOf<Product>()
+val productInShoppingCart = mutableStateListOf<ProductWithImage>()
 
-    val buyLaterProducts = mutableStateListOf<ProductSearchDTO>()
+val buyLaterProducts = mutableStateListOf<ProductWithImage>()
 
     init{
         loadShoppingCartProduct()
     }
 
-    private fun loadShoppingCartProduct(){
-       //Carica i prodotti sul carrello
-    }
-
-    fun addLaterProduct(product: Product){
-        println("aggiunto")
-        _buyLaterProducts.add(product)
-    }
-
-    fun getBuyLaterProducts(): List<Product>{
-        return _buyLaterProducts
-    }
-
-
-    /*
-    GEMINI esempio
-    fun loadProductsFromServer() {
-    viewModelScope.launch {
-        try {
-            val products = repository.getProductsFromApi()
-            _products.value = products
-        } catch (e: Exception) {
-            _errorMessage.value = e.message
+        private fun loadShoppingCartProduct(){
+           //Carica i prodotti sul carrello
         }
-    }
-}*/
+
+        fun addLaterProduct(product: Product){
+            println("aggiunto")
+            _buyLaterProducts.add(product)
+        }
+
+        fun getBuyLaterProducts(): List<Product>{
+            return _buyLaterProducts
+        }
+
+
+
+        GEMINI esempio
+        fun loadProductsFromServer() {
+        viewModelScope.launch {
+            try {
+                val products = repository.getProductsFromApi()
+                _products.value = products
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+    }*/
     /*
     fun saveProductToDatabase(product: Product) {
     viewModelScope.launch {
@@ -55,7 +58,7 @@ class ShoppingCartViewModel: ViewModel() {
     }
 }
 
-     */
+
 
     fun addProduct(product: Product){
         if(_productsInShoppingCart.contains(product)){
@@ -73,7 +76,7 @@ class ShoppingCartViewModel: ViewModel() {
 
     /*fun getImage(name: String): Int {
         return _productsInShoppingCart.find { it.name == name }?.imageRes ?: 0
-    }*/
+    }
 
 
     fun increaseProduct(product: Product) {
@@ -104,5 +107,5 @@ class ShoppingCartViewModel: ViewModel() {
         println("Prodotto eliminato: $name")
         _productsInShoppingCart.removeAll{ it.name == name }
     }
-
-}
+*/
+}*/
