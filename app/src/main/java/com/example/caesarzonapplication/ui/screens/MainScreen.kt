@@ -56,8 +56,6 @@ fun MainScreen(
     supportRequestsViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel
 ) {
-
-
     Scaffold(
         topBar = {
             SearchBar(navController = navController, notificationViewModel)

@@ -49,7 +49,6 @@ class ReviewViewModel: ViewModel() {
         val manageUrl = URL("http://25.49.50.144:8090/product-api/reviews?prod-id=$productId&str=0")
         val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${basicToken?.accessToken}").build()
 
-
         withContext(Dispatchers.IO){
             try{
                 val response = client.newCall(request).execute()
@@ -73,7 +72,6 @@ class ReviewViewModel: ViewModel() {
         }
     }
 
-    //Aggiunta delle recensioni
     fun addReview(review: ReviewDTO){
         viewModelScope.launch {
             try{
@@ -113,7 +111,6 @@ class ReviewViewModel: ViewModel() {
         }
     }
 
-    //Eliminazione della recenzione
     fun deleteReview(review: ReviewDTO){
         viewModelScope.launch {
             try{
@@ -127,6 +124,7 @@ class ReviewViewModel: ViewModel() {
     suspend fun doDeleteReview(review: ReviewDTO){
         val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${review.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        _reviews.value.toMutableList().remove(review)
 
         withContext(Dispatchers.IO){
             try {
@@ -138,7 +136,7 @@ class ReviewViewModel: ViewModel() {
                 }
 
                 println("Risposta dal server: $responseBody")
-                _reviews.value.toMutableList().remove(review)
+
                 println("Recensione aggiunta con successo")
             }catch (e: Exception){
                 e.printStackTrace()

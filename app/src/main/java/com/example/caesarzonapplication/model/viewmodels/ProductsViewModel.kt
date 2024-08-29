@@ -39,11 +39,8 @@ class ProductsViewModel: ViewModel() {
     private val _newProducts = mutableStateListOf<ProductSearchWithImage>()
     val newProducts: List<ProductSearchWithImage> get() = _newProducts
 
-
     private val _hotProducts = mutableStateListOf<ProductSearchWithImage>()
     val hotProducts: List<ProductSearchWithImage> get() = _hotProducts
-
-
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
@@ -58,7 +55,6 @@ class ProductsViewModel: ViewModel() {
     fun getProduct(productID: UUID){
         viewModelScope.launch(Dispatchers.IO)
         {
-
             val manageURL = URL("http://25.49.50.144:8090/product-api/product/$productID")
             val request = Request
                 .Builder()
@@ -66,9 +62,7 @@ class ProductsViewModel: ViewModel() {
                 .addHeader("Authorization", "Bearer ${basicToken?.accessToken}")
                 .build()
             try{
-                println("Sono nella funzione per prendere il prodotto")
                 val response = client.newCall(request).execute()
-                println("sto prendendo il prodotto"+response.message+" code: "+response.code)
                 if (!response.isSuccessful) {
                     println("Problemi nel caricamento del prodotto"+response.message+" code: "+response.code)
                     return@launch
@@ -78,9 +72,7 @@ class ProductsViewModel: ViewModel() {
                     val productDTO = gson.fromJson(responseBody, ProductDTO::class.java)
                     val image = loadProductImage(productDTO.id)
                     selectedProduct.value = ProductWithImage(productDTO, image)
-
                 }
-
             }catch (e: IOException){
                 e.printStackTrace()
             }
@@ -121,9 +113,7 @@ class ProductsViewModel: ViewModel() {
         }
     }
 
-    // Updated loadProductImage to handle base64 encoded strings
     suspend fun loadProductImage(productId: String): Bitmap? {
-        println("id che mando: $productId")
         return withContext(Dispatchers.IO) {
             val uuidProduct = UUID.fromString(productId)
             val manageURL = URL("http://25.49.50.144:8090/product-api/image/$uuidProduct")
@@ -140,7 +130,6 @@ class ProductsViewModel: ViewModel() {
                 }
                 val imageByteArray = response.body?.byteStream()?.readBytes()
 
-                // Check if imageByteArray is not null
                 if (imageByteArray != null) {
                     val convertedImage = bitampConverter.converterByteArray2Bitmap(imageByteArray)
                     println("prodotto preso response: " + response.message + " " + response.code)
@@ -205,7 +194,6 @@ class ProductsViewModel: ViewModel() {
                     val productListType = object : TypeToken<List<ProductSearchDTO>>() {}.type
                     val newProducts: List<ProductSearchDTO> = gson.fromJson(responseBody, productListType)
 
-                    // Asynchronously load images for each product
                     _productList.value = emptyList()
 
                     for(product in newProducts){
@@ -224,7 +212,6 @@ class ProductsViewModel: ViewModel() {
 
     fun getProductsByCategory(category: String) {
         _productList.value = emptyList()
-
         viewModelScope.launch {
             val manageURL = URL("http://25.49.50.144:8090/product-api/search?search-text=$category")
             val request = Request.Builder()
@@ -244,7 +231,6 @@ class ProductsViewModel: ViewModel() {
                     val productListType = object : TypeToken<List<ProductSearchDTO>>() {}.type
                     val newProducts: List<ProductSearchDTO> = gson.fromJson(responseBody, productListType)
 
-                    // Asynchronously load images for each product
                     _productList.value = emptyList()
 
                     for(product in newProducts){

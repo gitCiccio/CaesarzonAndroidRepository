@@ -45,14 +45,15 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
                     onClick = { /* Azione per acquistare subito */ },
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp),
+                        .height(72.dp)
+                        .padding(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
                 ) {
                     Text(
@@ -65,7 +66,8 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
                     onClick = { showPopup = true },
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp),
+                        .height(72.dp)
+                        .padding(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
                 ) {
                     Text(
@@ -93,7 +95,7 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
         Row{
             Button(onClick = {
                 val gson = Gson()
-                val productJson = gson.toJson(productDTO) // Serializza il prodotto a JSON
+                val productJson = gson.toJson(productDTO)
                 navController.navigate("addProduct/$productJson") }
             ) {
                 Text(text = "Modifica")

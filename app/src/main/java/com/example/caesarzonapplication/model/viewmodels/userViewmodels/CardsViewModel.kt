@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,6 +28,10 @@ import java.util.ArrayList
 import java.util.UUID
 
 class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> get() = _isLoading
+
     private val client = OkHttpClient()
     var cards: ArrayList<CardDTO> = ArrayList()
 
@@ -68,7 +74,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
     fun getCardsFromServer(cardsUuid: List<UUID>) {
         CoroutineScope(Dispatchers.IO).launch {
-
+            _isLoading.value = true
             for (uuid in cardsUuid) {
                 val manageUrl = URL("http://25.49.50.144:8090/user-api/card/$uuid")
                 val request = Request.Builder()
@@ -97,6 +103,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                _isLoading.value = false
             }
         }
     }
@@ -104,7 +111,9 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     //Funzione per eliminare indirizzo
     fun deleteCard(card: CardDTO){
         CoroutineScope(Dispatchers.IO).launch {
+            _isLoading.value = true
             doDeleteCard(card)
+            _isLoading.value = false
         }
     }
 
@@ -136,11 +145,13 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
     fun addCard(card: CardDTO){
         viewModelScope.launch {
+            _isLoading.value = true
             try{
                 doAddCard(card)
             }catch (e: Exception){
                 e.printStackTrace()
             }
+            _isLoading.value = false
         }
     }
     //funzione per aggiungere la carta funziona

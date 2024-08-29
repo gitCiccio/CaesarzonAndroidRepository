@@ -39,6 +39,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Follower
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
+import com.example.caesarzonapplication.ui.components.LoadBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -95,10 +96,14 @@ fun AuthScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        if (accountInfoViewModel.isLoading.value) {
+            LoadBar()
+        }
         Text(
             text = "Caesarzon",
             style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
                 .padding(bottom = 30.dp)
         )
         TextField(

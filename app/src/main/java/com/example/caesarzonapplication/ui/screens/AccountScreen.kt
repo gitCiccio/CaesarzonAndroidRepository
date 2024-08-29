@@ -20,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userData
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AccountTabRow
+import com.example.caesarzonapplication.ui.components.LoadBar
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
 import com.example.caesarzonapplication.ui.components.ReturnsSection
@@ -53,6 +55,9 @@ var selectedTab by remember { mutableIntStateOf(0) }
 Column(
     modifier = Modifier.fillMaxSize()
 ) {
+    if (accountInfoViewModel.isLoading.value || addressViewModel.isLoading.value || supportViewModel.isLoading.value || cardViewModel.isLoading.value) {
+        LoadBar()
+    }
     ScrollableTabRow(
         selectedTabIndex = selectedTab,
         edgePadding = 5.dp,
@@ -89,7 +94,7 @@ Column(
             2 -> PaymentManagementSection(cardViewModel)
             3 -> OrderManagementSection()
             4 -> ReturnsSection()
-            5 -> accountInfoViewModel.userData?.let { SupportSection(supportViewModel, it.username) }
+            5 -> userData?.username?.let { SupportSection(supportViewModel, it) }
         }
     }
 }
