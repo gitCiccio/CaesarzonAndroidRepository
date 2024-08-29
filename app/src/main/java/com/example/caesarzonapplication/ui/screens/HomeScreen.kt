@@ -23,8 +23,6 @@ fun HomeScreen(
         productsViewModel.loadHotProducts()
     }
 
-    val newProducts = productsViewModel.newProducts
-    val hotProducts = productsViewModel.hotProducts
 
     LazyColumn (
         modifier = Modifier
@@ -33,8 +31,8 @@ fun HomeScreen(
         content = {
             item {
                 CategoryGrid(navController)
-                HorizontalProductSection(title ="Offerte speciali", products = hotProducts, navController)
-                HorizontalProductSection(title = "Novità", products = newProducts, navController)
+                HorizontalProductSection(title ="Offerte speciali", products = productsViewModel.hotProducts,navController)
+                HorizontalProductSection(title = "Novità", products = productsViewModel.newProducts,navController)
             }
         }
     )

@@ -21,7 +21,7 @@ import com.example.caesarzonapplication.ui.screens.AuthScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
-import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
+//import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.ui.screens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.ProductSearchResultsScreen
@@ -56,9 +56,9 @@ fun NavigationGraph(
             else AuthScreen(navController,accountInfoViewModel, followerViewModel, logged)
         }
 
-        composable(route = BottomBarScreen.Cart.route) {
+       /* composable(route = BottomBarScreen.Cart.route) {
             ShoppingCartScreen(navController,logged, productsViewModel)
-        }
+        }*/
 
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value) {

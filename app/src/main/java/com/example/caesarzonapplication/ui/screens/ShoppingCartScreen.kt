@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+//import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.ui.components.EmptyShoppingCart
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
-import com.example.caesarzonapplication.ui.components.ShoppingCartCard
-
+//import com.example.caesarzonapplication.ui.components.ShoppingCartCard
+/*
 @Composable
 fun ShoppingCartScreen(navController: NavHostController, logged: MutableState<Boolean>, productsViewModel: ProductsViewModel) {
 
@@ -96,5 +96,5 @@ fun ShoppingCartScreen(navController: NavHostController, logged: MutableState<Bo
             HorizontalProductSection(title = "Altri prodotti", newProducts, navController)
         }
     }
-}
+}*/
 

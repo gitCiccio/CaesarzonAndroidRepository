@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,7 +134,10 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
                         .padding(4.dp)
                 ) {
                     items(productList) {product ->
-                        ProductCard(product = product, navController = navController)
+                        ProductCard(
+                            product = product.product,
+                            product.image,
+                            navController = navController)
                     }
                 }
             }

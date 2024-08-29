@@ -6,16 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.dto.ProductWithImage
 import com.example.caesarzonapplication.ui.components.ProductCard
 
 
 @Composable
-fun VerticalProductSection(title: String, products: List<ProductSearchDTO>, navController: NavHostController){
+fun VerticalProductSection(title: String, products: List<ProductWithImage>, navController: NavHostController){
     Spacer(modifier = Modifier.height(15.dp))
     LazyColumn {
             items(products){ product ->
-                ProductCard(product = product, navController)
+                ProductCard(product = product.product, product.image, navController)
                 Spacer(modifier = Modifier.height(15.dp))
             }
     }

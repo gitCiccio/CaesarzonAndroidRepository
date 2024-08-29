@@ -46,7 +46,7 @@ import com.example.caesarzonapplication.model.utils.Converters
                       Product::class, ProductOrder::class, ProductImage::class,
                       Address::class, Card::class, CityData::class, Follower::class, User::class,
                       Wishlist::class, WishlistProduct::class],
-    version = 4, exportSchema = false)
+    version = 5, exportSchema = false)
 @TypeConverters(Converters::class, BitmapConverter::class)
 abstract class AppDatabase: RoomDatabase()  {
     abstract fun adminNotificationDao(): AdminNotificationDao
@@ -80,206 +80,45 @@ abstract class AppDatabase: RoomDatabase()  {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).addMigrations(MIGRATION_3_4)
+                )
                     .build()
                 INSTANCE = instance
                 return instance
             }
         }
-        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
-
-                // Drop all existing tables
-                db.execSQL("DROP TABLE IF EXISTS notifiche_admin")
-                db.execSQL("DROP TABLE IF EXISTS ban")
-                db.execSQL("DROP TABLE IF EXISTS segnala")
-                db.execSQL("DROP TABLE IF EXISTS richiesta_supporto")
-                db.execSQL("DROP TABLE IF EXISTS notifiche_utente")
-                db.execSQL("DROP TABLE IF EXISTS prodotto")
-                db.execSQL("DROP TABLE IF EXISTS foto_prodotti")
-                db.execSQL("DROP TABLE IF EXISTS ordine_prodotto")
-                db.execSQL("DROP TABLE IF EXISTS indirizzo")
-                db.execSQL("DROP TABLE IF EXISTS admin")
-                db.execSQL("DROP TABLE IF EXISTS carte")
-                db.execSQL("DROP TABLE IF EXISTS dati_comune")
-                db.execSQL("DROP TABLE IF EXISTS follower")
-                db.execSQL("DROP TABLE IF EXISTS foto_utente")
-                db.execSQL("DROP TABLE IF EXISTS wishlist")
-                db.execSQL("DROP TABLE IF EXISTS prodotto_lista_desideri")
-
-                // Recreate the tables
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS notifiche_admin (
-                id_notifche_admin TEXT PRIMARY KEY NOT NULL,
-                data TEXT NOT NULL,
-                descrizione TEXT NOT NULL,
-                username_admin TEXT NOT NULL,
-                letta INTEGER NOT NULL,
-                id_segnalazione INTEGER NOT NULL,
-                id_richiesta_di_supporto INTEGER NOT NULL,
-                FOREIGN KEY(id_segnalazione) REFERENCES segnala(id_segnalazione) ON DELETE CASCADE,
-                FOREIGN KEY(id_richiesta_di_supporto) REFERENCES richiesta_supporto(id_richiesta_di_supporto) ON DELETE CASCADE
+                // Step 1: Create a new table without the foreign key constraint
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS `foto_prodotti` (
+                `id_foto_prodotto` TEXT PRIMARY KEY NOT NULL,
+                `id_prodotto` TEXT NOT NULL,
+                `immagine` BLOB NOT NULL
             )
-        """)
+            """
+                )
 
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS ban (
-                id_ban TEXT PRIMARY KEY NOT NULL,
-                motivo TEXT NOT NULL,
-                data_inizio TEXT NOT NULL,
-                data_fine TEXT NOT NULL,
-                username_utente TEXT NOT NULL,
-                username_admin TEXT NOT NULL
-            )
-        """)
+                // Step 2: Copy the data from the old table to the new table
+                db.execSQL(
+                    """
+            INSERT INTO `new_foto_prodotti` (id_foto_prodotto, id_prodotto, immagine)
+            SELECT id_foto_prodotto, id_prodotto, immagine
+            FROM `foto_prodotti`
+            """
+                )
 
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS segnala (
-                id_segnalazione TEXT PRIMARY KEY NOT NULL,
-                data_segnalazione TEXT NOT NULL,
-                motivo TEXT NOT NULL,
-                descrizione TEXT NOT NULL,
-                username_utente2 TEXT NOT NULL,
-                id_recensione TEXT NOT NULL
-            )
-        """)
+                // Step 3: Drop the old table
+                db.execSQL("DROP TABLE `foto_prodotti`")
 
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS richiesta_supporto (
-                id_richiesta_di_supporto TEXT PRIMARY KEY NOT NULL,
-                tipo TEXT NOT NULL,
-                testo TEXT NOT NULL,
-                oggetto TEXT NOT NULL,
-                data_richiesta TEXT NOT NULL
-            )
-        """)
+                // Step 4: Rename the new table to the old table's name
+                db.execSQL("ALTER TABLE `new_foto_prodotti` RENAME TO `foto_prodotti`")
 
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS notifiche_utente (
-                id_notifiche_utente TEXT PRIMARY KEY NOT NULL,
-                data TEXT NOT NULL,
-                descrizione TEXT NOT NULL,
-                username_utente TEXT NOT NULL,
-                letta INTEGER NOT NULL,
-                spiegazione TEXT NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS prodotto (
-                id_prodotto TEXT PRIMARY KEY NOT NULL,
-                descrizione TEXT NOT NULL,
-                nome TEXT NOT NULL,
-                marca TEXT NOT NULL,
-                sconto INTEGER NOT NULL,
-                prezzo REAL NOT NULL,
-                colore_primario TEXT NOT NULL,
-                colore_secondari TEXT NOT NULL,
-                e_abbigliamento INTEGER NOT NULL,
-                sport TEXT NOT NULL,
-                ultima_aggiunta TEXT NOT NULL,
-                quantita INTEGER NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS foto_prodotti (
-                id_foto_prodotto TEXT PRIMARY KEY NOT NULL,
-                id_prodotto TEXT NOT NULL,
-                immagine BLOB NOT NULL,
-                FOREIGN KEY(id_prodotto) REFERENCES prodotto(id_prodotto) ON DELETE CASCADE
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS ordine_prodotto (
-                id_ordine_prodotto TEXT PRIMARY KEY NOT NULL,
-                ref_prodotto TEXT NOT NULL,
-                totale REAL NOT NULL,
-                id_ordine TEXT NOT NULL,
-                quantità INTEGER NOT NULL,
-                per_dopo INTEGER NOT NULL,
-                taglia TEXT NOT NULL,
-                FOREIGN KEY(ref_prodotto) REFERENCES prodotto(id_prodotto) ON DELETE CASCADE
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS indirizzo (
-                id_indirizzo TEXT PRIMARY KEY NOT NULL,
-                nome_strada TEXT NOT NULL,
-                numero_civico TEXT NOT NULL,
-                tipo_strada TEXT NOT NULL,
-                id_dati_comune TEXT NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS admin (
-                nome TEXT PRIMARY KEY NOT NULL,
-                cognome TEXT NOT NULL,
-                email TEXT NOT NULL,
-                password TEXT NOT NULL,
-                username TEXT NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS carte (
-                id_carta TEXT PRIMARY KEY NOT NULL,
-                numero_carta TEXT NOT NULL,
-                titolare TEXT NOT NULL,
-                cvv TEXT NOT NULL,
-                data_scadenza TEXT NOT NULL,
-                saldo REAL NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS dati_comune (
-                id_dati_comune TEXT PRIMARY KEY NOT NULL,
-                nome_comune TEXT NOT NULL,
-                cap TEXT NOT NULL,
-                regione TEXT NOT NULL,
-                provincia TEXT NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS follower (
-                id TEXT PRIMARY KEY NOT NULL,
-                username_utente TEXT NOT NULL,
-                amico INTEGER NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS foto_utente (
-                username TEXT PRIMARY KEY NOT NULL,
-                foto BLOB
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS wishlist (
-                id_lista_desideri TEXT PRIMARY KEY NOT NULL,
-                nome TEXT NOT NULL,
-                visibilità INTEGER NOT NULL
-            )
-        """)
-
-                db.execSQL("""
-            CREATE TABLE IF NOT EXISTS prodotto_lista_desideri (
-                id_prodotto TEXT PRIMARY KEY NOT NULL,
-                nome TEXT NOT NULL,
-                immagine BLOB NOT NULL,
-                id_lista_desideri TEXT NOT NULL,
-                FOREIGN KEY(id_lista_desideri) REFERENCES wishlist(id_lista_desideri) ON DELETE CASCADE
-            )
-        """)
-
+                // Step 5: Optionally, create any necessary indexes
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_foto_prodotti_id_prodotto` ON `foto_prodotti` (`id_prodotto`)")
             }
         }
+
 
     }
 

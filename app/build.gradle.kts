@@ -80,6 +80,7 @@ dependencies {
     // Nuove dipendenze aggiunte dal secondo file
     implementation(libs.androidx.room.runtime)
     implementation(libs.identity.jvm)
+    implementation(libs.firebase.crashlytics.buildtools)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.adapters)
     implementation(libs.androidx.activity.compose.v172) // per inserire nuove immagini
