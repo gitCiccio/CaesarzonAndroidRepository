@@ -159,7 +159,8 @@ fun SearchBar(navController: NavHostController, notificationViewModel: Notificat
                             contentColor = Color.White,
                             shape = CircleShape,
                             modifier = Modifier
-                                .size(60.dp),
+                                .size(45.dp)
+                                .padding(top = 10.dp),
                             elevation = FloatingActionButtonDefaults.elevation(
                                 defaultElevation = 2.dp,
                                 pressedElevation = 4.dp

@@ -2,10 +2,34 @@ package com.example.caesarzonapplication.ui.screens
 
 import ProductActions
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,10 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.ui.components.ProductReviews
-import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.dto.ReviewDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
+import com.example.caesarzonapplication.ui.components.ProductReviews
+import java.time.LocalDate
 import java.util.UUID
 
 @Composable
@@ -30,6 +58,7 @@ fun ProductDetailsScreen(
     reviewViewModel: ReviewViewModel
 ) {
 
+    var isAddReviewDialogOpen by remember { mutableStateOf(false) }
     val adminProductViewModel = AdminProductViewModel()
     var selectedProduct by remember { mutableStateOf(productsViewModel.selectedProduct) }
 
@@ -40,10 +69,15 @@ fun ProductDetailsScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(18.dp)
     ) {
         item {
-            Column(modifier = Modifier .fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 selectedProduct.value.let {
                     if (it != null) {
                         Text(text = it.product.sport  ,
@@ -52,6 +86,7 @@ fun ProductDetailsScreen(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
                 selectedProduct.value.let {
                     if (it != null) {
                         Text(
@@ -61,6 +96,7 @@ fun ProductDetailsScreen(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
                 val imageBitmap = selectedProduct.value?.image?.asImageBitmap()
                 if (imageBitmap != null) {
                     Image(
@@ -81,12 +117,14 @@ fun ProductDetailsScreen(
                             .align(Alignment.CenterHorizontally)
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Price: \$${selectedProduct.value?.product?.price}",
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Descrizione: ",
                     style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
@@ -109,6 +147,88 @@ fun ProductDetailsScreen(
             selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, it1.product) } }
         }
         item {
+            if(logged.value) {
+                Button(
+                    onClick = { isAddReviewDialogOpen = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = "Aggiungi Recensione")
+                }
+            }
+            if (isAddReviewDialogOpen) {
+
+                var evaluation by remember { mutableIntStateOf(0) }
+                var text by remember { mutableStateOf("") }
+
+                AlertDialog(
+                    onDismissRequest = { isAddReviewDialogOpen = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val newReview = ReviewDTO(
+                                    id = UUID.randomUUID(),
+                                    text = text,
+                                    evaluation = evaluation,
+                                    username = "",
+                                    productID = productID,
+                                    localDate = LocalDate.now().toString(),
+                                )
+                                reviewViewModel.addReview(newReview)
+                                navController.navigate("productDetails/${selectedProduct.value?.product?.id}")
+                                isAddReviewDialogOpen = false
+                            }
+                        ) {
+                            Text(text = "Aggiungi")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { isAddReviewDialogOpen = false }) {
+                            Text(text = "Annulla")
+                        }
+                    },
+                    title = {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize()
+                                .height(40.dp),
+                            text = "Aggiungi una recensione"
+                        )
+                    },
+                    text = {
+                        Column {
+                            Text(text = "Valutazione: ")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row {
+                                for (i in 1..5) {
+                                    val iconColor = if (i <= evaluation) Color.Yellow else Color.Gray
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = null,
+                                        tint = iconColor,
+                                        modifier = Modifier
+                                            .clickable { evaluation = i }
+                                            .padding(end = 4.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            TextField(
+                                value = text,
+                                onValueChange = { text = it },
+                                label = { Text("Recensione") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp),
+                                maxLines = 5
+                            )
+                        }
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             ProductReviews(navController, reviewViewModel, productID.toString())
         }
     }

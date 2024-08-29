@@ -37,16 +37,17 @@ import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userData
 import kotlinx.coroutines.launch
 
 @Composable
 fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
 
-    var username by remember { mutableStateOf(accountInfoViewModel.userData?.username) }
-    var firstName by remember { mutableStateOf(accountInfoViewModel.userData?.firstName) }
-    var lastName by remember { mutableStateOf(accountInfoViewModel.userData?.lastName) }
-    var email by remember { mutableStateOf(accountInfoViewModel.userData?.email) }
-    var phoneNumber by remember { mutableStateOf(accountInfoViewModel.userData?.phoneNumber) }
+    var username = userData?.username
+    var firstName = userData?.firstName
+    var lastName = userData?.lastName
+    var email = userData?.email
+    var phoneNumber = userData?.phoneNumber
     var password by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()

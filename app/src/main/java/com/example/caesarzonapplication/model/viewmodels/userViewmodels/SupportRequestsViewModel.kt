@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -21,6 +23,10 @@ import java.net.URL
 
 //Promosso
 class SupportRequestsViewModel(private val supportRepository: SupportRepository): ViewModel() {
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> get() = _isLoading
+
     private val client = OkHttpClient()
     val gson = Gson()
 
