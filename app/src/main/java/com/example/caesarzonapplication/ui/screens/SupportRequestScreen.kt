@@ -23,26 +23,19 @@ import com.example.caesarzonapplication.ui.components.SupportUser
 fun SupportRequestScreen(supportRequestViewModel: AdminSupportRequestViewModel) {
 
     Column {
-        Box(
-            Modifier
+        Text(
+            text = "Assistenza",
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            ),
+            modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(16.dp),
-        ){
-            Text(
-                text = "Assistenza",
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(top = 30.dp),
-                color = Color.Black,
-            )
-        }
+                .padding(top = 30.dp),
+            color = Color.Black,
+        )
         if(supportRequestViewModel.supportRequests.isNotEmpty()){
             LazyColumn(
                 modifier = Modifier.padding(top = 8.dp)

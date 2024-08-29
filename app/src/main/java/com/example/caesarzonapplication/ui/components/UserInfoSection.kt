@@ -1,8 +1,5 @@
 package com.example.caesarzonapplication.ui.components
 
-import android.graphics.ImageDecoder
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -33,11 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import kotlinx.coroutines.launch
 
@@ -256,6 +254,29 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                         isUserInfoTextFieldEnabled = true
                 }) {
                     Text(text = if (isUserInfoTextFieldEnabled) "Salva" else "Modifica Info")
+                }
+            }
+            Spacer(modifier = Modifier.height(14.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    enabled = logged.value,
+                    onClick = {
+                        logged.value = false
+                        myToken?.refreshToken=""
+                        myToken?.accessToken="" },
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ),
+
+                    )
+                {
+                    Text(text = "Logout")
                 }
             }
         }

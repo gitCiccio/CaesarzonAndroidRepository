@@ -56,7 +56,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel,cardViewModel)
+                AccountScreen(navController, accountInfoViewModel, addressViewModel, cardViewModel)
             else AuthScreen(navController,accountInfoViewModel, followerViewModel, logged)
         }
 
@@ -68,13 +68,13 @@ fun NavigationGraph(
             if(logged.value) {
                 FriendlistScreen(navController, followerViewModel)
             }
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel, logged)
+            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
         }
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
                 WishlistScreen(navController)
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel, logged)
+            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
         }
 
 
@@ -109,7 +109,7 @@ fun NavigationGraph(
             val productId = backStackEntry.arguments?.getString("productId")
             if (productId != null) {
                     val uuid = UUID.fromString(productId)
-                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, reviewViewModel,isAdmin)
+                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, reviewViewModel)
             } else {
                 Log.e("NavigationError", "productId is null")
             }

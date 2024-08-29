@@ -48,13 +48,11 @@ class AdminSupportRequestViewModel {
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
                     _supportRequests.add(SupportDTO(UUID.fromString(id), username, type, subject, text, localDate))
                 }
-
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
     }
-
 
     fun deleteSupport(supportDTOId: UUID, explain: String) {
         CoroutineScope(Dispatchers.IO).launch {

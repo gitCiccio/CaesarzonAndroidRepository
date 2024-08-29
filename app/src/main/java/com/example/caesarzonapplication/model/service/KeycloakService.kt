@@ -40,9 +40,9 @@ class KeycloakService {
     }
 
     val client = OkHttpClient()
-    val keycloakRealm = "CaesarRealm"
-    val keycloakUrl = "http://25.24.244.170:8080"
-    val clientId = "caesar-app"
+    private val keycloakRealm = "CaesarRealm"
+    private val keycloakUrl = "http://25.24.244.170:8080"
+
     suspend fun getAccessToken(username: String, password: String) {
         withContext(Dispatchers.IO) {
             try {
@@ -209,6 +209,6 @@ class KeycloakService {
                 }
             }
         }
-        throw RuntimeException("No suitable RSA key found in JWK set")
+        throw RuntimeException("No suitable RSA key found in JWKset")
     }
 }
