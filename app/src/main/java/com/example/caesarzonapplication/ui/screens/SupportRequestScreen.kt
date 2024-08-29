@@ -16,11 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SupportRequestViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminSupportRequestViewModel
 import com.example.caesarzonapplication.ui.components.SupportUser
-
+/*
 @Composable
-fun SupportRequestScreen(supportRequestViewModel: SupportRequestViewModel) {
+fun SupportRequestScreen(supportRequestViewModel: AdminSupportRequestViewModel) {
 
     Column {
         Text(
@@ -58,5 +58,5 @@ fun SupportRequestScreen(supportRequestViewModel: SupportRequestViewModel) {
             )
         }
     }
-}
+}*/
 

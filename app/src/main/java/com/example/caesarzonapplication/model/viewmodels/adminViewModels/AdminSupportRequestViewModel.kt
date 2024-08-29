@@ -13,8 +13,8 @@ import java.io.IOException
 import java.net.URL
 import java.util.UUID
 
-class SupportRequestViewModel {
-
+class AdminSupportRequestViewModel {
+/*
     val client = OkHttpClient()
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
@@ -80,6 +80,6 @@ class SupportRequestViewModel {
         }
     }
 
-
+*/
 
 }

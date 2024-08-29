@@ -19,10 +19,17 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.ProductReviews
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import java.util.UUID
 
 @Composable
-fun ProductDetailsScreen(productID: UUID, navController: NavHostController, productsViewModel: ProductsViewModel, isAdmin: MutableState<Boolean>) {
+fun ProductDetailsScreen(
+    productID: UUID,
+    navController: NavHostController,
+    productsViewModel: ProductsViewModel,
+    reviewViewModel: ReviewViewModel,
+    isAdmin: MutableState<Boolean>
+) {
 
     val adminProductViewModel = AdminProductViewModel()
     var selectedProduct by remember { mutableStateOf(productsViewModel.selectedProduct) }
@@ -102,7 +109,7 @@ fun ProductDetailsScreen(productID: UUID, navController: NavHostController, prod
             selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, it1.product, isAdmin) } }
         }
         item {
-            ProductReviews(navController)
+            ProductReviews(navController, reviewViewModel, productID.toString())
         }
     }
 }

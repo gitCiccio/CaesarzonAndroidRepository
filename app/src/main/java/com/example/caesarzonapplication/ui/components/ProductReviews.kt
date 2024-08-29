@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ReviewDTO
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import java.util.UUID
 
 @Composable
-fun ProductReviews(navController : NavHostController) {
+fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewViewModel, productId: String) {
     var isReviewExpanded by remember { mutableStateOf(false) }
     var isAddReviewDialogOpen by remember { mutableStateOf(false) }
     var isAdmin by rememberSaveable { mutableStateOf(true) }

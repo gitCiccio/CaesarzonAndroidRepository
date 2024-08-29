@@ -36,7 +36,7 @@ fun AccountScreen(
     navController: NavController,
     accountInfoViewModel: AccountInfoViewModel,
     addressViewModel: AddressViewModel,
-    supportRequestViewModel: SupportRequestsViewModel,
+    supportViewModel: SupportRequestsViewModel,
     cardViewModel: CardsViewModel) {
 
 val accountTabs = listOf(
@@ -89,7 +89,7 @@ Column(
             2 -> PaymentManagementSection(cardViewModel)
             3 -> OrderManagementSection()
             4 -> ReturnsSection()
-            5 -> accountInfoViewModel.userData?.let { SupportSection(supportRequestViewModel, it.username) }
+            5 -> accountInfoViewModel.userData?.let { SupportSection(supportViewModel, it.username) }
         }
     }
 }
