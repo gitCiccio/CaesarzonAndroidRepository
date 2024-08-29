@@ -15,17 +15,18 @@ import com.example.caesarzonapplication.model.repository.userRepository.Follower
 import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModelFactory
-import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
 import com.example.caesarzonapplication.ui.screens.MainScreen
@@ -36,9 +37,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          val productsViewModel: ProductsViewModel by viewModels()
-         val accountInfoViewModel by viewModels<AccountInfoViewModel>{
+
+        val accountInfoViewModel by viewModels<AccountInfoViewModel>{
              AccountInfoViewModelFactory(UserRepository(AppDatabase.getDatabase(this).userDao()),
                  ProfileImageRepository(AppDatabase.getDatabase(this).profileImageDao())) }
+
         val addressViewModel by viewModels<AddressViewModel>{ AddressViewModelFactory(AddressRepository(AppDatabase.getDatabase(this).addressDao()), CityDataRepository(AppDatabase.getDatabase(this).cityDataDao())) }
 
         val cardViewModel by viewModels<CardsViewModel>{ CardsViewModelFactory(CardRepository(AppDatabase.getDatabase(this).cardDao())) }
@@ -49,10 +52,13 @@ class MainActivity : ComponentActivity() {
         val notificationViewModel: NotificationViewModel by viewModels<NotificationViewModel>{
             NotificationViewModelFactory(UserNotificationRepository(AppDatabase.getDatabase(this).userNotificationDao()))
         }
-        val wishlistViewModel: ProductsViewModel by viewModels()
-        val supportViewModels: SupportRequestsViewModel by viewModels<SupportRequestsViewModel>{
+
+        val supportRequestsViewModel: SupportRequestsViewModel by viewModels<SupportRequestsViewModel>{
             SupportRequestsViewModelFactory(SupportRepository(AppDatabase.getDatabase(this).supportDao()))
         }
+        val reviewViewModel: ReviewViewModel by viewModels()
+
+        val wishlistViewModel: ProductsViewModel by viewModels()
 
         setContent{
             CaesarzonApplicationTheme{
@@ -67,7 +73,8 @@ class MainActivity : ComponentActivity() {
                     addressViewModel = addressViewModel,
                     cardsViewModel = cardViewModel,
                     notificationViewModel = notificationViewModel,
-                    supportViewModels = supportViewModels
+                    supportRequestsViewModel = supportRequestsViewModel,
+                    reviewViewModel = reviewViewModel
                 )
             }
         }

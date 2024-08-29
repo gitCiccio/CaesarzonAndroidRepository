@@ -136,9 +136,7 @@ class NotificationViewModel(private val userNotificationRepository: UserNotifica
         }
 
     }
-    fun exit() {
-        TODO("Not yet implemented")
-    }
+
 }
 class NotificationViewModelFactory(
     private val userRepositoryNotification: UserNotificationRepository

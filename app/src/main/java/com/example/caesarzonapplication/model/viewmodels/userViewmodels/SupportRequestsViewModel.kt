@@ -19,6 +19,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
+//Promosso
 class SupportRequestsViewModel(private val supportRepository: SupportRepository): ViewModel() {
     private val client = OkHttpClient()
     val gson = Gson()
@@ -132,6 +133,6 @@ class SupportRequestsViewModelFactory(
         if (modelClass.isAssignableFrom(SupportRequestsViewModel::class.java)) {
             return SupportRequestsViewModel(supportRepository) as T
         }
-        throw IllegalArgumentException("Unknown ViewModelclass")
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

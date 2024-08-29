@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,15 +34,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ReviewDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import java.util.UUID
 
 @Composable
-fun ProductReviews(navController : NavHostController) {
+fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewViewModel, productId: String) {
     var isReviewExpanded by remember { mutableStateOf(false) }
     var isAddReviewDialogOpen by remember { mutableStateOf(false) }
-    var isAdmin by rememberSaveable { mutableStateOf(true) }
+    val reviews = remember { mutableStateListOf<ReviewDTO>() }
+    LaunchedEffect(Unit) {
+        reviewViewModel.getAllProductReviews(productId)
+    }
 
-    if(!isAdmin){
+    if(!isAdmin.value){
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
@@ -61,48 +70,6 @@ fun ProductReviews(navController : NavHostController) {
 
             if (isReviewExpanded) {
                 //lista fittizia, da rimpiazzare
-                val reviews = listOf(
-                    ReviewDTO(
-                        id = UUID.randomUUID(),
-                        text = "Ottimo prodotto! La qualità è superiore alle aspettative e il prezzo è molto conveniente.",
-                        evaluation = 5,
-                        username = "user1",
-                        productID = UUID.randomUUID(),
-                        localDate = "2024-06-01"
-                    ),
-                    ReviewDTO(
-                        id = UUID.randomUUID(),
-                        text = "Molto utile e ben fatto. L'unica pecca è la spedizione che ha tardato un po'.",
-                        evaluation = 4,
-                        username = "user2",
-                        productID = UUID.randomUUID(),
-                        localDate = "2024-06-05"
-                    ),
-                    ReviewDTO(
-                        id = UUID.randomUUID(),
-                        text = "Buon rapporto qualità/prezzo. Tuttavia, il materiale potrebbe essere migliore.",
-                        evaluation = 3,
-                        username = "user3",
-                        productID = UUID.randomUUID(),
-                        localDate = "2024-06-10"
-                    ),
-                    ReviewDTO(
-                        id = UUID.randomUUID(),
-                        text = "Non sono molto soddisfatto. Il prodotto non è come descritto.",
-                        evaluation = 2,
-                        username = "user4",
-                        productID = UUID.randomUUID(),
-                        localDate = "2024-06-15"
-                    ),
-                    ReviewDTO(
-                        id = UUID.randomUUID(),
-                        text = "Pessima qualità. Si è rotto dopo una settimana di utilizzo.",
-                        evaluation = 1,
-                        username = "user5",
-                        productID = UUID.randomUUID(),
-                        localDate = "2024-06-20"
-                    )
-                )
                 Column {
                     reviews.forEach { review ->
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -147,7 +114,9 @@ fun ProductReviews(navController : NavHostController) {
         if (isAddReviewDialogOpen) {
             AddReviewPopup(
                 onDismiss = { isAddReviewDialogOpen = false },
-                onAddReview = { /* Aggiungi la nuova recensione */ },
+                onAddReview = {
+                    /*val review = ReviewDTO()
+                    reviewViewModel.addReview() */},
                 navController
             )
         }

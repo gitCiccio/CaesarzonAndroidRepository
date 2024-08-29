@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,8 +23,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportR
 @Composable
 fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String) {
 
-    var reportText by remember { mutableStateOf(TextFieldValue("")) }
-    var subjectText by remember { mutableStateOf(TextFieldValue("")) }
+    var reportText by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var selectedReason by remember { mutableStateOf("Seleziona...") }
 
@@ -100,13 +101,6 @@ fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String)
             }
         }
         TextField(
-            value = subjectText,
-            onValueChange = { subjectText = it },
-            label = { Text("Titolo richiesta") },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        TextField(
             value = reportText,
             onValueChange = { reportText = it },
             label = { Text("Descrivi il problema") },
@@ -114,13 +108,10 @@ fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String)
                 .fillMaxWidth()
                 .height(150.dp)
         )
-        Button(
-            onClick = {
-                val date = java.time.LocalDateTime.now()
-                val support = SupportDTO("", username,  selectedReason, subjectText.toString(), reportText.toString(), date.toString())
-                supportViewModel.addSupport(support)
-            }
-        ) {
+        Button(onClick = {
+            val date = java.time.LocalDateTime.now()
+            val support = SupportDTO("", username,  selectedReason, "", reportText, date.toString())
+            supportViewModel.addSupport(support)}) {
             Text(text = "Invia richiesta")
         }
     }
