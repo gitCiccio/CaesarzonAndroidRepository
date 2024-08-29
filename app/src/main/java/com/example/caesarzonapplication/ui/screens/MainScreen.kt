@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
@@ -54,7 +55,8 @@ fun MainScreen(
     cardsViewModel: CardsViewModel,
     notificationViewModel: NotificationViewModel,
     supportRequestsViewModel: SupportRequestsViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    wishlistViewModel: WishlistViewModel
 ) {
 
 
@@ -83,7 +85,8 @@ fun MainScreen(
                     addressViewModel = addressViewModel,
                     cardViewModel = cardsViewModel,
                     supportRequestViewModel = supportRequestsViewModel,
-                    reviewViewModel = reviewViewModel
+                    reviewViewModel = reviewViewModel,
+                    wishlistViewModel = wishlistViewModel
                 )
             }
         }

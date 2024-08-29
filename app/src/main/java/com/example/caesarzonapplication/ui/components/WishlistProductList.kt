@@ -23,7 +23,7 @@ import java.util.UUID
 fun WishlistProductList(
     productList: List<SingleWishlistProductDTO>?,
     wishlistViewModel: WishlistViewModel,
-    wishlistId: UUID
+    wishlistId: String
 ) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
@@ -49,7 +49,7 @@ fun WishlistProductList(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
                 Button(onClick = {
-                        wishlistViewModel.removeWishlistProduct(wishlistId, product.productId);
+                        //wishlistViewModel rimuovi elemento dalla wishlist
                         showPopupMessage = "Prodotto rimosso dalla wishlist";
                         showPopup = true
                     })

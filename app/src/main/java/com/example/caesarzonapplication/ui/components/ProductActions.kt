@@ -21,7 +21,7 @@ import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 
 @Composable
-fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO) {
+fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, wishlistViewModel: WishlistViewModel,productDTO: ProductDTO) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
@@ -32,7 +32,7 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
         }
 
         if(showWishlistPopup){
-            WishlistPopup(wishlistViewModel = WishlistViewModel(), onDismiss = {showWishlistPopup = false})
+            WishlistPopup(wishlistViewModel = wishlistViewModel, onDismiss = {showWishlistPopup = false})
         }
 
         Column(
