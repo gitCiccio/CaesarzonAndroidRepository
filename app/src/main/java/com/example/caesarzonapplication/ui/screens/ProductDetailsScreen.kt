@@ -19,15 +19,22 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.ProductReviews
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import java.util.UUID
 
 @Composable
-fun ProductDetailsScreen(productID: UUID, navController: NavHostController, productsViewModel: ProductsViewModel, isAdmin: MutableState<Boolean>) {
+fun ProductDetailsScreen(
+    productID: UUID,
+    navController: NavHostController,
+    productsViewModel: ProductsViewModel,
+    reviewViewModel: ReviewViewModel
+) {
 
     val adminProductViewModel = AdminProductViewModel()
     var selectedProduct by remember { mutableStateOf(productsViewModel.selectedProduct) }
+
     LaunchedEffect(Unit) {
-        productsViewModel.getProduct(productID = productID)
+        productsViewModel.getProduct(productID)
     }
 
     LazyColumn(
@@ -99,10 +106,10 @@ fun ProductDetailsScreen(productID: UUID, navController: NavHostController, prod
             }
         }
         item {
-            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, it1.product, isAdmin) } }
+            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, it1.product) } }
         }
         item {
-            ProductReviews(navController)
+            ProductReviews(navController, reviewViewModel, productID.toString())
         }
     }
 }

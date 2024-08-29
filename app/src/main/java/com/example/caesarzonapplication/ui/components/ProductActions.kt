@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.ProductDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
@@ -20,7 +21,7 @@ import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
 import com.google.gson.Gson
 
 @Composable
-fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO, isAdmin: MutableState<Boolean>) {
+fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, productDTO: ProductDTO) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }

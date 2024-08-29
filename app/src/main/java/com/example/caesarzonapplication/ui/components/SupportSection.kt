@@ -16,12 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SupportSection() {
+fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String) {
 
-    var reportText by remember { mutableStateOf(TextFieldValue("")) }
+    var reportText by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var selectedReason by remember { mutableStateOf("Seleziona...") }
 
@@ -106,9 +108,10 @@ fun SupportSection() {
                 .fillMaxWidth()
                 .height(150.dp)
         )
-        Button(
-            onClick = { /* Logica per inviare la richiesta */ }
-        ) {
+        Button(onClick = {
+            val date = java.time.LocalDateTime.now()
+            val support = SupportDTO("", username,  selectedReason, "", reportText, date.toString())
+            supportViewModel.addSupport(support)}) {
             Text(text = "Invia richiesta")
         }
     }

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.database.AppDatabase
+import com.example.caesarzonapplication.model.repository.notificationRepository.SupportRepository
 import com.example.caesarzonapplication.model.repository.notificationRepository.UserNotificationRepository
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
@@ -25,6 +26,9 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsVie
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
 import com.example.caesarzonapplication.ui.screens.MainScreen
 import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
 
@@ -33,9 +37,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          val productsViewModel: ProductsViewModel by viewModels()
-         val accountInfoViewModel by viewModels<AccountInfoViewModel>{
+
+        val accountInfoViewModel by viewModels<AccountInfoViewModel>{
              AccountInfoViewModelFactory(UserRepository(AppDatabase.getDatabase(this).userDao()),
                  ProfileImageRepository(AppDatabase.getDatabase(this).profileImageDao())) }
+
         val addressViewModel by viewModels<AddressViewModel>{ AddressViewModelFactory(AddressRepository(AppDatabase.getDatabase(this).addressDao()), CityDataRepository(AppDatabase.getDatabase(this).cityDataDao())) }
 
         val cardViewModel by viewModels<CardsViewModel>{ CardsViewModelFactory(CardRepository(AppDatabase.getDatabase(this).cardDao())) }
@@ -46,8 +52,13 @@ class MainActivity : ComponentActivity() {
         val notificationViewModel: NotificationViewModel by viewModels<NotificationViewModel>{
             NotificationViewModelFactory(UserNotificationRepository(AppDatabase.getDatabase(this).userNotificationDao()))
         }
-         val wishlistViewModel: ProductsViewModel by viewModels()
-         val friendsViewModel: ProductsViewModel by viewModels()
+
+        val supportRequestsViewModel: SupportRequestsViewModel by viewModels<SupportRequestsViewModel>{
+            SupportRequestsViewModelFactory(SupportRepository(AppDatabase.getDatabase(this).supportDao()))
+        }
+        val reviewViewModel: ReviewViewModel by viewModels()
+
+        val wishlistViewModel: ProductsViewModel by viewModels()
 
         setContent{
             CaesarzonApplicationTheme{
@@ -62,6 +73,8 @@ class MainActivity : ComponentActivity() {
                     addressViewModel = addressViewModel,
                     cardsViewModel = cardViewModel,
                     notificationViewModel = notificationViewModel,
+                    supportRequestsViewModel = supportRequestsViewModel,
+                    reviewViewModel = reviewViewModel
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.ui.screens
+package com.example.caesarzonapplication.ui.screens.adminScreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
