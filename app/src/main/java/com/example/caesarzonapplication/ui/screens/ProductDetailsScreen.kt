@@ -25,9 +25,9 @@ fun ProductDetailsScreen(productID: UUID, navController: NavHostController, prod
 
     val adminProductViewModel = AdminProductViewModel()
     var selectedProduct by remember { mutableStateOf(productsViewModel.selectedProduct) }
-
     LaunchedEffect(Unit) {
         productsViewModel.getProduct(productID = productID)
+        productsViewModel.loadProductImage(productID.toString())
     }
 
     LazyColumn(
@@ -51,7 +51,7 @@ fun ProductDetailsScreen(productID: UUID, navController: NavHostController, prod
                     )
                 }
                 Image(
-                    painter = painterResource(id = R.drawable.logo),
+                    bitmap = ,
                     contentDescription = selectedProduct.value?.name,
                     modifier = Modifier
                         .size(200.dp)

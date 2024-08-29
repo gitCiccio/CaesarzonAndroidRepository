@@ -41,15 +41,14 @@ fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHos
                 .fillMaxSize()
                 .background(Color(247, 177, 76, 255))
         ) {
-            image?.asImageBitmap()?.let {
+
                 Image(
-                    bitmap = it,
+                    bitmap = image!!.asImageBitmap(),
                     contentDescription = product.productName,
                     modifier = Modifier
                         .height(100.dp),
                     contentScale = ContentScale.Crop
                 )
-            }
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
