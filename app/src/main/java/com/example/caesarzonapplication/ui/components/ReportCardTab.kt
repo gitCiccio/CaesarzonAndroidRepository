@@ -26,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.ReportDTO
-import com.example.caesarzonapplication.model.viewmodels.adminViewModels.ReportViewModel
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminReportViewModel
 
 @Composable
-fun ReportCardTab(report : ReportDTO, reportViewModel: ReportViewModel) {
+fun ReportCardTab(report : ReportDTO, reportViewModel: AdminReportViewModel) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
     var popupMessage by rememberSaveable { mutableStateOf("") }

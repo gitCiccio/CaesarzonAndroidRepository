@@ -10,11 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.model.dto.ProductWithImage
+import com.example.caesarzonapplication.model.dto.ProductSearchWithImage
 
 
 @Composable
-fun HorizontalProductSection(title: String, products: List<ProductWithImage>, navController: NavHostController) {
+fun HorizontalProductSection(title: String, products: List<ProductSearchWithImage>, navController: NavHostController) {
     Column(modifier = Modifier
         .padding(16.dp)){
         Text(text=title, style= MaterialTheme.typography.titleLarge, color= MaterialTheme.colorScheme.primary)
