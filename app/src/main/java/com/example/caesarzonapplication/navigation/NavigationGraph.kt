@@ -8,6 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.*
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
@@ -35,8 +37,6 @@ import java.util.UUID
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    isAdmin: MutableState<Boolean>,
-    logged: MutableState<Boolean>,
     productsViewModel: ProductsViewModel,
     accountInfoViewModel: AccountInfoViewModel,
     followerViewModel: FollowersViewModel,
@@ -53,7 +53,7 @@ fun NavigationGraph(
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
                 AccountScreen(navController, accountInfoViewModel, addressViewModel, cardViewModel)
-            else AuthScreen(navController,accountInfoViewModel, followerViewModel, logged)
+            else AuthScreen(navController,accountInfoViewModel, followerViewModel)
         }
 
        /* composable(route = BottomBarScreen.Cart.route) {
@@ -64,13 +64,13 @@ fun NavigationGraph(
             if(logged.value) {
                 FriendlistScreen(navController, followerViewModel)
             }
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel, logged)
+            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
         }
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
                 WishlistScreen(navController)
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel, logged)
+            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
         }
 
 

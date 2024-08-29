@@ -21,6 +21,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,10 +33,11 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun ReturnsSection() {
+
     val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3")
-    var showReturnDialog by rememberSaveable { mutableStateOf(false) }
-    var selectedOrder by rememberSaveable { mutableStateOf("") }
-    var returnReason by rememberSaveable { mutableStateOf(TextFieldValue("")) }
+    var showReturnDialog by remember { mutableStateOf(false) }
+    var selectedOrder by remember { mutableStateOf("") }
+    var returnReason by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
@@ -84,7 +86,7 @@ fun OrderRow(order: String, onReturnClick: () -> Unit) {
             modifier = Modifier.weight(1f)
         )
         Button(onClick = onReturnClick) {
-            Text(text = "Richiedi reso")
+            Text(text = "Visualizza dettagli")
         }
     }
 }

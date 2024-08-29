@@ -1,22 +1,29 @@
 package com.example.caesarzonapplication.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupportSection() {
 
-    var reportText by rememberSaveable { mutableStateOf(TextFieldValue("")) }
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    var selectedReason by rememberSaveable { mutableStateOf("Seleziona...") }
+    var reportText by remember { mutableStateOf(TextFieldValue("")) }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedReason by remember { mutableStateOf("Seleziona...") }
 
     val reportReasons = listOf(
         "Ordine",
@@ -31,11 +38,25 @@ fun SupportSection() {
         "Assistenza personalizzata"
     )
 
-    Column {
-        Text(text = "Invia richiesta", style = MaterialTheme.typography.bodyMedium)
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = !expanded }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Richiesta di supporto",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 10.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 26.sp
+        )
+        ExposedDropdownMenuBox(
+            onExpandedChange = { expanded = !expanded },
+            expanded = expanded
         ) {
             TextField(
                 value = selectedReason,
@@ -43,16 +64,28 @@ fun SupportSection() {
                 label = { Text("Motivo") },
                 readOnly = true,
                 trailingIcon = {
-                    if (expanded)
-                        Icons.Filled.ArrowUpward
-                    else Icons.Filled.ArrowDropDown
+                    IconButton(
+                        onClick = { expanded = !expanded }
+                    ) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { expanded = !expanded }
+                    .menuAnchor()
             )
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
             ) {
                 reportReasons.forEach { reason ->
                     DropdownMenuItem(
@@ -73,7 +106,9 @@ fun SupportSection() {
                 .fillMaxWidth()
                 .height(150.dp)
         )
-        Button(onClick = { /* Logica per inviare la richiesta */ }) {
+        Button(
+            onClick = { /* Logica per inviare la richiesta */ }
+        ) {
             Text(text = "Invia richiesta")
         }
     }
