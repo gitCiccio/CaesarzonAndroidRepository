@@ -58,6 +58,7 @@ class ProductsViewModel: ViewModel() {
     fun getProduct(productID: UUID){
         viewModelScope.launch(Dispatchers.IO)
         {
+
             val manageURL = URL("http://25.49.50.144:8090/product-api/product/$productID")
             val request = Request
                 .Builder()

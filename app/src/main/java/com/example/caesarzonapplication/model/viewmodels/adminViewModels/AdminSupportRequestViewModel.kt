@@ -14,7 +14,7 @@ import java.net.URL
 import java.util.UUID
 
 class AdminSupportRequestViewModel {
-/*
+
     val client = OkHttpClient()
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
@@ -46,7 +46,7 @@ class AdminSupportRequestViewModel {
                     val subject = jsonResponse.getJSONObject(i).getString("subject")
                     val text = jsonResponse.getJSONObject(i).getString("text")
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
-                    _supportRequests.add(SupportDTO(UUID.fromString(id).toString(), username, type, subject, text, localDate))
+                    _supportRequests.add(SupportDTO(id, username, type, subject, text, localDate))
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -54,7 +54,7 @@ class AdminSupportRequestViewModel {
         }
     }
 
-    fun deleteSupport(supportDTOId: String, explain: String) {
+    fun deleteSupport(supportDTOId: UUID, explain: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = "http://25.49.50.144:8090/notify-api/support?support-id=${supportDTOId}&explain=${explain}"
             val request = Request.Builder()
@@ -80,6 +80,6 @@ class AdminSupportRequestViewModel {
         }
     }
 
-*/
+
 
 }

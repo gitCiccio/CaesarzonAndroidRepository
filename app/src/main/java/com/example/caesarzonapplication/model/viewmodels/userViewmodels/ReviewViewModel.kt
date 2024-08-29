@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.AverageDTO
 import com.example.caesarzonapplication.model.dto.ReviewDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -44,8 +46,9 @@ class ReviewViewModel: ViewModel() {
     }
 
     suspend fun doGetAllProductReviews(productId: String){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/reviews?prod-id=$productId&str=${0}")
-        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/reviews?prod-id=$productId&str=0")
+        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${basicToken?.accessToken}").build()
+
 
         withContext(Dispatchers.IO){
             try{
@@ -53,17 +56,19 @@ class ReviewViewModel: ViewModel() {
                 val responseBody = response.body?.string()
 
                 if(!response.isSuccessful || responseBody.isNullOrEmpty()){
-                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    println("Chiamata fallita o risposta vuota, per la presa delle recensioni. Codice di stato: ${response.code}")
                     return@withContext
                 }
 
                 val reviewsList = object : TypeToken<List<ReviewDTO>>() {}.type
                 _reviews.value = gson.fromJson(responseBody, reviewsList)
-
+                for(review in _reviews.value){
+                    println("Recensione: ${review.text}")
+                }
                 println("Reviews recuperate con successo: ${_reviews.value.size}")
             }catch (e: Exception){
                 e.printStackTrace()
-                println("Errore durante la chiamata: ${e.message}")
+                println("Errore durante la chiamata, per la presa delle recensioni: ${e.message}")
             }
         }
     }
@@ -80,7 +85,7 @@ class ReviewViewModel: ViewModel() {
     }
 
     suspend fun doAddReview(review: ReviewDTO){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/review")
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/review")
 
         val JSON = "application/json; charset=utf-8".toMediaType()
         val json = gson.toJson(review)
@@ -94,6 +99,7 @@ class ReviewViewModel: ViewModel() {
                val responseBody = response.body?.string()
 
                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                   println("Recensioni")
                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                }
 
@@ -119,7 +125,7 @@ class ReviewViewModel: ViewModel() {
     }
 
     suspend fun doDeleteReview(review: ReviewDTO){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/review?product-id=${review.id}")
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${review.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         withContext(Dispatchers.IO){
@@ -153,8 +159,8 @@ class ReviewViewModel: ViewModel() {
     }
 
     suspend fun doGetAverageReview(productId: String){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/reviews/average?prod-id=$productId")
-        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/review/average?prod-id=$productId")
+        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${basicToken?.accessToken}").build()
 
         withContext(Dispatchers.IO){
             try{
@@ -187,8 +193,8 @@ class ReviewViewModel: ViewModel() {
     }
 
     suspend fun doGetReviewsScore(productId: String){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/reviews/score?prod-id=$productId")
-        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/reviews/score?prod-id=$productId")
+        val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${basicToken?.accessToken}").build()
 
         withContext(Dispatchers.IO){
             try{
