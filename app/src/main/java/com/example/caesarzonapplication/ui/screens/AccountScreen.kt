@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AccountTabRow
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
@@ -35,6 +36,7 @@ fun AccountScreen(
     navController: NavController,
     accountInfoViewModel: AccountInfoViewModel,
     addressViewModel: AddressViewModel,
+    supportRequestViewModel: SupportRequestsViewModel,
     cardViewModel: CardsViewModel) {
 
 val accountTabs = listOf(
@@ -87,7 +89,7 @@ Column(
             2 -> PaymentManagementSection(cardViewModel)
             3 -> OrderManagementSection()
             4 -> ReturnsSection()
-            5 -> SupportSection()
+            5 -> accountInfoViewModel.userData?.let { SupportSection(supportRequestViewModel, it.username) }
         }
     }
 }

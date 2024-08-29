@@ -27,13 +27,13 @@ import com.example.caesarzonapplication.model.viewmodels.adminViewModels.Support
 
 @Composable
 fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestViewModel){
+
     var responseText by rememberSaveable { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
 
     if(showPopup){
         GenericMessagePopup(message = "Risposta inviata con successo", onDismiss = {showPopup = false})
     }
-
 
     Card(
         modifier = Modifier
@@ -48,7 +48,7 @@ fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestVi
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = supports.text, style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = supports.localDate, style = MaterialTheme.typography.bodyLarge)
+            Text(text = supports.dateRequest, style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = responseText,

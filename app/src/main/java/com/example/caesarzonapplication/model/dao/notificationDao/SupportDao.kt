@@ -9,12 +9,16 @@ import com.example.caesarzonapplication.model.entities.notificationEntity.Suppor
 
 @Dao
 interface SupportDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addSupport(support: Support)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(support: Support)
 
 
     @Query("SELECT * FROM richiesta_supporto")
-    fun getAllSupport(): LiveData<List<Support>>
+    fun getAllSupport(): List<Support>
+
+    @Query("SELECT * FROM richiesta_supporto WHERE id_richiesta_di_supporto = :id")
+    fun getById(id: String): Support
+
 
     @Query("DELETE FROM richiesta_supporto WHERE id_richiesta_di_supporto = :id")
     suspend fun deleteSupportById(id: String)

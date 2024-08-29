@@ -2,7 +2,6 @@ package com.example.caesarzonapplication.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +16,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -42,7 +42,8 @@ fun NavigationGraph(
     followerViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
     cardViewModel: CardsViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    supportRequestViewModel: SupportRequestsViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -52,7 +53,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController, accountInfoViewModel, addressViewModel, cardViewModel)
+                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel, cardViewModel)
             else AuthScreen(navController,accountInfoViewModel, followerViewModel)
         }
 

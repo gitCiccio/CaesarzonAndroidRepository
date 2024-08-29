@@ -1,6 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.SupportDTO
 import com.example.caesarzonapplication.model.repository.notificationRepository.SupportRepository
@@ -18,7 +19,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-class SupportViewModels(private val supportRepository: SupportRepository): ViewModel() {
+class SupportRequestsViewModel(private val supportRepository: SupportRepository): ViewModel() {
     private val client = OkHttpClient()
     val gson = Gson()
 
@@ -120,5 +121,17 @@ class SupportViewModels(private val supportRepository: SupportRepository): ViewM
                 println("Errore durante la chiamata: ${e.message}")
             }
         }
+    }
+}
+class SupportRequestsViewModelFactory(
+    private val supportRepository: SupportRepository
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SupportRequestsViewModel::class.java)) {
+            return SupportRequestsViewModel(supportRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModelclass")
     }
 }

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.database.AppDatabase
+import com.example.caesarzonapplication.model.repository.notificationRepository.SupportRepository
 import com.example.caesarzonapplication.model.repository.notificationRepository.UserNotificationRepository
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
@@ -14,17 +15,19 @@ import com.example.caesarzonapplication.model.repository.userRepository.Follower
 import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
-import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
 import com.example.caesarzonapplication.ui.screens.MainScreen
 import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
 
@@ -46,8 +49,10 @@ class MainActivity : ComponentActivity() {
         val notificationViewModel: NotificationViewModel by viewModels<NotificationViewModel>{
             NotificationViewModelFactory(UserNotificationRepository(AppDatabase.getDatabase(this).userNotificationDao()))
         }
-         val wishlistViewModel: ProductsViewModel by viewModels()
-         val friendsViewModel: ProductsViewModel by viewModels()
+        val wishlistViewModel: ProductsViewModel by viewModels()
+        val supportViewModels: SupportRequestsViewModel by viewModels<SupportRequestsViewModel>{
+            SupportRequestsViewModelFactory(SupportRepository(AppDatabase.getDatabase(this).supportDao()))
+        }
 
         setContent{
             CaesarzonApplicationTheme{
@@ -62,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     addressViewModel = addressViewModel,
                     cardsViewModel = cardViewModel,
                     notificationViewModel = notificationViewModel,
+                    supportViewModels = supportViewModels
                 )
             }
         }

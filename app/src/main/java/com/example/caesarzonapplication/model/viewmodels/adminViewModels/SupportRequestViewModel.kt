@@ -46,7 +46,7 @@ class SupportRequestViewModel {
                     val subject = jsonResponse.getJSONObject(i).getString("subject")
                     val text = jsonResponse.getJSONObject(i).getString("text")
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
-                    _supportRequests.add(SupportDTO(UUID.fromString(id), username, type, subject, text, localDate))
+                    _supportRequests.add(SupportDTO(UUID.fromString(id).toString(), username, type, subject, text, localDate))
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -54,7 +54,7 @@ class SupportRequestViewModel {
         }
     }
 
-    fun deleteSupport(supportDTOId: UUID, explain: String) {
+    fun deleteSupport(supportDTOId: String, explain: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val manageURL = "http://25.49.50.144:8090/notify-api/support?support-id=${supportDTOId}&explain=${explain}"
             val request = Request.Builder()
@@ -68,7 +68,7 @@ class SupportRequestViewModel {
 
                 response.use {
                     if (response.isSuccessful) {
-                        _supportRequests.removeIf { it.id == supportDTOId }
+                        _supportRequests.removeIf { it.id == supportDTOId.toString() }
                         println("Richiesta di supporto eliminata con successo")
                     } else {
                         println("Problemi nell'eliminazione della richiesta di supporto: ${response.message}")

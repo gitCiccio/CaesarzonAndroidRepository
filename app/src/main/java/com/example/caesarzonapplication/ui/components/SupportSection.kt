@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -16,12 +14,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SupportSection() {
+fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String) {
 
     var reportText by remember { mutableStateOf(TextFieldValue("")) }
+    var subjectText by remember { mutableStateOf(TextFieldValue("")) }
     var expanded by remember { mutableStateOf(false) }
     var selectedReason by remember { mutableStateOf("Seleziona...") }
 
@@ -99,6 +100,13 @@ fun SupportSection() {
             }
         }
         TextField(
+            value = subjectText,
+            onValueChange = { subjectText = it },
+            label = { Text("Titolo richiesta") },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        TextField(
             value = reportText,
             onValueChange = { reportText = it },
             label = { Text("Descrivi il problema") },
@@ -107,7 +115,11 @@ fun SupportSection() {
                 .height(150.dp)
         )
         Button(
-            onClick = { /* Logica per inviare la richiesta */ }
+            onClick = {
+                val date = java.time.LocalDateTime.now()
+                val support = SupportDTO("", username,  selectedReason, subjectText.toString(), reportText.toString(), date.toString())
+                supportViewModel.addSupport(support)
+            }
         ) {
             Text(text = "Invia richiesta")
         }
