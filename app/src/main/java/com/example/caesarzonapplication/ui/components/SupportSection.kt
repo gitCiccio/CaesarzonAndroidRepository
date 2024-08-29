@@ -9,12 +9,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.TextFieldValue
+import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 
 @Composable
-fun SupportSection() {
+fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String) {
 
-    var reportText by rememberSaveable { mutableStateOf(TextFieldValue("")) }
+    var reportText by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedReason by rememberSaveable { mutableStateOf("Seleziona...") }
 
@@ -73,7 +74,10 @@ fun SupportSection() {
                 .fillMaxWidth()
                 .height(150.dp)
         )
-        Button(onClick = { /* Logica per inviare la richiesta */ }) {
+        Button(onClick = {
+            val date = java.time.LocalDateTime.now()
+            val support = SupportDTO("", username, selectedReason, "", reportText, date.toString())
+            supportViewModel.addSupport(support)}) {
             Text(text = "Invia richiesta")
         }
     }

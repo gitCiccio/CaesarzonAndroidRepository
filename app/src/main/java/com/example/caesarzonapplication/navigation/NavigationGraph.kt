@@ -15,6 +15,8 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -26,7 +28,7 @@ import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.ui.screens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.ProductSearchResultsScreen
 import com.example.caesarzonapplication.ui.screens.ReportsScreen
-import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
+//import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
 import com.example.caesarzonapplication.ui.screens.UserSearchScreen
@@ -42,7 +44,9 @@ fun NavigationGraph(
     followerViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
     cardViewModel: CardsViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    supportRequestViewModel: SupportRequestsViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -52,7 +56,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController, accountInfoViewModel, addressViewModel, cardViewModel)
+                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel,cardViewModel)
             else AuthScreen(navController,accountInfoViewModel, followerViewModel, logged)
         }
 
@@ -77,7 +81,7 @@ fun NavigationGraph(
         if(isAdmin.value) {
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
             val reportViewModel = AdminReportViewModel()
-            val supportRequestViewModel = SupportRequestViewModel()
+            //val supportRequestViewModel = AdminSupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
@@ -89,9 +93,9 @@ fun NavigationGraph(
             composable(route = AdminBottomBarScreen.Reports.route) {
                 ReportsScreen(reportViewModel)
             }
-            composable(route = AdminBottomBarScreen.SupportRequest.route) {
+            /*composable(route = AdminBottomBarScreen.SupportRequest.route) {
                 SupportRequestScreen(supportRequestViewModel)
-            }
+            }*/
             composable(route = AdminBottomBarScreen.SearchUser.route) {
                 UserSearchScreen(searchAndBanUsersViewModel)
             }
@@ -105,7 +109,7 @@ fun NavigationGraph(
             val productId = backStackEntry.arguments?.getString("productId")
             if (productId != null) {
                     val uuid = UUID.fromString(productId)
-                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, isAdmin)
+                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, reviewViewModel,isAdmin)
             } else {
                 Log.e("NavigationError", "productId is null")
             }

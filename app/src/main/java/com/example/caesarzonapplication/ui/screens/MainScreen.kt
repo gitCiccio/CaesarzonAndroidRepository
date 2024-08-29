@@ -29,6 +29,8 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationGraph
@@ -43,7 +45,9 @@ fun MainScreen(
     followersViewModel: FollowersViewModel,
     addressViewModel: AddressViewModel,
     cardsViewModel: CardsViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    supportRequestsViewModel: SupportRequestsViewModel,
+    reviewViewModel: ReviewViewModel
 ){
 
     var showNotificationsPopup by rememberSaveable { mutableStateOf(false) }
@@ -115,7 +119,9 @@ fun MainScreen(
                     followerViewModel = followersViewModel,
                     addressViewModel = addressViewModel,
                     cardViewModel = cardsViewModel,
-                    notificationViewModel = notificationViewModel
+                    notificationViewModel = notificationViewModel,
+                    supportRequestViewModel = supportRequestsViewModel,
+                    reviewViewModel = reviewViewModel
                 )
 
             }

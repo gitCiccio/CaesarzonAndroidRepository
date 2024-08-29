@@ -179,14 +179,14 @@ class ReviewViewModel: ViewModel() {
     fun getReviewsScore(productId: String){
         viewModelScope.launch {
             try{
-                doGetReviwsScore(productId)
+                doGetReviewsScore(productId)
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
 
-    suspend fun doGetReviwsScore(productId: String){
+    suspend fun doGetReviewsScore(productId: String){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/reviews/score?prod-id=$productId")
         val request = Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
