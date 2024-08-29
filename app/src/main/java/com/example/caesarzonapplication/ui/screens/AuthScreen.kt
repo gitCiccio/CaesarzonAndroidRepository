@@ -46,9 +46,7 @@ fun AuthScreen(
     navController: NavController,
     accountInfoViewModel: AccountInfoViewModel,
     followerViewModel: FollowersViewModel,
-    logged: MutableState<Boolean>
 ) {
-
 
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -160,7 +158,14 @@ fun AuthScreen(
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 16.dp)
         ) {
-            Text(text = "Accedi")
+            Text(
+                style = MaterialTheme.typography.bodyLarge,
+                text = "Accedi",
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .align(Alignment.CenterVertically),
+            )
         }
         TextButton(
             onClick = { navController.navigate(DetailsScreen.UserRegistrationDetailsScreen.route) },

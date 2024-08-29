@@ -74,6 +74,7 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
             }
         } else {
             if (productList.isEmpty()) {
+                println("Errore nella ricerca")
                 Image(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Nessun prodotto trovato",
@@ -128,7 +129,7 @@ fun ProductSearchResultsScreen(query: String, productsViewModel: ProductsViewMod
                     )
                 }
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3), // 3 prodotti per riga
+                    columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp)

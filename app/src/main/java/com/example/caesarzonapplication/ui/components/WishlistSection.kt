@@ -57,7 +57,7 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
     for (wishlist in wishlistViewModel.wishlists) {
         Column(modifier = Modifier.padding(10.dp)) {
             Spacer(modifier = Modifier.height(30.dp))
-            Row { Text(text = wishlist.name) }
+            Text(text = wishlist.name)
             Row {
                 Button(modifier = Modifier.padding(8.dp), onClick = {
                     if (selectedWishlistId == wishlist.id) {

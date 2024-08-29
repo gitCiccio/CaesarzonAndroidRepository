@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun OrderManagementSection() {
+
     val orders = listOf(
         "Ordine #1",
         "Ordine #2",
@@ -34,9 +36,14 @@ fun OrderManagementSection() {
         "Ordine #10"
     )
 
-    var expandedOrder by rememberSaveable { mutableStateOf<String?>(null) }
+    var expandedOrder by remember { mutableStateOf<String?>(null) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    )
+    {
         Text(
             text = "Cronologia ordini",
             style = MaterialTheme.typography.bodyMedium.copy(
@@ -48,14 +55,20 @@ fun OrderManagementSection() {
                 .padding(bottom = 16.dp)
         )
 
-        LazyColumn {
+        LazyColumn (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ){
             items(orders) { order ->
                 OrderItem(
                     order = order,
                     isExpanded = expandedOrder == order,
-                    onOrderClick = { expandedOrder = if (expandedOrder == order) null else order }
+                    onOrderClick = {
+                        expandedOrder = if (expandedOrder == order) null else order
+                    }
                 )
-                HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -63,32 +76,41 @@ fun OrderManagementSection() {
 
 @Composable
 fun OrderItem(order: String, isExpanded: Boolean, onOrderClick: () -> Unit) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(8.dp)
-            .animateContentSize()
-    ) {
-        Row(
+            .animateContentSize(),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    )
+    {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onOrderClick() },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = order,
-                modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.SemiBold
-            )
-            Icon(
-                imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = null
-            )
-        }
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
-            OrderDetails(order = order)
+                .clickable { onOrderClick() }
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(10.dp)
+        )
+        {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = order,
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Icon(
+                    imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null
+                )
+            }
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                OrderDetails(order = order)
+            }
         }
     }
 }
@@ -100,7 +122,16 @@ fun OrderDetails(order: String) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = "Prodotto 1: Descrizione, Prezzo, Quantità")
         Text(text = "Prodotto 2: Descrizione, Prezzo, Quantità")
-
+        Button(
+            onClick = { //richiedi reso
+                 },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clip(MaterialTheme.shapes.medium),
+            shape = MaterialTheme.shapes.medium,
+        ) {
+            Text(text = "Richiedi reso")
+        }
     }
 }
 
