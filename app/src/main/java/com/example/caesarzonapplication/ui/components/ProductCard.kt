@@ -34,7 +34,7 @@ fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHos
     Card(
         modifier = Modifier
             .padding(10.dp)
-            .height(200.dp)
+            .height(250.dp)
             .width(150.dp)
             .clickable { navController.navigate("productDetails/${product.productId}") },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -52,7 +52,7 @@ fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHos
                     bitmap = image.asImageBitmap(),
                     contentDescription = product.productName,
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(170.dp)
                         .clip(MaterialTheme.shapes.medium)
                         .align(Alignment.CenterHorizontally)
                 )
@@ -61,7 +61,7 @@ fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHos
                     painter = painterResource(R.drawable.logo),
                     contentDescription = "immagine_prodotto_non_disponibile",
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(170.dp)
                         .clip(MaterialTheme.shapes.medium)
                         .align(Alignment.CenterHorizontally)
                 )
@@ -69,19 +69,15 @@ fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHos
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
-                //modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp)
             )
             Text(
                 text =  (product.price.toString()+"€"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
-                //modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
-            Text(
-                text = "Inserire la descrizione del prodotto",
-                style = MaterialTheme.typography.bodySmall,
-                //modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+
         }
     }
 }

@@ -14,7 +14,7 @@ import java.net.URL
 import java.util.UUID
 
 class AdminSupportRequestViewModel {
-/*
+
     val client = OkHttpClient()
 
     private val _supportRequests = mutableStateListOf<SupportDTO>()
@@ -46,7 +46,7 @@ class AdminSupportRequestViewModel {
                     val subject = jsonResponse.getJSONObject(i).getString("subject")
                     val text = jsonResponse.getJSONObject(i).getString("text")
                     val localDate = jsonResponse.getJSONObject(i).optString("localDate", "")
-                    _supportRequests.add(SupportDTO(UUID.fromString(id), username, type, subject, text, localDate))
+                    _supportRequests.add(SupportDTO(id, username, type, subject, text, localDate))
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -68,7 +68,7 @@ class AdminSupportRequestViewModel {
 
                 response.use {
                     if (response.isSuccessful) {
-                        _supportRequests.removeIf { it.id == supportDTOId }
+                        _supportRequests.removeIf { it.id == supportDTOId.toString() }
                         println("Richiesta di supporto eliminata con successo")
                     } else {
                         println("Problemi nell'eliminazione della richiesta di supporto: ${response.message}")
@@ -80,6 +80,6 @@ class AdminSupportRequestViewModel {
         }
     }
 
-*/
+
 
 }

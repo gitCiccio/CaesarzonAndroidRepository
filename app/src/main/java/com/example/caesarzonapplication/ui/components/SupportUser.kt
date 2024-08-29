@@ -23,10 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminSupportRequestViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
+import java.util.UUID
 
 @Composable
-fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestsViewModel){
+fun SupportUser(supports: SupportDTO, adminSupportRequestViewModel: AdminSupportRequestViewModel){
     var responseText by rememberSaveable { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
 
@@ -61,7 +63,7 @@ fun SupportUser(supports: SupportDTO, supportRequestViewmModel: SupportRequestsV
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    supportRequestViewmModel.deleteSupport(supports.id, responseText)
+                    adminSupportRequestViewModel.deleteSupport(UUID.fromString(supports.id), responseText)
                     responseText=""
                     showPopup = true
                 },

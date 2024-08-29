@@ -23,7 +23,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportR
 @Composable
 fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String) {
 
-    var reportText by remember { mutableStateOf(TextFieldValue("")) }
+    var reportText by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var selectedReason by remember { mutableStateOf("Seleziona...") }
 
@@ -110,7 +110,7 @@ fun SupportSection(supportViewModel: SupportRequestsViewModel, username: String)
         )
         Button(onClick = {
             val date = java.time.LocalDateTime.now()
-            val support = SupportDTO("", username, selectedReason, "", reportText, date.toString())
+            val support = SupportDTO("", username,  selectedReason, "", reportText, date.toString())
             supportViewModel.addSupport(support)}) {
             Text(text = "Invia richiesta")
         }
