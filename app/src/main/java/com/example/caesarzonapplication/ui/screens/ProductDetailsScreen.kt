@@ -173,7 +173,7 @@ fun ProductDetailsScreen(
                                     evaluation = evaluation,
                                     username = "",
                                     productID = productID,
-                                    localDate = LocalDate.now().toString(),
+                                    date = LocalDate.now().toString(),
                                 )
                                 reviewViewModel.addReview(newReview)
                                 navController.navigate("productDetails/${selectedProduct.value?.product?.id}")
