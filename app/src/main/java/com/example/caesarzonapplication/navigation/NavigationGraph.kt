@@ -12,10 +12,11 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.*
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
@@ -45,18 +46,19 @@ fun NavigationGraph(
     cardViewModel: CardsViewModel,
     supportRequestViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel,
-    wishlistViewModel: WishlistViewModel
+    wishlistViewModel: WishlistViewModel,
+    notificationViewModel: NotificationViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
         composable(route = BottomBarScreen.Home.route) {
-            HomeScreen(navController, productsViewModel)
+            HomeScreen(navController, productsViewModel, notificationViewModel)
         }
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel, cardViewModel)
-            else AuthScreen(navController,accountInfoViewModel, followerViewModel)
+                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel, cardViewModel, notificationViewModel)
+            else AuthScreen(navController,accountInfoViewModel,followerViewModel)
         }
 
        /* composable(route = BottomBarScreen.Cart.route) {
@@ -65,15 +67,15 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value) {
-                FriendlistScreen(navController, followerViewModel)
+                FriendlistScreen(navController, notificationViewModel, followerViewModel)
             }
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
+            else AuthScreen(navController, accountInfoViewModel,followerViewModel)
         }
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
-                WishlistScreen(navController)
-            else AuthScreen(navController, accountInfoViewModel, followerViewModel)
+                WishlistScreen(navController, notificationViewModel, wishlistViewModel)
+            else AuthScreen(navController, accountInfoViewModel,followerViewModel)
         }
 
 
@@ -108,7 +110,7 @@ fun NavigationGraph(
             val productId = backStackEntry.arguments?.getString("productId")
             if (productId != null) {
                     val uuid = UUID.fromString(productId)
-                    ProductDetailsScreen(productID = uuid, navController, productsViewModel, reviewViewModel)
+                    ProductDetailsScreen(productID = uuid, navController, productsViewModel,reviewViewModel, wishlistViewModel)
             } else {
                 Log.e("NavigationError", "productId is null")
             }

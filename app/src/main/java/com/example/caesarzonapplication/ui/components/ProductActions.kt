@@ -17,11 +17,11 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.google.gson.Gson
 
 @Composable
-fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, wishlistViewModel: WishlistViewModel,productDTO: ProductDTO) {
+fun ProductActions(navController: NavHostController, adminProductViewModel: AdminProductViewModel, wishlistViewModel: WishlistViewModel, productDTO: ProductDTO) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
@@ -32,7 +32,7 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
         }
 
         if(showWishlistPopup){
-            WishlistPopup(wishlistViewModel = wishlistViewModel, onDismiss = {showWishlistPopup = false})
+            WishlistPopup(wishlistViewModel = wishlistViewModel, productId = productDTO.id,onDismiss = {showWishlistPopup = false})
         }
 
         Column(
@@ -78,7 +78,8 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
                 }
             }
             Button(
-                onClick = { showWishlistPopup = true},
+                onClick = {
+                    showWishlistPopup = true},
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .height(48.dp)

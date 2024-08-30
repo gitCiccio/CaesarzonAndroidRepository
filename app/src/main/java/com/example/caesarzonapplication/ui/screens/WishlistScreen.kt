@@ -11,6 +11,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.ui.components.WishlistSection
 
 
@@ -31,12 +33,13 @@ enum class WishlistTab {
 }
 
 @Composable
-fun WishlistScreen(navController : NavHostController) {
+fun WishlistScreen(navController : NavHostController, notificationViewModel: NotificationViewModel, wishlistViewModel: WishlistViewModel) {
 
-    val wishlistViewModel = WishlistViewModel()
     var selectedTab by remember { mutableStateOf(WishlistTab.Pubbliche) }
 
-
+    LaunchedEffect(Unit) {
+        notificationViewModel.getNotification()
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()

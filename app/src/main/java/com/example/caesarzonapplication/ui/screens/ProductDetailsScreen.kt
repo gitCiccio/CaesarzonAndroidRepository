@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,8 +42,8 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.ReviewDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
-import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.ui.components.ProductReviews
 import java.time.LocalDate
@@ -55,7 +54,8 @@ fun ProductDetailsScreen(
     productID: UUID,
     navController: NavHostController,
     productsViewModel: ProductsViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    wishlistViewModel: WishlistViewModel
 ) {
 
     var isAddReviewDialogOpen by remember { mutableStateOf(false) }
@@ -144,7 +144,7 @@ fun ProductDetailsScreen(
             }
         }
         item {
-            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, it1.product) } }
+            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, wishlistViewModel,it1.product) } }
         }
         item {
             if(logged.value) {

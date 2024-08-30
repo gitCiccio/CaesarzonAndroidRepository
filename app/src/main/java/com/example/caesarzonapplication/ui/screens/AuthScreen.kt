@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup

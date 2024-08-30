@@ -16,8 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.SingleWishlistProductDTO
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
-import java.util.UUID
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 
 @Composable
 fun WishlistProductList(
