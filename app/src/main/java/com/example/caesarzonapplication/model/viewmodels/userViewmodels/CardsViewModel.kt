@@ -1,17 +1,25 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
+import com.example.caesarzonapplication.model.entities.userEntity.Card
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,82 +36,92 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     val isLoading: State<Boolean> get() = _isLoading
 
     private val client = OkHttpClient()
-    var cards: ArrayList<CardDTO> = ArrayList()
 
-    lateinit var cardsUuid: List<UUID>
+    var cardsUuid: List<UUID> = emptyList()
 
-    //caricamento in locale
-    fun getAllAddressesAndCityData(){
-        cards = cardRepository.getAllCards() as ArrayList<CardDTO>
-    }
+    private val _cards: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
+    val cards: StateFlow<List<CardDTO>> = _cards
 
-    //chiamata al server per ricevere gli indirizzi
-    fun getUuidCardsFromServer(){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/cards")
-        val request =  Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try{
-                val response = client.newCall(request).execute()
-                val responseBody = response.body?.string()
-
-                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
-                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    return@launch
-                }
-
-                println("Risposta dal server: $responseBody")
-                val gson = Gson()
-                //serve per deserializzare la stringa JSON in una lista di oggetti Address
-                val listType = object :  TypeToken<List<UUID>>() {}.type
-                cardsUuid = gson.fromJson(responseBody, listType)
-                println("Indirizzi recuperati con successo: ${cards.size}")
-
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-
-        }
-
-    }
-
-    fun getCardsFromServer(cardsUuid: List<UUID>) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun loadCards() {
+        viewModelScope.launch {
             _isLoading.value = true
-            for (uuid in cardsUuid) {
-                val manageUrl = URL("http://25.49.50.144:8090/user-api/card/$uuid")
-                val request = Request.Builder()
-                    .url(manageUrl)
-                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                    .build()
-
-                try {
-                    val response = client.newCall(request).execute()
-                    val responseBody = response.body?.string()
-
-                    if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
-                        println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                        continue
-                    }
-
-                    println("Risposta dal server: $responseBody")
-                    val gson = Gson()
-                    val valType = object : TypeToken<CardDTO>() {}.type
-                    val card = gson.fromJson<CardDTO>(responseBody, valType)
-
-                    cards.add(card)
-                    cardRepository.addCard(card)
-                    println("Indirizzi recuperati con successo: ${cards.size}")
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            try {
+                getUuidCardsFromServer()
+                cardsUuid.forEach {
+                    getCardFromServer(it)
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    //Funzione per eliminare indirizzo
+    suspend fun getUuidCardsFromServer() {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/cards")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@withContext
+                }
+
+                println("Risposta dal server: $responseBody")
+                val gson = Gson()
+                val listType = object : TypeToken<List<UUID>>() {}.type
+                cardsUuid = gson.fromJson(responseBody, listType)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun getCardFromServer(cardUuid: UUID) {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/card?card_id=$cardUuid")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            _isLoading.value = true
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@withContext
+                }
+
+                println("Risposta dal server: $responseBody")
+                val gson = Gson()
+                val card = gson.fromJson(responseBody, CardDTO::class.java)
+                card.id = cardUuid.toString()
+
+                withContext(Dispatchers.Main) {
+                    cardRepository.addCard(card)
+                    _cards.value += card
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
     fun deleteCard(card: CardDTO){
         CoroutineScope(Dispatchers.IO).launch {
             _isLoading.value = true
@@ -114,7 +132,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
     suspend fun doDeleteCard(card: CardDTO) {
 
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/card/${card.id}")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/card?card_id=${card.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         try{
@@ -129,6 +147,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 println("Risposta dal server: $responseBody")
 
                 cardRepository.deleteCardById(card.id)
+                _cards.value -= card
                 println("Carta eliminato con successo")
             }
         }catch (e: Exception){
@@ -146,10 +165,12 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
             }catch (e: Exception){
                 e.printStackTrace()
             }
-            _isLoading.value = false
+            finally {
+                _isLoading.value = false
+            }
         }
     }
-    //funzione per aggiungere la carta funziona
+
     suspend fun doAddCard(card: CardDTO){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/card")
         val JSON = "application/json; charset=utf-8".toMediaType()
@@ -169,10 +190,8 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 }
 
                 println("Risposta dal server: $responseBody")
-                //val gson = Gson()
-                cards.add(card)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
-                cardRepository.addCard(card)//Aggiunge l'indirizzo al db in locale
-                println("Indirizzo aggiunto con successo")
+                _cards.value += card
+                cardRepository.addCard(card)
             }catch (e: Exception){
                 e.printStackTrace()
             }

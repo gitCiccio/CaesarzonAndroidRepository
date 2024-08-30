@@ -52,12 +52,16 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
     var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
     var cityDropdownExpanded by rememberSaveable { mutableStateOf(false) }
+    var roadTypeDropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
     val filteredCities by addressViewModel.cityData.observeAsState(emptyList())
     val cityDataDTO by addressViewModel.cityDataDTO.observeAsState(null)
 
-
     val cityFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        addressViewModel.loadAddresses()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -170,12 +174,39 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
                     label = { Text("Via") },
                     singleLine = true,
                 )
-                OutlinedTextField(
-                    value = roadType,
-                    onValueChange = { roadType = it },
-                    label = { Text("Tipologia via") },
-                    singleLine = true,
-                )
+                ExposedDropdownMenuBox(
+                    expanded = roadTypeDropdownExpanded,
+                    onExpandedChange = { roadTypeDropdownExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = roadType,
+                        onValueChange = { roadType = it },
+                        label = { Text("Tipologia via") },
+                        singleLine = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = roadTypeDropdownExpanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = roadTypeDropdownExpanded,
+                        onDismissRequest = { roadTypeDropdownExpanded = false }
+                    ) {
+                        val roadTypes = listOf(
+                            "Via", "Vicolo", "Viale", "Traversa", "Borgo", "Piazzale", "Piazza", "Largo", "Lungarno"
+                        )
+                        roadTypes.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(text = type) },
+                                onClick = {
+                                    roadType = type
+                                    roadTypeDropdownExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
                 OutlinedTextField(
                     value = houseNumber,
                     onValueChange = { houseNumber = it },

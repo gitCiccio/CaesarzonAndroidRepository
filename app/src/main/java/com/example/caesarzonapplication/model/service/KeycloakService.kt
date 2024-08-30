@@ -97,7 +97,6 @@ class KeycloakService {
                 "http://25.24.244.170:8080/realms/CaesarRealm/protocol/openid-connect/token"
             val passwordGuest = "Mascalzone1"
 
-            // Encode the parameters
             val params = listOf(
                 "client_id" to "caesar-app",
                 "grant_type" to "password",
