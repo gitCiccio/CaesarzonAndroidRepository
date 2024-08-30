@@ -1,146 +1,137 @@
-package com.example.caesarzonapplication.ui.components
-
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.caesarzonapplication.model.dto.productDTOS.OrderDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.globalUsername
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 
 @Composable
-fun ReturnsSection() {
+fun ReturnsSection(orderViewModels: OrdersViewModel) {
 
-    val orders = listOf("Ordine #1", "Ordine #2", "Ordine #3")
-    var showReturnDialog by remember { mutableStateOf(false) }
-    var selectedOrder by remember { mutableStateOf("") }
-    var returnReason by remember { mutableStateOf(TextFieldValue("")) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    val refoundOrders by orderViewModels.refoundOrders.collectAsState()
+    LaunchedEffect(Unit) {
+        orderViewModels.getOrdersFromServer()
+    }
+    var expandedOrder by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    )
+    {
         Text(
-            text = "Cronologia ordini per reso",
-            style = MaterialTheme.typography.titleLarge.copy(
+            text = "Cronologia ordini",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             ),
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 16.dp)
         )
 
-        orders.forEach { order ->
-            OrderRow(order = order, onReturnClick = {
-                selectedOrder = order
-                showReturnDialog = true
-            })
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider( thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp),color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-        }
-
-        if (showReturnDialog) {
-            ReturnRequestDialog(
-                selectedOrder = selectedOrder,
-                returnReason = returnReason,
-                onReasonChange = { returnReason = it },
-                onDismiss = { showReturnDialog = false },
-                onSubmit = {
-                    showReturnDialog = false
-                    // returnViewModel.submitReturnRequest(selectedOrder, returnReason.text)
-                }
-            )
+        LazyColumn (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ){
+            items(refoundOrders) { refoundOrder ->
+                OrderItem(
+                    order = refoundOrder.orderNumber,
+                    isExpanded = expandedOrder == refoundOrder.id,
+                    onOrderClick = {
+                        expandedOrder = if (expandedOrder == refoundOrder.id) null else refoundOrder.id
+                    },
+                    orderViewModels,
+                    refoundOrder.id
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
 
 @Composable
-fun OrderRow(order: String, onReturnClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+fun OrderItem(
+    order: String,
+    isExpanded: Boolean,
+    onOrderClick: () -> Unit,
+    orderViewModels: OrdersViewModel,
+    orderId: String
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Text(
-            text = order,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
+            .animateContentSize(),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    )
+    {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onOrderClick() }
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(10.dp)
         )
-        Button(onClick = onReturnClick) {
-            Text(text = "Visualizza dettagli")
+        {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = order,
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.SemiBold
+                )
+                Icon(
+                    imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null
+                )
+            }
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                OrderDetails(order = order, orderViewModels = orderViewModels, orderId)
+            }
         }
     }
 }
 
 @Composable
-fun ReturnRequestDialog(
-    selectedOrder: String,
-    returnReason: TextFieldValue,
-    onReasonChange: (TextFieldValue) -> Unit,
-    onDismiss: () -> Unit,
-    onSubmit: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Text(
-                        text = "Richiesta reso per $selectedOrder",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Icon(
-                        Icons.Filled.Close,
-                        contentDescription = "Chiudi",
-                        modifier = Modifier.clickable { onDismiss() }
-                    )
-                }
-                TextField(
-                    value = returnReason,
-                    onValueChange = onReasonChange,
-                    label = { Text("Motivo del reso") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onSubmit, modifier = Modifier.align(Alignment.End)) {
-                    Text(text = "Invia richiesta")
-                }
-            }
+fun OrderDetails(order: String, orderViewModels: OrdersViewModel, orderId: String) {
+    val productCardDTOList by orderViewModels.productCardDTOList.collectAsState()
+    LaunchedEffect(Unit) {
+        orderViewModels.getProductInOrder(orderId)
+    }
+    Column(modifier = Modifier.padding(start = 16.dp)) {
+        Text(text = "Dettagli dell'ordine: $order", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(4.dp))
+        for(product in productCardDTOList){
+            Text(text = "Nome prodotto: ${product.name}")
+            Text(text = "Quantità: ${product.quantity}")
+            Text(text = "Totale: ${product.total}")
+            Text(text = "Totale con sconto: ${product.discountTotal}")
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

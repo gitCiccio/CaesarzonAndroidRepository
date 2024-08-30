@@ -41,7 +41,7 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.productDTOS.ReviewDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
@@ -231,7 +231,7 @@ fun ProductDetailsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            ProductReviews(navController, reviewViewModel, productID)
+            ProductReviews(navController, reviewViewModel, UUID.fromString(productID))
         }
     }
 }

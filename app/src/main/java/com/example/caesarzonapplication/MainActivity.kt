@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -39,7 +38,7 @@ import com.example.caesarzonapplication.model.repository.userRepository.ProfileI
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.repository.wishlistRepository.WishlistRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
@@ -53,6 +52,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsVie
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
@@ -89,13 +89,14 @@ class MainActivity : ComponentActivity() {
         val wishlistViewModel: WishlistViewModel by viewModels<WishlistViewModel>{
             WishlistViewModelFactory(WishlistRepository(AppDatabase.getDatabase(this).wishlistDao()))
         }
+        val ordersViewModel: OrdersViewModel by viewModels()
 
         val shoppingCartViewModel: ShoppingCartViewModel by viewModels()
         setContent{
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
                 KeycloakService().getBasicToken()
-                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel)
+                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel, ordersViewModel)
             }
         }
     }
@@ -139,7 +140,8 @@ fun Loading(
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
     notificationViewModel: NotificationViewModel,
-    shoppingCartViewModel: ShoppingCartViewModel
+    shoppingCartViewModel: ShoppingCartViewModel,
+    ordersViewModel: OrdersViewModel
 ) {
     var isLoading by remember { mutableStateOf(true) }
     LoadingScreen()
@@ -163,7 +165,8 @@ fun Loading(
             supportRequestsViewModel = supportRequestsViewModel,
             reviewViewModel = reviewViewModel,
             wishlistViewModel = wishlistViewModel,
-            shoppingCartViewModel = shoppingCartViewModel
+            shoppingCartViewModel = shoppingCartViewModel,
+            ordersViewModel = ordersViewModel
         )
     }
 }

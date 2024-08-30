@@ -123,7 +123,7 @@ class ReviewViewModel: ViewModel() {
         val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${productId}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
         for(review in _reviews.value){
-            if(review.productID == productId){
+            if(review.productID == productId.toString()){
                 _reviews.value.toMutableList().remove(review)
             }
         }

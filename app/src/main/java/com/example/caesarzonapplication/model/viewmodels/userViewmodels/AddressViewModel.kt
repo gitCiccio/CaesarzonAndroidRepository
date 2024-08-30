@@ -119,11 +119,11 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                     _addresses.value += address
                 }
                 println("Indirizzi recuperati con successo: ${addresses.value.size}")
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+
     }
 
     //Funzione per eliminare indirizzo

@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 
@@ -24,8 +24,8 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        addressViewModel.getAllAddressesAndCityData()
-        //cardsViewModel.getAllCards()
+        addressViewModel.loadAddresses()
+        cardsViewModel.loadCards()
     }
 
     var selectedAddress by remember { mutableStateOf<AddressDTO?>(null) }
@@ -58,11 +58,10 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                             .padding(vertical = 4.dp),
                     ) {
                         RadioButton(
-                            selected = selectedAddress == address && !payPal,
+                            selected = selectedAddress == address,
                             onClick = {
                                 selectedAddress = address
-                                selectedCard = null
-                                payPal = false
+
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -96,7 +95,6 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                             selected = selectedCard == card && !payPal,
                             onClick = {
                                 selectedCard = card
-                                selectedAddress = null
                                 payPal = false
                             }
                         )
@@ -124,7 +122,6 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                     onClick = {
                         payPal = true
                         selectedCard = null
-                        selectedAddress = null
                     }
                 )
             }
