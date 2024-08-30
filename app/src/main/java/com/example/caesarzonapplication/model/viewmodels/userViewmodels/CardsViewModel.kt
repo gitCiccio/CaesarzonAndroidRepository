@@ -5,13 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.AddressDTO
-import com.example.caesarzonapplication.model.dto.CardDTO
-import com.example.caesarzonapplication.model.entities.userEntity.Address
-import com.example.caesarzonapplication.model.entities.userEntity.CityData
-import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
+import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
-import com.example.caesarzonapplication.model.repository.userRepository.CityDataRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

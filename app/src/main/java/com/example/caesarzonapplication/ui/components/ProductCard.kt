@@ -21,13 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.dto.ProductDTO
-import com.example.caesarzonapplication.model.dto.ProductSearchDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.ProductSearchDTO
 
 @Composable
 fun ProductCard(product: ProductSearchDTO, image: Bitmap?, navController: NavHostController){

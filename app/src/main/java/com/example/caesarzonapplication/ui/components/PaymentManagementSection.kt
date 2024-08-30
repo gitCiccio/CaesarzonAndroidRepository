@@ -14,9 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.caesarzonapplication.model.dto.CardDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
 //import com.example.caesarzonapplication.model.utils.CardUtils
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 

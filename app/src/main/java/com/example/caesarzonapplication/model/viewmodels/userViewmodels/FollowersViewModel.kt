@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.FollowerDTO
-import com.example.caesarzonapplication.model.dto.UserSearchDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.FollowerDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Follower
 import com.example.caesarzonapplication.model.repository.userRepository.FollowerRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken

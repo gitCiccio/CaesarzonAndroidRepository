@@ -1,7 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.SupportDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

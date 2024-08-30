@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
-import com.example.caesarzonapplication.model.dto.UserSearchDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi

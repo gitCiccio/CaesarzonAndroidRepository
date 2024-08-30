@@ -1,13 +1,10 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.AddressDTO
-import com.example.caesarzonapplication.model.dto.ReportDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.ReportDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

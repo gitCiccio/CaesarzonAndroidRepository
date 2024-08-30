@@ -22,9 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.SupportDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminSupportRequestViewModel
-import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import java.util.UUID
 
 @Composable

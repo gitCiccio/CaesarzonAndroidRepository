@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.caesarzonapplication.model.dto.UserNotificationDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserNotificationDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import kotlinx.coroutines.flow.StateFlow
 

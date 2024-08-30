@@ -19,7 +19,7 @@ import com.example.caesarzonapplication.model.service.KeycloakService
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
-import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel

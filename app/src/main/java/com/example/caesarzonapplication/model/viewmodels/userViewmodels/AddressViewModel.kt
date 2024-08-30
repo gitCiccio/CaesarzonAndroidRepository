@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.AddressDTO
-import com.example.caesarzonapplication.model.dto.CityDataDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CityDataDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
 import com.example.caesarzonapplication.model.repository.userRepository.AddressRepository
 import com.example.caesarzonapplication.model.repository.userRepository.CityDataRepository

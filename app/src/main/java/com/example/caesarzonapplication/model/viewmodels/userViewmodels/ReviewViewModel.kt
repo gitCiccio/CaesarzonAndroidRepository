@@ -2,12 +2,9 @@ package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.AddressDTO
-import com.example.caesarzonapplication.model.dto.AverageDTO
-import com.example.caesarzonapplication.model.dto.ProductDTO
-import com.example.caesarzonapplication.model.dto.ReviewDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.AverageDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.ReviewDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

@@ -2,7 +2,7 @@ package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.caesarzonapplication.model.dto.ReportDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.ReportDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

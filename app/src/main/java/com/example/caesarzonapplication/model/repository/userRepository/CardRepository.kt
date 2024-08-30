@@ -3,7 +3,7 @@ package com.example.caesarzonapplication.model.repository.userRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.userDao.CardDao
-import com.example.caesarzonapplication.model.dto.CardDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Card
 
 class CardRepository(private val cardDao: CardDao) {
