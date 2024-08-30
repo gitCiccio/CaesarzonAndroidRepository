@@ -4,6 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.database.AppDatabase
 import com.example.caesarzonapplication.model.repository.notificationRepository.SupportRepository
@@ -16,6 +39,7 @@ import com.example.caesarzonapplication.model.repository.userRepository.ProfileI
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.repository.wishlistRepository.WishlistRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
@@ -34,6 +58,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportR
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
 import com.example.caesarzonapplication.ui.screens.MainScreen
 import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
@@ -65,25 +90,80 @@ class MainActivity : ComponentActivity() {
             WishlistViewModelFactory(WishlistRepository(AppDatabase.getDatabase(this).wishlistDao()))
         }
 
+        val shoppingCartViewModel: ShoppingCartViewModel by viewModels()
         setContent{
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
                 KeycloakService().getBasicToken()
-                MainScreen(
-                    navController = navController,
-                    accountInfoViewModel = accountInfoViewModel,
-                    productsViewModel = productsViewModel,
-                    followersViewModel = followersViewModel,
-                    addressViewModel = addressViewModel,
-                    cardsViewModel = cardViewModel,
-                    notificationViewModel = notificationViewModel,
-                    supportRequestsViewModel = supportRequestsViewModel,
-                    reviewViewModel = reviewViewModel,
-                    wishlistViewModel = wishlistViewModel
-                )
+                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel)
             }
         }
     }
 }
 
+@Composable
+fun LoadingScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo"
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Benvenuto su Caesarzon",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun Loading(
+    navController: NavHostController,
+    productsViewModel: ProductsViewModel,
+    accountInfoViewModel: AccountInfoViewModel,
+    followersViewModel: FollowersViewModel,
+    addressViewModel: AddressViewModel,
+    cardViewModel: CardsViewModel,
+    supportRequestsViewModel: SupportRequestsViewModel,
+    reviewViewModel: ReviewViewModel,
+    wishlistViewModel: WishlistViewModel,
+    notificationViewModel: NotificationViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
+) {
+    var isLoading by remember { mutableStateOf(true) }
+    LoadingScreen()
+
+    LaunchedEffect(Unit) {
+        delay(3000)
+        isLoading = false
+    }
+    if(isLoading) {
+        LoadingScreen()
+
+    }else{
+        MainScreen(
+            navController = navController,
+            accountInfoViewModel = accountInfoViewModel,
+            productsViewModel = productsViewModel,
+            followersViewModel = followersViewModel,
+            addressViewModel = addressViewModel,
+            cardsViewModel = cardViewModel,
+            notificationViewModel = notificationViewModel,
+            supportRequestsViewModel = supportRequestsViewModel,
+            reviewViewModel = reviewViewModel,
+            wishlistViewModel = wishlistViewModel,
+            shoppingCartViewModel = shoppingCartViewModel
+        )
+    }
+}

@@ -43,8 +43,9 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
     val wishlistsShared: StateFlow<List<BasicWishlistDTO>> get() = _wishlistsShared
 
 
-    private val _products = mutableStateListOf<SingleWishlistProductDTO>()
-    val products: List<SingleWishlistProductDTO> get() = _products
+    private val _wishProduct: MutableStateFlow<WishProductDTO?> = MutableStateFlow(null)
+    val wishProduct: StateFlow<WishProductDTO?> get() = _wishProduct
+
     //val username = AccountInfoViewModel
 
     //Inserimento della wishlist
@@ -127,10 +128,17 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
         }
     }
 
-    suspend fun doAddProductIntoList(wishListId: String, productId: String){
+    suspend fun doAddProductIntoList(wishListId: String, productId: String) {
+        println("=== Inizio doAddProductIntoList ===")
+        println("Parametro wishListId: $wishListId")
+        println("Parametro productId: $productId")
+
         val JSON = "application/json; charset=utf-8".toMediaType()
-        val sendWishlistProductDTO = SendWishlistProductDTO(wishListId, productId)
+
+        val sendWishlistProductDTO = SendWishlistProductDTO(productId, wishListId)
         val json = gson.toJson(sendWishlistProductDTO)
+        println("JSON serializzato: $json")
+
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder()
             .url("http://25.49.50.144:8090/product-api/wishlist/product")
@@ -138,29 +146,42 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
 
-        withContext(Dispatchers.IO){
+        println("Request URL: ${request.url}")
+        println("Request Headers: ${request.headers}")
+        println("Request Body: $json")
+
+        withContext(Dispatchers.IO) {
             try {
+                println("=== Inizio chiamata API ===")
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
-                    println("Errore nella risposta dell'aggiunta del prodotto alla wishlist: "+response.message+"  "+response.code)
+
+                println("Codice di stato della risposta: ${response.code}")
+                println("Messaggio della risposta: ${response.message}")
+                println("Corpo della risposta: ${responseBody ?: "Risposta vuota"}")
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Errore nella risposta dell'aggiunta del prodotto alla wishlist: ${response.message}  ${response.code}")
                     return@withContext
                 }
-                println("response code: ${response.code}")
 
-                //chiedere a luca come gestirlo
+                println("Prodotto aggiunto con successo alla wishlist. Codice di stato: ${response.code}")
 
             } catch (e: IOException) {
                 e.printStackTrace()
+                println("Errore durante la chiamata HTTP: ${e.message}")
                 return@withContext
             }
         }
+
+        println("=== Fine doAddProductIntoList ===")
     }
+
     //Fine aggiunta prodotto dentro la wishlist
 
 
     //Inizio, Tutti i prodotti dentro la wishlist, per se stesso e per gli utenti
-    fun getWishlistProductsByWishlistID(wishlistId: UUID, ownerUSername: String) {
+    fun getWishlistProductsByWishlistID(wishlistId: String, ownerUSername: String) {
         viewModelScope.launch {
             try {
                 doGetWishlistProductsByWishlistID(wishlistId, ownerUSername)
@@ -170,37 +191,56 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
         }
     }
 
-    suspend fun doGetWishlistProductsByWishlistID(wishlistId: UUID, ownerUSername: String) {
-        _products.clear()
+    suspend fun doGetWishlistProductsByWishlistID(wishlistId: String, ownerUsername: String) {
+        println("=== Inizio doGetWishlistProductsByWishlistID ===")
+        println("Parametro wishlistId: $wishlistId")
+        println("Parametro ownerUsername: $ownerUsername")
 
-        val manageURL = URL("http://25.25.161.198:8090/product-api/wishlist/products?wish-id=$wishlistId&usr=$ownerUSername")
+        val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/products?wish-id=$wishlistId&usr=$ownerUsername")
+        println("URL di richiesta: $manageURL")
+
         val request = Request.Builder()
             .url(manageURL)
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
-        withContext(Dispatchers.IO) {
 
+        println("Request Headers: ${request.headers}")
+
+        withContext(Dispatchers.IO) {
             try {
+                println("=== Inizio chiamata API ===")
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
+
+                println("Codice di stato della risposta: ${response.code}")
+                println("Messaggio della risposta: ${response.message}")
+                println("Corpo della risposta: ${responseBody ?: "Risposta vuota"}")
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
                     println("Chiamata fallita o risposta vuota, nella load dei prodotti della wishlist. Codice di stato: ${response.code}")
                     return@withContext
                 }
-                println("Risposta dal server: $responseBody")
 
-                val wishListProduct = object : TypeToken<WishProductDTO>() {}.type
-                val wishListProductDTO = gson.fromJson<WishProductDTO>(responseBody, wishListProduct)
-                //_products.addAll(wishListProductDTO.products)
-                println("Prodotti caricati correttamente")
+                println("Risposta dal server (corpo): $responseBody")
+
+                val wishListProductType = object : TypeToken<WishProductDTO>() {}.type
+                println("Tipo JSON WishProductDTO: $wishListProductType")
+
+                val wishProd = gson.fromJson<WishProductDTO>(responseBody, wishListProductType)
+                println("Prodotto desiderato deserializzato: $wishProd")
+
+                _wishProduct.value = wishProd
+                println("Prodotti caricati correttamente in _wishProduct: ${_wishProduct.value}")
 
             } catch (e: IOException) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
             }
         }
+
+        println("=== Fine doGetWishlistProductsByWishlistID ===")
     }
+
     //Fine, Tutti i prodotti dentro la wishlist, per se stesso e per gli utenti
 
     //Inizio, presa tutte le wishlist dell'utente con visibilità
@@ -214,35 +254,72 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
         }
     }
     //da usare sia per utente stesso che per altri utenti
-    suspend fun doGetUserWishlists(ownerUsername: String, visibility: Int){
+    suspend fun doGetUserWishlists(ownerUsername: String, visibility: Int) {
+        println("=== Inizio doGetUserWishlists ===")
+        println("Parametro ownerUsername: $ownerUsername")
+        println("Parametro visibility: $visibility")
+
         val manageURL = URL("http://25.49.50.144:8090/product-api/wishlists?usr=$ownerUsername&visibility=$visibility")
-        val request = Request.Builder().url(manageURL).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        println("URL generata: $manageURL")
 
-        withContext(Dispatchers.IO){
+        val token = myToken?.accessToken
+        println("Token di accesso: ${token ?: "Nessun token"}")
 
-            try{
+        val request = Request.Builder()
+            .url(manageURL)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        println("Request headers: ${request.headers}")
+
+        withContext(Dispatchers.IO) {
+            try {
+                println("=== Inizio chiamata API ===")
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
-                    println("Chiamata fallita o risposta vuota, nella get user wishlist. Codice di stato: ${response.code}")
+
+                println("Codice di stato della risposta: ${response.code}")
+                println("Corpo della risposta: ${responseBody ?: "Risposta vuota"}")
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota nella get user wishlist. Codice di stato: ${response.code}")
                     return@withContext
                 }
-                println("Risposta dal server: $responseBody")
-                val basicWishlist = object : TypeToken<List<BasicWishlistDTO>>() {}.type
-                if(visibility == 0)
-                    _wishlistsPublic.value = gson.fromJson(responseBody, basicWishlist)
-                else if(visibility == 1)
-                    _wishlistsShared.value = gson.fromJson(responseBody, basicWishlist)
-                else if(visibility == 2)
-                    _wishlistsPrivate.value = gson.fromJson(responseBody, basicWishlist)
 
+                println("Risposta dal server (corpo della risposta non vuoto): $responseBody")
+
+                val basicWishlist = object : TypeToken<List<BasicWishlistDTO>>() {}.type
+
+                when (visibility) {
+                    0 -> {
+                        _wishlistsPublic.value = gson.fromJson(responseBody, basicWishlist)
+                        println("Aggiornata _wishlistsPublic con: ${_wishlistsPublic.value}")
+                    }
+                    1 -> {
+                        _wishlistsShared.value = gson.fromJson(responseBody, basicWishlist)
+                        println("Aggiornata _wishlistsShared con: ${_wishlistsShared.value}")
+                    }
+                    2 -> {
+                        _wishlistsPrivate.value = gson.fromJson(responseBody, basicWishlist)
+                        println("Aggiornata _wishlistsPrivate con: ${_wishlistsPrivate.value}")
+                    }
+                    else -> {
+                        println("Valore di visibility non valido: $visibility")
+                    }
+                }
+
+                println("Lista pubblica attuale: ${_wishlistsPublic.value}")
+                println("Lista condivisa attuale: ${_wishlistsShared.value}")
+                println("Lista privata attuale: ${_wishlistsPrivate.value}")
                 println("Wishlist caricata correttamente")
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
             }
         }
+
+        println("=== Fine doGetUserWishlists ===")
     }
     //Fine, presa tutte le wishlist dell'utente con visibilità
 
@@ -285,20 +362,21 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
     //Fine, presa tutte le wishlist dell'utente senza visibilità
 
     //Inizio cambio visibilità della wishlist
-    fun getUserWishlists(changeVisibilityDTO: ChangeVisibilityDTO){
+    fun updateUserWishlists(wishId: String, visibility: Int){
         viewModelScope.launch {
             try{
-                doGetUserWishlists(changeVisibilityDTO)
+                doUpdateUserWishlists(wishId, visibility)
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
 
-    suspend fun doGetUserWishlists(changeVisibilityDTO: ChangeVisibilityDTO){
+    suspend fun doUpdateUserWishlists(wishId: String, visibility: Int){
+        val changeVisibility = ChangeVisibilityDTO(wishId, visibility)
         val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/visibility");
         val JSON = "application/json; charset=utf-8".toMediaType()
-        val json = gson.toJson(changeVisibilityDTO)
+        val json = gson.toJson(changeVisibility)
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder().url(manageURL).put(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
@@ -381,7 +459,24 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
                     return@withContext
                 }
                 println("response code: ${response.code}")
-                //chiedere a luca come gestirlo
+                for(wishlist in _wishlistsPrivate.value){
+                    if(wishlist.id == wishId){
+                        _wishlistsPrivate.value = _wishlistsPrivate.value.filter { it.id != wishId }
+                        break
+                    }
+                }
+                for(wishlist in _wishlistsPublic.value){
+                    if(wishlist.id == wishId){
+                        _wishlistsPublic.value = _wishlistsPublic.value.filter { it.id != wishId }
+                        break
+                    }
+                }
+                for(wishlist in _wishlistsShared.value){
+                    if(wishlist.id == wishId){
+                        _wishlistsShared.value = _wishlistsShared.value.filter { it.id != wishId }
+                        break
+                    }
+                }
 
             }catch (e: Exception){
                 e.printStackTrace()
@@ -426,6 +521,8 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
         }
     }
     //Fine svuota la wishlist
+
+
 
 }
 class WishlistViewModelFactory(

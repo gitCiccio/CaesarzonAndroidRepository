@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.productDTOS.ReviewDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
@@ -51,11 +52,12 @@ import java.util.UUID
 
 @Composable
 fun ProductDetailsScreen(
-    productID: UUID,
+    productID: String,
     navController: NavHostController,
     productsViewModel: ProductsViewModel,
     reviewViewModel: ReviewViewModel,
-    wishlistViewModel: WishlistViewModel
+    wishlistViewModel: WishlistViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
 
     var isAddReviewDialogOpen by remember { mutableStateOf(false) }
@@ -144,7 +146,7 @@ fun ProductDetailsScreen(
             }
         }
         item {
-            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, wishlistViewModel,it1.product) } }
+            selectedProduct.value.let { selectedProduct.value?.let { it1 -> ProductActions(navController, adminProductViewModel, shoppingCartViewModel, wishlistViewModel,it1.product) } }
         }
         item {
             if(logged.value) {

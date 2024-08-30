@@ -29,7 +29,6 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     val isLoading: State<Boolean> get() = _isLoading
 
     private val client = OkHttpClient()
-
     var cardsUuid: List<UUID> = emptyList()
 
     private val _cards: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
@@ -50,6 +49,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 _isLoading.value = false
             }
         }
+
     }
 
     suspend fun getUuidCardsFromServer() {
@@ -75,6 +75,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 val listType = object : TypeToken<List<UUID>>() {}.type
                 cardsUuid = gson.fromJson(responseBody, listType)
             } catch (e: Exception) {
+
                 e.printStackTrace()
             }
         }

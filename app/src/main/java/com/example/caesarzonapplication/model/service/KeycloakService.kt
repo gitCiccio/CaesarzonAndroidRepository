@@ -54,8 +54,8 @@ class KeycloakService {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-                val postData = "username=${URLEncoder.encode(username, "UTF-8")}" +
-                        "&password=${URLEncoder.encode(password, "UTF-8")}" +
+                val postData = "username=${URLEncoder.encode("tartix", "UTF-8")}" +
+                        "&password=${URLEncoder.encode("CiaoCiao!2", "UTF-8")}" +
                         "&grant_type=password" +
                         "&client_id=caesar-app"
                 val outputStream = OutputStreamWriter(connection.outputStream)
@@ -76,7 +76,7 @@ class KeycloakService {
                 connection.disconnect()
 
                 val gson = Gson()
-                globalUsername = mutableStateOf(username)
+                globalUsername = mutableStateOf(username.lowercase())
                 myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
                 myToken?.accessToken?.let {
                     decodeTokenMio(it)

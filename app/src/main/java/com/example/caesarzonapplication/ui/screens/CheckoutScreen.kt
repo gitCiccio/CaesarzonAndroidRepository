@@ -7,17 +7,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 
 @Composable
-fun CheckoutScreen() {
-    var addresses by remember { mutableStateOf(listOf<String>()) }
-    var cards by remember { mutableStateOf(listOf<String>()) }
-    val orderTotal = 100.0
+fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewModel: AddressViewModel, cardsViewModel: CardsViewModel) {
 
-    var selectedAddress by remember { mutableStateOf<String?>(null) }
-    var selectedCard by remember { mutableStateOf<String?>(null) }
+    val addresses by addressViewModel.addresses.collectAsState()
+    val cards by cardsViewModel.cards.collectAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        addressViewModel.getAllAddressesAndCityData()
+        //cardsViewModel.getAllCards()
+    }
+
+    var selectedAddress by remember { mutableStateOf<AddressDTO?>(null) }
+    var selectedCard by remember { mutableStateOf<CardDTO?>(null) }
     var payPal by remember { mutableStateOf(false) }
 
     LazyColumn(
@@ -31,7 +43,7 @@ fun CheckoutScreen() {
 
             if (addresses.isEmpty()) {
                 Button(
-                    onClick = { /* Logica per aggiungere un indirizzo */ },
+                    onClick = { /*Aggiungi navigate per aggiungere indirizzo*/ },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors()
                 ) {
@@ -54,7 +66,7 @@ fun CheckoutScreen() {
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = address)
+                        Text(text = address.toString())
                     }
                 }
             }
@@ -89,7 +101,7 @@ fun CheckoutScreen() {
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = card)
+                        Text(text = card.toString())
                     }
                 }
             }
@@ -98,7 +110,9 @@ fun CheckoutScreen() {
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
             ) {
                 Text(
                     text = "Oppure paga con PayPal",
@@ -120,7 +134,7 @@ fun CheckoutScreen() {
         item {
             Text(text = "Riepilogo Ordine", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Totale: €${"%.2f".format(orderTotal)}", style = MaterialTheme.typography.bodyLarge)
+            //Text(text = "Totale: €${"%.2f".format(shoppingCartViewModel.total.toString())}", style = MaterialTheme.typography.bodyLarge)
         }
 
         item {
@@ -140,14 +154,15 @@ fun CheckoutScreen() {
                 Button(
                     onClick = {
                         if (selectedAddress != null || selectedCard != null || payPal) {
-                            // Procedi all'acquisto con l'opzione selezionata
+                            selectedAddress?.id?.let { selectedCard?.let { it1 -> shoppingCartViewModel.purchase(it, it1.id, payPal, context) } }
                         } else {
                             // Mostra un messaggio di errore o avviso
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(),
-                    enabled = selectedAddress != null && (selectedCard != null || payPal)                ) {
+                    enabled = selectedAddress != null && (selectedCard != null || payPal)
+                ) {
                     Text(text = "Procedi all'acquisto", color = Color.White)
                 }
             }
