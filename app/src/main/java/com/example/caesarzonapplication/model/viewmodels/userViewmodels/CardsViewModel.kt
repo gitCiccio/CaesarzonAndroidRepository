@@ -16,8 +16,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,7 +34,6 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     val isLoading: State<Boolean> get() = _isLoading
 
     private val client = OkHttpClient()
-
     var cardsUuid: List<UUID> = emptyList()
 
     private val _cards: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
@@ -57,6 +54,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 _isLoading.value = false
             }
         }
+
     }
 
     suspend fun getUuidCardsFromServer() {
@@ -81,6 +79,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 val listType = object : TypeToken<List<UUID>>() {}.type
                 cardsUuid = gson.fromJson(responseBody, listType)
             } catch (e: Exception) {
+
                 e.printStackTrace()
             }
         }

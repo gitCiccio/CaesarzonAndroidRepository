@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.*
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
@@ -22,6 +23,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportR
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
+import com.example.caesarzonapplication.ui.screens.CheckoutScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
@@ -29,6 +31,7 @@ import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.ProductSearchResultsScreen
+import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.ReportsScreen
 //import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
@@ -47,7 +50,8 @@ fun NavigationGraph(
     supportRequestViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -61,9 +65,9 @@ fun NavigationGraph(
             else AuthScreen(navController,accountInfoViewModel,followerViewModel)
         }
 
-       /* composable(route = BottomBarScreen.Cart.route) {
-            ShoppingCartScreen(navController,logged, productsViewModel)
-        }*/
+        composable(route = BottomBarScreen.Cart.route) {
+            ShoppingCartScreen(navController, shoppingCartViewModel)
+        }
 
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value) {
@@ -102,15 +106,14 @@ fun NavigationGraph(
             }
         }
 
-
         composable(
             route = DetailsScreen.ProductDetailsScreen.route+"/{productId}",
             arguments = listOf(navArgument("productId") { type = NavType.StringType })
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")
             if (productId != null) {
-                    val uuid = UUID.fromString(productId)
-                    ProductDetailsScreen(productID = uuid, navController, productsViewModel,reviewViewModel, wishlistViewModel)
+                println("u prodotto: "+productId)
+                    ProductDetailsScreen(productID = productId, navController, productsViewModel,reviewViewModel,wishlistViewModel,shoppingCartViewModel)
             } else {
                 Log.e("NavigationError", "productId is null")
             }
@@ -132,6 +135,9 @@ fun NavigationGraph(
             UserRegistrationScreen(navController, accountInfoViewModel)
         }
 
+        composable(route = DetailsScreen.CheckOutScreen.route) {
+            CheckoutScreen(shoppingCartViewModel, addressViewModel, cardViewModel)
+        }
 
     }
 }

@@ -7,6 +7,6 @@ data class ReviewDTO (
     val text : String,
     val evaluation : Int,
     val username : String,
-    val productID : UUID,
+    val productID : String,
     val date : String
 )

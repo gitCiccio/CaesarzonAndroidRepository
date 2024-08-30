@@ -24,4 +24,9 @@ sealed class DetailsScreen(
         title = "USERPAGE",
     )
 
+    data object CheckOutScreen : DetailsScreen(
+        route = "checkout",
+        title = "CHECKOUT",
+    )
+
 }
