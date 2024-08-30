@@ -48,7 +48,7 @@ fun WishlistProductList(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
                 Button(onClick = {
-                        //wishlistViewModel rimuovi elemento dalla wishlist
+                        wishlistViewModel.deleteWishlistProductByProductID(wishlistId, product.productId)
                         showPopupMessage = "Prodotto rimosso dalla wishlist";
                         showPopup = true
                     })

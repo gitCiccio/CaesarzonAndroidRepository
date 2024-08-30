@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.globalUsername
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.ui.components.WishlistSection
@@ -38,6 +39,7 @@ fun WishlistScreen(navController : NavHostController, notificationViewModel: Not
     var selectedTab by remember { mutableStateOf(WishlistTab.Pubbliche) }
 
     LaunchedEffect(Unit) {
+        wishlistViewModel.getUserWishlists(globalUsername.value, 0)
         notificationViewModel.getNotification()
     }
     LazyColumn(

@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.productDTOS.SingleWishlistProductDTO
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.globalUsername
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import kotlinx.coroutines.launch
 
@@ -31,18 +32,23 @@ import kotlinx.coroutines.launch
 fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
 
     var selectedWishlistId by remember { mutableStateOf<String?>(null) }
-    val coroutineScope = rememberCoroutineScope()
     var newWishlistName by remember { mutableStateOf("") }
-    var productList by remember { mutableStateOf<List<SingleWishlistProductDTO>?>(null) }
+    val wishProduct by wishlistViewModel.wishProduct.collectAsState()
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showPopupMessage by rememberSaveable { mutableStateOf("") }
-    val wishlists by wishlistViewModel.wishlistsPrivate.collectAsState()
 
+    // Variabile wishlists che cambia dinamicamente
+    val wishlists by when (visibility) {
+        0 -> wishlistViewModel.wishlistsPublic.collectAsState()
+        1 -> wishlistViewModel.wishlistsShared.collectAsState()
+        2 -> wishlistViewModel.wishlistsPrivate.collectAsState()
+        else -> wishlistViewModel.wishlistsPublic.collectAsState() // default case
+    }
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 
     LaunchedEffect(Unit) {
-       //wishlistViewModel.loadWishlists(visibility) carica elementi
+       wishlistViewModel.getUserWishlists(globalUsername.value, visibility)
     }
 
     TextField(
@@ -50,8 +56,8 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
         onValueChange = { newWishlistName = it },
         label = { Text("Nome nuova lista") }
     )
-    Button(modifier = Modifier.padding(8.dp), onClick = { /* aggiungi prodotto nella wish list
-    wishlistViewModel.addWishlist(newWishlistName, visibility)*/ }) {
+    Button(modifier = Modifier.padding(8.dp), onClick = {
+    wishlistViewModel.addWishlist(newWishlistName, globalUsername.value, visibility) }) {
         Text(text = "Aggiungi lista")
     }
 
@@ -63,12 +69,9 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                 Button(modifier = Modifier.padding(8.dp), onClick = {
                     if (selectedWishlistId == wishlist.id) {
                         selectedWishlistId = null
-                        productList = null
                     } else {
                         selectedWishlistId = wishlist.id
-                        coroutineScope.launch {
-                            //productList = wishlistViewModel.getWishlistProducts(wishlist.id), prendi prodotti della wish list
-                        }
+                        wishlistViewModel.getWishlistProductsByWishlistID(wishlist.id, globalUsername.value)
                     }
                 }) {
                     Text(text = if (selectedWishlistId == wishlist.id) "Nascondi" else "Visualizza")
@@ -76,7 +79,7 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                 Button(
                     modifier = Modifier.padding(8.dp),
                     onClick = {
-                        //wishlistViewModel.emptyWishlist(wishlist.id);, svuota la lista
+                        wishlistViewModel.deleteAllWishlistProductsByWishlistID(wishlist.id)
                         showPopupMessage = "Lista svuotata con successo";
                         showPopup = true
                     }) {
@@ -94,28 +97,26 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }
-            LaunchedEffect(Unit) {
-                //productList ?: wishlistViewModel.getWishlistProducts(wishlist.id), prendi i prodotti
-            }
-            if (selectedWishlistId == wishlist.id && productList != null) {
+
+            if (selectedWishlistId == wishlist.id && wishProduct?.singleWishListProductDTOS != null) {
                 WishlistProductList(
-                    productList,
+                    wishProduct?.singleWishListProductDTOS,
                     wishlistViewModel,
                     wishlist.id
                 )
             }
             when (visibility) {
                 0 ->Row{
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 1) }) { Text(text = "Rendi condivisa") }
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi privata") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 1) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 0) }) { Text(text = "Rendi privata") }
                 }
                 1 -> Row{
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi condivisa") }
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 2) }) { Text(text = "Rendi condivisa") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
                 }
                 2 -> Row{
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
-                    //Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.changeWishlistVisibility(wishlist.id, 2) }) { Text(text = "Rendi privata") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 0) }) { Text(text = "Rendi pubblica") }
+                    Button(modifier = Modifier.padding(10.dp), onClick = { wishlistViewModel.updateUserWishlists(wishlist.id, 2) }) { Text(text = "Rendi privata") }
                 }
             }
         }
