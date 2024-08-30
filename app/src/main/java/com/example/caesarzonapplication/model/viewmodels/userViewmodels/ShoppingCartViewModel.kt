@@ -1,4 +1,4 @@
-package com.example.caesarzonapplication.model.viewmodels
+package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import android.content.Context
 import android.content.Intent
@@ -159,18 +159,19 @@ class ShoppingCartViewModel(): ViewModel() {
                     ?: _buyLaterProducts.value.find { it.product.id == productId }
 
                 if (productToMove != null) {
-                    if (num == 0) {
-                        // Salva per dopo
+                    if (_productsInShoppingCart.value.contains(productToMove)) {
+                        _productsInShoppingCart.update { it - productToMove }
                         _buyLaterProducts.update {
                             it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
                         }
-                    } else {
-                        // Riporta nel carrello
+                    } else if (_buyLaterProducts.value.contains(productToMove)) {
+                        _buyLaterProducts.update { it - productToMove }
                         _productsInShoppingCart.update {
                             it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
                         }
                     }
                 }
+
 
             } catch (e: Exception) {
                 e.printStackTrace()

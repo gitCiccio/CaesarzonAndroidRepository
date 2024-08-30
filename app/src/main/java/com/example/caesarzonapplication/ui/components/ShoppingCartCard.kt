@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductCartWithImage
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 
 
 @Composable

@@ -11,31 +11,23 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.globalUsername
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 
 @Composable
-fun OrderManagementSection() {
+fun OrderManagementSection(orderViewModels: OrdersViewModel) {
 
-    val orders = listOf(
-        "Ordine #1",
-        "Ordine #2",
-        "Ordine #3",
-        "Ordine #4",
-        "Ordine #5",
-        "Ordine #6",
-        "Ordine #7",
-        "Ordine #8",
-        "Ordine #9",
-        "Ordine #10"
-    )
 
+    val orders by orderViewModels.orders.collectAsState()
+    LaunchedEffect(Unit) {
+        orderViewModels.getOrdersFromServer()
+    }
     var expandedOrder by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -62,11 +54,13 @@ fun OrderManagementSection() {
         ){
             items(orders) { order ->
                 OrderItem(
-                    order = order,
-                    isExpanded = expandedOrder == order,
+                    order = order.orderNumber,
+                    isExpanded = expandedOrder == order.id,
                     onOrderClick = {
-                        expandedOrder = if (expandedOrder == order) null else order
-                    }
+                        expandedOrder = if (expandedOrder == order.id) null else order.id
+                    },
+                    orderViewModels,
+                    order.id
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -75,7 +69,13 @@ fun OrderManagementSection() {
 }
 
 @Composable
-fun OrderItem(order: String, isExpanded: Boolean, onOrderClick: () -> Unit) {
+fun OrderItem(
+    order: String,
+    isExpanded: Boolean,
+    onOrderClick: () -> Unit,
+    orderViewModels: OrdersViewModel,
+    orderId: String
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,22 +109,30 @@ fun OrderItem(order: String, isExpanded: Boolean, onOrderClick: () -> Unit) {
             }
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(8.dp))
-                OrderDetails(order = order)
+                OrderDetails(order = order, orderViewModels = orderViewModels, orderId)
             }
         }
     }
 }
 
 @Composable
-fun OrderDetails(order: String) {
+fun OrderDetails(order: String, orderViewModels: OrdersViewModel, orderId: String) {
+    val productCardDTOList by orderViewModels.productCardDTOList.collectAsState()
+    LaunchedEffect(Unit) {
+        orderViewModels.getProductInOrder(orderId)
+    }
     Column(modifier = Modifier.padding(start = 16.dp)) {
         Text(text = "Dettagli dell'ordine: $order", fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = "Prodotto 1: Descrizione, Prezzo, Quantità")
-        Text(text = "Prodotto 2: Descrizione, Prezzo, Quantità")
+        for(product in productCardDTOList){
+            Text(text = "Nome prodotto: ${product.name}")
+            Text(text = "Quantità: ${product.quantity}")
+            Text(text = "Totale: ${product.total}")
+            Text(text = "Totale con sconto: ${product.discountTotal}")
+            Spacer(modifier = Modifier.height(4.dp))
+        }
         Button(
-            onClick = { //richiedi reso
-                 },
+            onClick = { orderViewModels.reFund(orderId, globalUsername.value) },
             modifier = Modifier
                 .padding(top = 16.dp)
                 .clip(MaterialTheme.shapes.medium),

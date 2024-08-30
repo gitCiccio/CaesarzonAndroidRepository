@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.screens
 
+import ReturnsSection
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +26,12 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountI
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AccountTabRow
 import com.example.caesarzonapplication.ui.components.LoadBar
 import com.example.caesarzonapplication.ui.components.OrderManagementSection
 import com.example.caesarzonapplication.ui.components.PaymentManagementSection
-import com.example.caesarzonapplication.ui.components.ReturnsSection
 import com.example.caesarzonapplication.ui.components.SupportSection
 import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.components.UserInfoSection
@@ -42,7 +43,8 @@ fun AccountScreen(
     addressViewModel: AddressViewModel,
     supportViewModel: SupportRequestsViewModel,
     cardViewModel: CardsViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    orderViewModels: OrdersViewModel
 ) {
 
 val accountTabs = listOf(
@@ -98,8 +100,8 @@ Column(
             0 -> UserInfoSection(accountInfoViewModel)
             1 -> UserAddressInfoSection(addressViewModel)
             2 -> PaymentManagementSection(cardViewModel)
-            3 -> OrderManagementSection()
-            4 -> ReturnsSection()
+            3 -> OrderManagementSection(orderViewModels)
+            4 -> ReturnsSection(orderViewModels)
             5 -> userData?.username?.let { SupportSection(supportViewModel, it) }
         }
     }

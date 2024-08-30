@@ -128,14 +128,13 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                     _addresses.value += address
                 }
 
-                println("Indirizzi recuperati con successo: ${addresses.value.size}${address.city}")
-
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
             }
         }
+
     }
 
     //Funzione per eliminare indirizzo

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
@@ -18,6 +18,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
@@ -37,7 +38,8 @@ fun MainScreen(
     supportRequestsViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
-    shoppingCartViewModel: ShoppingCartViewModel
+    shoppingCartViewModel: ShoppingCartViewModel,
+    ordersViewModel: OrdersViewModel
 ) {
     Scaffold(
         topBar = {
@@ -67,7 +69,8 @@ fun MainScreen(
                     reviewViewModel = reviewViewModel,
                     wishlistViewModel = wishlistViewModel,
                     notificationViewModel = notificationViewModel,
-                    shoppingCartViewModel = shoppingCartViewModel
+                    shoppingCartViewModel = shoppingCartViewModel,
+                    ordersViewModel = ordersViewModel
                 )
             }
         }
