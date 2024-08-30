@@ -170,7 +170,12 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
                 )
                 OutlinedTextField(
                     value = street,
-                    onValueChange = { street = it },
+                    onValueChange = {
+                        val streetRegex = Regex("^(?=(?:.*[a-zA-Z]){2,})[a-zA-Z0-9 ]{2,30}\$")
+                        if (streetRegex.matches(it))
+                            street = it
+                        else if (it.isNotEmpty())
+                            street = it.dropLast(1) },
                     label = { Text("Via") },
                     singleLine = true,
                 )
@@ -209,7 +214,12 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
                 }
                 OutlinedTextField(
                     value = houseNumber,
-                    onValueChange = { houseNumber = it },
+                    onValueChange = {
+                        val houseNumberRegex = Regex("^[0-9a-zA-Z]{1,8}\$")
+                        if (houseNumberRegex.matches(it))
+                            houseNumber = it
+                        else if (it.isNotEmpty())
+                            houseNumber = it.dropLast(1) },
                     label = { Text("Numero civico") },
                     singleLine = true,
                 )
@@ -291,7 +301,7 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
                                 roadName = street,
                                 houseNumber = houseNumber,
                                 roadType = roadType,
-                                city = CityDataDTO(0, city, zipCode, province, region)
+                                city = CityDataDTO(addressViewModel.selectedCityId.toLong(), city, zipCode, province, region)
                             )
                             addressViewModel.addAddress(newAddressDTO)
                             showAddAddressDialog = false
