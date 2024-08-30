@@ -2,12 +2,17 @@ package com.example.caesarzonapplication.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,172 +43,247 @@ fun UserRegistrationScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp),
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.Center
     ) {
+        item {
+            Text(
+                text = "Registrazione",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 32.dp),
+            color = MaterialTheme.colorScheme.primary
+            )
+        }
         item {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(20.dp)
-            ) {
-                Text(
-                    text = "Registrazione",
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(20.dp),
-                    textAlign = TextAlign.Center
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+                {
+                    InputField(
+                        value = name,
+                        onValueChange = {
+                            name = it
+                            nameError = validateName(it)
+                        },
+                        label = "Nome",
+                        error = nameError
                 )
-                TextField(
-                    value = name,
-                    onValueChange = {
-                        name = it
-                        nameError = when {
-                            it.isEmpty() -> "Il nome non può essere vuoto"
-                            it.length < 2 || it.length > 30 -> "Il nome deve essere tra 2 e 30 caratteri"
-                            !it[0].isUpperCase() -> "Il nome deve iniziare con una lettera maiuscola"
-                            else -> ""
-                        }
-                    },
-                    label = { Text("Nome") },
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = nameError.isNotEmpty()
-                )
-                if (nameError.isNotEmpty()) {
-                    Text(nameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                TextField(
+
+                InputField(
                     value = surname,
                     onValueChange = {
                         surname = it
-                        surnameError = when {
-                            it.isEmpty() -> "Il cognome non può essere vuoto"
-                            it.length < 2 || it.length > 30 -> "Il cognome deve essere tra 2 e 30 caratteri"
-                            !it[0].isUpperCase() -> "Il cognome deve iniziare con una lettera maiuscola"
-                            else -> ""
-                        }
+                        surnameError = validateSurname(it)
                     },
-                    label = { Text("Cognome") },
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = surnameError.isNotEmpty()
+                    label = "Cognome",
+                    error = surnameError
                 )
-                if (surnameError.isNotEmpty()) {
-                    Text(surnameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-               TextField(
+
+                InputField(
                     value = username,
                     onValueChange = {
                         username = it
-                        usernameError = when {
-                            it.isEmpty() -> "L'username non può essere vuoto"
-                            it.length < 5 || it.length > 20 -> "L'username deve essere tra 5 e 20 caratteri"
-                            else -> ""
-                        }
+                        usernameError = validateUsername(it)
                     },
-                    label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = usernameError.isNotEmpty()
-               )
-                if (usernameError.isNotEmpty()) {
-                    Text(usernameError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                TextField(
+                    label = "Username",
+                    error = usernameError
+                )
+
+                InputField(
                     value = email,
                     onValueChange = {
                         email = it
-                        emailError = when {
-                            it.isEmpty() -> "L'email non può essere vuota"
-                            !android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches() -> "Inserisci un'email valida"
-                            it.substringBefore('@').length > 64 -> "La lunghezza della parte locale dell'email deve essere inferiore a 64 caratteri"
-                            else -> ""
-                        }
+                        emailError = validateEmail(it)
                     },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = emailError.isNotEmpty()
+                    label = "Email",
+                    error = emailError
                 )
-                if (emailError.isNotEmpty()) {
-                    Text(emailError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                TextField(
+
+                PasswordInputField(
                     value = password,
-                    onValueChange = { it ->
+                    onValueChange = {
                         password = it
-                        passwordError = when {
-                            it.isEmpty() -> "La password non può essere vuota"
-                            it.length < 8 || it.length > 20 -> "La password deve essere tra 8 e 20 caratteri"
-                            !it.any { it.isUpperCase() } -> "La password deve contenere almeno una lettera maiuscola"
-                            !it.any { it.isDigit() } -> "La password deve contenere almeno un numero"
-                            !it.any { !it.isLetterOrDigit() } -> "La password deve contenere almeno un carattere speciale"
-                            else -> ""
-                        }
+                        passwordError = validatePassword(it)
                     },
-                    label = { Text("Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = passwordError.isNotEmpty()
+                    label = "Password",
+                    error = passwordError
                 )
-                if (passwordError.isNotEmpty()) {
-                    Text(passwordError, modifier = Modifier.padding(horizontal = 45.dp, vertical = 5.dp), color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-                TextField(
+
+                PasswordInputField(
                     value = confirmPassword,
                     onValueChange = {
                         confirmPassword = it
-                        confirmPasswordError = when {
-                            it.isEmpty() -> "La conferma della password non può essere vuota"
-                            it != password -> "Le password non coincidono"
-                            else -> ""
-                        }
+                        confirmPasswordError = validateConfirmPassword(it, password)
                     },
-                    label = { Text("Conferma password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    isError = confirmPasswordError.isNotEmpty()
+                    label = "Conferma Password",
+                    error = confirmPasswordError
                 )
-                if (confirmPasswordError.isNotEmpty()) {
-                    Text(confirmPasswordError, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                }
-            }
-        }
-        item {
-            Button(
-                onClick = {
-                    if (name.isEmpty()) nameError = "Il nome non può essere vuoto"
-                    if (surname.isEmpty()) surnameError = "Il cognome non può essere vuoto"
-                    if (username.isEmpty()) usernameError = "L'username non può essere vuoto"
-                    if (email.isEmpty()) emailError = "L'email non può essere vuota"
-                    if (password.isEmpty()) passwordError = "La password non può essere vuota"
-                    if (confirmPassword.isEmpty()) confirmPasswordError = "La conferma della password non può essere vuota"
 
-                    if (password != confirmPassword) {
-                        passwordError = "Le password non coincidono"
-                        confirmPasswordError = "Le password non coincidono"
-                        password = ""
-                        confirmPassword = ""
-                    }
-                    if(checksAreOk(nameError, surnameError, usernameError, emailError, passwordError)) {
-                        accountInfoViewModel.registerUser(name, surname, username, email, password) { result ->
-                            if (result == "success") {
-                                navController.navigate(BottomBarScreen.Profile.route)
-                            } else {
-                                println("Errore durante la registrazione: $result")
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (checksAreOk(nameError, surnameError, usernameError, emailError, passwordError)) {
+                            accountInfoViewModel.registerUser(name, surname, username, email, password) { result ->
+                                if (result == "success") {
+                                    navController.navigate(BottomBarScreen.Profile.route)
+                                } else {
+                                    println("Errore durante la registrazione: $result")
+                                }
                             }
                         }
-                    }
-
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .padding(20.dp),
-                colors = ButtonDefaults.buttonColors()
-            ) {
-                Text("Registrati")
+                    },
+                    modifier = Modifier
+                        .height(75.dp)
+                        .padding(bottom = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                )
+                {
+                    Text("Registrati", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
+                    Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
 
-fun checksAreOk(nameError: String, surnameError: String, usernameError: String, emailError: String, passwordError: String): Boolean {
-    return !(nameError.isNotEmpty() || surnameError.isNotEmpty() || usernameError.isNotEmpty() || emailError.isNotEmpty() || passwordError.isNotEmpty())
+@Composable
+fun InputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    error: String
+) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            isError = error.isNotEmpty(),
+            singleLine = true
+        )
+        if (error.isNotEmpty()) {
+            Text(
+                text = error,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun PasswordInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    error: String
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            isError = error.isNotEmpty(),
+            singleLine = true,
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+
+                IconButton(onClick = {
+                    passwordVisible = !passwordVisible
+                }) {
+                    Icon(imageVector = image, contentDescription = null)
+                }
+            }
+        )
+        if (error.isNotEmpty()) {
+            Text(
+                text = error,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+}
+
+
+fun validateName(name: String): String {
+    return when {
+        name.isEmpty() -> "Il nome non può essere vuoto"
+        name.length < 2 || name.length > 30 -> "Il nome deve essere tra 2 e 30 caratteri"
+        !name[0].isUpperCase() -> "Il nome deve iniziare con una lettera maiuscola"
+        else -> ""
+    }
+}
+
+fun validateSurname(surname: String): String {
+    return when {
+        surname.isEmpty() -> "Il cognome non può essere vuoto"
+        surname.length < 2 || surname.length > 30 -> "Il cognome deve essere tra 2 e 30 caratteri"
+        !surname[0].isUpperCase() -> "Il cognome deve iniziare con una lettera maiuscola"
+        else -> ""
+    }
+}
+
+fun validateUsername(username: String): String {
+    return when {
+        username.isEmpty() -> "L'username non può essere vuoto"
+        username.length < 5 || username.length > 20 -> "L'username deve essere tra 5 e 20 caratteri"
+        else -> ""
+    }
+}
+
+fun validateEmail(email: String): String {
+    return when {
+        email.isEmpty() -> "L'email non può essere vuota"
+        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Inserisci un'email valida"
+        email.substringBefore('@').length > 64 -> "La lunghezza della parte locale dell'email deve essere inferiore a 64 caratteri"
+        else -> ""
+    }
+}
+
+fun validatePassword(password: String): String {
+    return when {
+        password.isEmpty() -> "La password non può essere vuota"
+        password.length < 8 || password.length > 20 -> "La password deve essere tra 8 e 20 caratteri"
+        !password.any { it.isUpperCase() } -> "La password deve contenere almeno una lettera maiuscola"
+        !password.any { it.isDigit() } -> "La password deve contenere almeno un numero"
+        !password.any { !it.isLetterOrDigit() } -> "La password deve contenere almeno un carattere speciale"
+        else -> ""
+    }
+}
+
+fun validateConfirmPassword(confirmPassword: String, password: String): String {
+    return when {
+        confirmPassword.isEmpty() -> "La conferma della password non può essere vuota"
+        confirmPassword != password -> "Le password non coincidono"
+        else -> ""
+    }
+}
+
+fun checksAreOk(
+    nameError: String,
+    surnameError: String,
+    usernameError: String,
+    emailError: String,
+    passwordError: String
+): Boolean {
+    return nameError.isEmpty() && surnameError.isEmpty() && usernameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty()
 }

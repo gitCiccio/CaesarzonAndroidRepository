@@ -45,19 +45,15 @@ import java.io.InputStream
 @Composable
 fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
 
-
-    // State to hold the selected image URI
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
 
-    // Launcher to pick an image from the gallery
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             imageUri = uri
 
-            // Convert the Uri to ImageBitmap
             uri?.let {
                 val inputStream: InputStream? = context.contentResolver.openInputStream(it)
                 inputStream?.let { stream ->

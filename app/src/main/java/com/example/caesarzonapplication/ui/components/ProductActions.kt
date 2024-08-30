@@ -18,6 +18,8 @@ import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
+import com.example.caesarzonapplication.navigation.BottomBarScreen
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.google.gson.Gson
 
 @Composable
@@ -94,15 +96,18 @@ fun ProductActions(navController: NavHostController, adminProductViewModel: Admi
         }
     }else{
         Row{
-            Button(onClick = {
+            /*Button(onClick = {
                 val gson = Gson()
                 val productJson = gson.toJson(productDTO)
                 navController.navigate("addProduct/$productJson") }
             ) {
                 Text(text = "Modifica")
-            }
+            }*/
             Button(
-                onClick = { adminProductViewModel.deleteProduct(productDTO.id) }
+                onClick = {
+                    adminProductViewModel.deleteProduct(productDTO.id)
+                    navController.navigate(BottomBarScreen.Home.route)
+                }
             ) {
                 Text(text = "Elimina")
             }

@@ -30,9 +30,9 @@ import com.example.caesarzonapplication.ui.screens.WishlistScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.AdminScreen
 import com.example.caesarzonapplication.ui.screens.ProductSearchResultsScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.ReportsScreen
-//import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
+import com.example.caesarzonapplication.ui.screens.adminScreens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.UserSearchScreen
 import java.util.UUID
 
@@ -61,9 +61,9 @@ fun NavigationGraph(
             else AuthScreen(navController,accountInfoViewModel,followerViewModel)
         }
 
-       /* composable(route = BottomBarScreen.Cart.route) {
-            ShoppingCartScreen(navController,logged, productsViewModel)
-        }*/
+        composable(route = BottomBarScreen.Cart.route) {
+            //ShoppingCartScreen(navController,logged, productsViewModel)
+        }
 
         composable(route = BottomBarScreen.Friends.route) {
             if(logged.value) {
@@ -78,11 +78,10 @@ fun NavigationGraph(
             else AuthScreen(navController, accountInfoViewModel,followerViewModel)
         }
 
-
         if(isAdmin.value) {
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
             val reportViewModel = AdminReportViewModel()
-            //val supportRequestViewModel = AdminSupportRequestViewModel()
+            val adminSupportRequestViewModel = AdminSupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
@@ -94,9 +93,9 @@ fun NavigationGraph(
             composable(route = AdminBottomBarScreen.Reports.route) {
                 ReportsScreen(reportViewModel)
             }
-            /*composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                SupportRequestScreen(supportRequestViewModel)
-            }*/
+            composable(route = AdminBottomBarScreen.SupportRequest.route) {
+                SupportRequestScreen(adminSupportRequestViewModel)
+            }
             composable(route = AdminBottomBarScreen.SearchUser.route) {
                 UserSearchScreen(searchAndBanUsersViewModel)
             }
@@ -131,7 +130,6 @@ fun NavigationGraph(
         composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {
             UserRegistrationScreen(navController, accountInfoViewModel)
         }
-
 
     }
 }
