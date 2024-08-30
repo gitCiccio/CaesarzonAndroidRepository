@@ -101,7 +101,7 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                         ) {
                             Text(text = "La tua recensione: ")
                             Text(
-                                text = "Data: ${review.localDate}",
+                                text = "Data: ${review.date}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.Gray
                             )
@@ -126,8 +126,8 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Button(onClick = {
-                                reviewViewModel.deleteReview(review)
-                                navController.navigate("product_details/${review.productID}")
+                                reviewViewModel.deleteReview(productId)
+                                //navController.navigate("product_details/${productId}")
                             }) {
                                 Text(text = "Elimina recensione")
                             }
@@ -141,7 +141,7 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            text = "Data: ${review.localDate}",
+                            text = "Data: ${review.date}",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.Gray
                         )
@@ -175,8 +175,8 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                         }
                         if(isAdmin.value){
                             Button(onClick = {
-                                reviewViewModel.deleteReview(review)
-                                navController.navigate("product_details/${review.productID}")
+                                reviewViewModel.deleteReview(productId)
+                                //navController.navigate("product_details/${review.productID}")
                             })
                             {
                                 Text(text = "Elimina recensione")

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.AddressDTO
 import com.example.caesarzonapplication.model.dto.AverageDTO
+import com.example.caesarzonapplication.model.dto.ProductDTO
 import com.example.caesarzonapplication.model.dto.ReviewDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
@@ -111,20 +112,20 @@ class ReviewViewModel: ViewModel() {
         }
     }
 
-    fun deleteReview(review: ReviewDTO){
+    fun deleteReview(product: String){
         viewModelScope.launch {
             try{
-                doDeleteReview(review)
+                doDeleteReview(product)
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
 
-    suspend fun doDeleteReview(review: ReviewDTO){
-        val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${review.id}")
+    suspend fun doDeleteReview(product: String){
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${product}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        _reviews.value.toMutableList().remove(review)
+        //_reviews.value.toMutableList().remove(review)
 
         withContext(Dispatchers.IO){
             try {
