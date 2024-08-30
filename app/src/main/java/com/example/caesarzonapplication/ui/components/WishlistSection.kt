@@ -23,7 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.model.dto.SingleWishlistProductDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.SingleWishlistProductDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import kotlinx.coroutines.launch
 

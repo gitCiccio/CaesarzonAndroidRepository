@@ -3,7 +3,7 @@ package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.UserNotificationDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserNotificationDTO
 import com.example.caesarzonapplication.model.repository.notificationRepository.UserNotificationRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson

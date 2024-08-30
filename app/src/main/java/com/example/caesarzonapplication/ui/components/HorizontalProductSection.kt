@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.caesarzonapplication.model.dto.ProductSearchWithImage
+import com.example.caesarzonapplication.model.dto.productDTOS.ProductSearchWithImage
 
 
 @Composable

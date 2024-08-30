@@ -1,11 +1,8 @@
 package com.example.caesarzonapplication.model.repository.userRepository
 
-import androidx.compose.ui.text.toLowerCase
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.example.caesarzonapplication.model.dao.userDao.UserDao
-import com.example.caesarzonapplication.model.dto.UserDTO
-import com.example.caesarzonapplication.model.dto.UserRegistrationDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.UserDTO
+import com.example.caesarzonapplication.model.dto.authDTOS.UserRegistrationDTO
 import com.example.caesarzonapplication.model.entities.userEntity.User
 
 class UserRepository(private val userDao: UserDao) {

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.example.caesarzonapplication.model.dao.userDao.AddressDao
-import com.example.caesarzonapplication.model.dto.AddressDTO
-import com.example.caesarzonapplication.model.dto.CityDataDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CityDataDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Address
 import com.example.caesarzonapplication.model.entities.userEntity.CityData
 

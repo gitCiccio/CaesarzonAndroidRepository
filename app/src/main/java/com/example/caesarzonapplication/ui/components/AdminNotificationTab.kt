@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.model.dto.AdminNotificationDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.AdminNotificationDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 
 @Composable

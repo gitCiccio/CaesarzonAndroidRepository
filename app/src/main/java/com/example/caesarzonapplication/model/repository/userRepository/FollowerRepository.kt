@@ -3,7 +3,7 @@ package com.example.caesarzonapplication.model.repository.userRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.caesarzonapplication.model.dao.userDao.FollowerDao
-import com.example.caesarzonapplication.model.dto.FollowerDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.FollowerDTO
 import com.example.caesarzonapplication.model.entities.userEntity.Follower
 
 class FollowerRepository(private val followerDao: FollowerDao) {

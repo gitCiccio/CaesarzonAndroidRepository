@@ -2,12 +2,10 @@ package com.example.caesarzonapplication.model.repository.notificationRepository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.example.caesarzonapplication.model.dao.notificationDao.SupportDao
-import com.example.caesarzonapplication.model.dto.SupportDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.SupportDTO
 import com.example.caesarzonapplication.model.entities.notificationEntity.Support
 import com.example.caesarzonapplication.model.utils.Converters
-import java.time.LocalDate
 
 class SupportRepository(private val supportDao: SupportDao) {
 
