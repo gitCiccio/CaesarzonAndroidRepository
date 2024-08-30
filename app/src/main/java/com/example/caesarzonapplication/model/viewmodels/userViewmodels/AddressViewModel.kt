@@ -1,7 +1,13 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableLongState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -43,6 +49,8 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     var addressesUuid: List<UUID> = emptyList()
 
+    var selectedCityId: String = ""
+
     private val _cityDataDTO = MutableLiveData<CityDataDTO?>(null)
     val cityDataDTO: LiveData<CityDataDTO?> = _cityDataDTO
 
@@ -80,6 +88,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
 
+                val gson = Gson()
                 val listType = object :  TypeToken<List<UUID>>() {}.type
                 addressesUuid = gson.fromJson(responseBody, listType)
                 println("Indirizzi recuperati con successo: ${addressesUuid.size}")
@@ -92,35 +101,37 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     }
 
-    fun getAddressesFromServer(addressUuid: UUID) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
-            val request = Request.Builder()
-                .url(manageUrl)
-                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                .build()
+    suspend fun getAddressesFromServer(addressUuid: UUID) {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
 
+        withContext(Dispatchers.IO) {
+            _isLoading.value = true
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@withContext
                 }
 
                 println("Risposta dal server: $responseBody")
-                val valType = object : TypeToken<Address>() {}.type
-                val address = gson.fromJson<AddressDTO>(responseBody, valType)
-
+                val gson = Gson()
+                val address = gson.fromJson(responseBody, AddressDTO::class.java)
                 address.id = addressUuid.toString()
 
                 withContext(Dispatchers.Main) {
-                    addressRepository.addAddress(address)
                     _addresses.value += address
                 }
-                println("Indirizzi recuperati con successo: ${addresses.value.size}")
+
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
 
@@ -175,9 +186,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         val json = gson.toJson(address)
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        println("valore del token: ${myToken?.accessToken}")
         withContext(Dispatchers.IO){
-            println("sono nel withContext della doAddress")
             try{
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
@@ -250,7 +259,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 val listType = object : TypeToken<CityDataDTO>() {}.type
                 val cityData = gson.fromJson<CityDataDTO>(responseBody, listType)
 
-
+                selectedCityId = cityData.id.toString()
 
                 _cityDataDTO.postValue(cityData)
             } catch (e: Exception) {
