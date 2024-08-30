@@ -3,7 +3,6 @@ package com.example.caesarzonapplication.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -25,9 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.caesarzonapplication.model.dto.SingleWishlistProductDTO
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 @Composable
 fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
@@ -39,7 +37,7 @@ fun WishlistSection(visibility: Int, wishlistViewModel: WishlistViewModel) {
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showPopupMessage by rememberSaveable { mutableStateOf("") }
-    val wishlists by wishlistViewModel.wishlists.collectAsState()
+    val wishlists by wishlistViewModel.wishlistsPrivate.collectAsState()
 
     if (showPopup) { GenericMessagePopup(message = showPopupMessage, onDismiss = { showPopup = false }) }
 

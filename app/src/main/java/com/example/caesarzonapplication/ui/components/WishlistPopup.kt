@@ -1,7 +1,6 @@
 package com.example.caesarzonapplication.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
@@ -11,7 +10,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.globalUsername
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 
 enum class WishlistTab {
     Pubbliche,
@@ -20,8 +20,13 @@ enum class WishlistTab {
 }
 
 @Composable
-fun WishlistPopup(wishlistViewModel: WishlistViewModel, onDismiss: () -> Unit) {
+fun WishlistPopup(wishlistViewModel: WishlistViewModel, productId: String,onDismiss: () -> Unit) {
     var selectedTab by remember { mutableStateOf(WishlistTab.Pubbliche) }
+
+    // Update the wishlist whenever the selectedTab changes
+    LaunchedEffect(selectedTab) {
+        wishlistViewModel.getUserWishlists(globalUsername.value, 0)
+    }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -50,7 +55,7 @@ fun WishlistPopup(wishlistViewModel: WishlistViewModel, onDismiss: () -> Unit) {
                     tabs.forEachIndexed { index, tab ->
                         Tab(
                             selected = selectedTab == tab,
-                            onClick = { selectedTab = tab },
+                            onClick = { selectedTab = tab }, // Update selectedTab on tab click
                             text = { Text(tab.name, style = TextStyle(fontSize = 14.sp)) }
                         )
                     }
@@ -59,14 +64,16 @@ fun WishlistPopup(wishlistViewModel: WishlistViewModel, onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 WishlistViewForProduct(
-                    wishlistViewModel, visibility = when (selectedTab) {
+                    wishlistViewModel = wishlistViewModel,
+                    visibility = when (selectedTab) {
                         WishlistTab.Pubbliche -> 0
-                        WishlistTab.Private -> 2
                         WishlistTab.Condivise -> 1
-                    }
+                        WishlistTab.Private -> 2
+                    },
+                    productId = productId
                 )
             }
-               },
+        },
         confirmButton = {
             Button(onClick = { onDismiss() }) {
                 Text("Annulla", style = TextStyle(color = Color.Black, fontSize = 16.sp))
@@ -74,3 +81,4 @@ fun WishlistPopup(wishlistViewModel: WishlistViewModel, onDismiss: () -> Unit) {
         }
     )
 }
+

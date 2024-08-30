@@ -20,8 +20,8 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountI
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModel
-import com.example.caesarzonapplication.model.viewmodels.WishlistViewModelFactory
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
@@ -69,7 +69,6 @@ class MainActivity : ComponentActivity() {
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
                 KeycloakService().getBasicToken()
-
                 MainScreen(
                     navController = navController,
                     accountInfoViewModel = accountInfoViewModel,

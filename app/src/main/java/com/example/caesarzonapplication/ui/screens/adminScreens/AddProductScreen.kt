@@ -1,11 +1,17 @@
 package com.example.caesarzonapplication.ui.screens.adminScreens
 
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -18,11 +24,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,9 +41,33 @@ import androidx.compose.ui.unit.sp
 import com.example.caesarzonapplication.model.dto.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
+import java.io.InputStream
 
 @Composable
 fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
+
+
+    // State to hold the selected image URI
+    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
+
+    // Launcher to pick an image from the gallery
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            imageUri = uri
+
+            // Convert the Uri to ImageBitmap
+            uri?.let {
+                val inputStream: InputStream? = context.contentResolver.openInputStream(it)
+                inputStream?.let { stream ->
+                    val bitmap = BitmapFactory.decodeStream(stream)
+                    imageBitmap = bitmap.asImageBitmap()
+                }
+            }
+        }
+    )
 
     var productId by rememberSaveable { mutableStateOf("") }
     var productName by rememberSaveable { mutableStateOf("") }
@@ -199,33 +233,41 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                 }
             }
             item {
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { isClothing = !isClothing }) {
-                    if (isClothing)
-                        Text(text = "Abbigliamento")
-                    else
-                        Text(text = "Attrezzatura")
+                Button(onClick = {
+                    imagePickerLauncher.launch("image/*")
+                }) {
+                    Text("Carica Immagine")
+                }
+
+                imageBitmap?.let { bitmap ->
+                    Image(
+                        bitmap = bitmap,
+                        contentDescription = "Anteprima Immagine",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .padding(16.dp),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
             item {
                 Button(
                     onClick = {
-                    adminProductViewModel.addProduct(
-                        SendProductDTO(
-                            id = productId,
-                            name = productName,
-                            description = description,
-                            brand = brand,
-                            price = price.toDouble(),
-                            discount = discount.toDouble(),
-                            primaryColor = primaryColor,
-                            secondaryColor = secondaryColor,
-                            is_clothing = isClothing,
-                            sport = sport,
-                            availabilities = availability
-                        )
-                    ) }
+                        adminProductViewModel.addProduct(
+                            SendProductDTO(
+                                id = productId,
+                                name = productName,
+                                description = description,
+                                brand = brand,
+                                price = price.toDouble(),
+                                discount = discount.toDouble(),
+                                primaryColor = primaryColor,
+                                secondaryColor = secondaryColor,
+                                is_clothing = isClothing,
+                                sport = sport,
+                                availabilities = availability
+                            )
+                        ) }
                 ) {
                     Text(text = "Aggiungi prodotto")
                 }
