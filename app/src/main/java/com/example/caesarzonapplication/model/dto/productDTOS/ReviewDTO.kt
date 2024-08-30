@@ -9,5 +9,4 @@ data class ReviewDTO (
     val username : String,
     val productID : String,
     val date : String
-
 )

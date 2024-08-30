@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
+import java.util.UUID
 
 class ReviewViewModel: ViewModel() {
     private val client = OkHttpClient()
@@ -32,7 +33,6 @@ class ReviewViewModel: ViewModel() {
     private val _reviewsScore: MutableStateFlow<List<Int>> = MutableStateFlow(emptyList())
     val reviewsScore: StateFlow<List<Int>> = _reviewsScore
 
-    //Manca la media delle recensioni e lo score
     fun getAllProductReviews(productId: String){
         viewModelScope.launch {
             try{
@@ -109,7 +109,7 @@ class ReviewViewModel: ViewModel() {
         }
     }
 
-    fun deleteReview(product: String){
+    fun deleteReview(product: UUID){
         viewModelScope.launch {
             try{
                 doDeleteReview(product)
@@ -119,10 +119,14 @@ class ReviewViewModel: ViewModel() {
         }
     }
 
-    suspend fun doDeleteReview(product: String){
-        val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${product}")
+    suspend fun doDeleteReview(productId: UUID){
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/review?product-id=${productId}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        //_reviews.value.toMutableList().remove(review)
+        for(review in _reviews.value){
+            if(review.productID == productId){
+                _reviews.value.toMutableList().remove(review)
+            }
+        }
 
         withContext(Dispatchers.IO){
             try {
@@ -135,7 +139,6 @@ class ReviewViewModel: ViewModel() {
 
                 println("Risposta dal server: $responseBody")
 
-                println("Recensione aggiunta con successo")
             }catch (e: Exception){
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
@@ -167,15 +170,15 @@ class ReviewViewModel: ViewModel() {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
 
-                val averageProd = object : TypeToken<AverageDTO>() {}.type
-                _averageReview.value = gson.fromJson(responseBody, averageProd)
-                println("Recensione aggiunta con successo")
+                val averageProd: AverageDTO = gson.fromJson(responseBody, AverageDTO::class.java)
+
+                _averageReview.value = averageProd.average
+
             }catch (e: Exception){
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
             }
         }
-
     }
 
     fun getReviewsScore(productId: String){
@@ -203,7 +206,6 @@ class ReviewViewModel: ViewModel() {
 
                 val scoreReviewProd = object : TypeToken<List<Int>>() {}.type
                 _reviewsScore.value = gson.fromJson(responseBody, scoreReviewProd)
-                println("Recensione aggiunta con successo")
             }catch (e: Exception){
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")

@@ -48,21 +48,26 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     val gson = Gson()
 
-    init{
-        getAllAddressesAndCityData()
-    }
-
-    //caricamento in locale
-    fun getAllAddressesAndCityData(){
-        getUuidAddressesFromServer()
-        getAddressesFromServer(addressesUuid)//da capire se server
+    fun loadAddresses() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                getUuidAddressesFromServer()
+                addressesUuid.forEach {
+                    getAddressesFromServer(it)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     //chiamata al server per ricevere gli indirizzi
     fun getUuidAddressesFromServer(){
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/addresses")
         val request =  Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-
         CoroutineScope(Dispatchers.IO).launch {
             try{
                 val response = client.newCall(request).execute()
@@ -74,7 +79,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                //serve per deserializzare la stringa JSON in una lista di oggetti Address
+
                 val listType = object :  TypeToken<List<UUID>>() {}.type
                 addressesUuid = gson.fromJson(responseBody, listType)
                 println("Indirizzi recuperati con successo: ${addressesUuid.size}")
@@ -87,36 +92,36 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     }
 
-    fun getAddressesFromServer(addressesUuid: List<UUID>) {
+    fun getAddressesFromServer(addressUuid: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
+            val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
+            val request = Request.Builder()
+                .url(manageUrl)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
 
-            for (uuid in addressesUuid) {
-                val manageUrl = URL("http://25.49.50.144:8090/user-api/address/$uuid")
-                val request = Request.Builder()
-                    .url(manageUrl)
-                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                    .build()
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
 
-                try {
-                    val response = client.newCall(request).execute()
-                    val responseBody = response.body?.string()
-
-                    if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
-                        println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                        continue
-                    }
-
-                    println("Risposta dal server: $responseBody")
-                    val valType = object : TypeToken<Address>() {}.type
-                    val address = gson.fromJson<AddressDTO>(responseBody, valType)
-
-                    addresses.value.toMutableList().add(address)
-                    addressRepository.addAddress(address)
-                    println("Indirizzi recuperati con successo: ${addresses.value.size}")
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
+
+                println("Risposta dal server: $responseBody")
+                val valType = object : TypeToken<Address>() {}.type
+                val address = gson.fromJson<AddressDTO>(responseBody, valType)
+
+                address.id = addressUuid.toString()
+
+                withContext(Dispatchers.Main) {
+                    addressRepository.addAddress(address)
+                    _addresses.value += address
+                }
+                println("Indirizzi recuperati con successo: ${addresses.value.size}")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -130,7 +135,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     suspend fun doDeleteAddress(address: AddressDTO) {
 
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address/${address.id}")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=${address.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
         try{
@@ -144,6 +149,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
                 addressRepository.deleteAddressByCityId(address)
+                _addresses.value -= address
                 println("Indirizzo eliminato con successo")
             }
         }catch (e: Exception){
@@ -163,8 +169,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     suspend fun doAddAddress(address: AddressDTO){
-        println("so in doAddAddress")
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
+        val manageUrl = URL("http://25.1.9.69:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
         val json = gson.toJson(address)
@@ -182,7 +187,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 }
 
                 println("Risposta dal server: $responseBody")
-                addresses.value.toMutableList().add(address)
+                _addresses.value += address
                 addressRepository.addAddress(address)
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){

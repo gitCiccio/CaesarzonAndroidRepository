@@ -1,7 +1,7 @@
 package com.example.caesarzonapplication.model.dto.userDTOS
 
 data class CardDTO(
-    val id: String,
+    var id: String,
     val cardNumber: String,
     val owner: String,
     val cvv: String,

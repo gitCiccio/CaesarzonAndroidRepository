@@ -27,22 +27,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userData
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
+import com.example.caesarzonapplication.navigation.DetailsScreen
+import java.util.UUID
 
 @Composable
-fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewViewModel, productId: String) {
+fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewViewModel, productId: UUID) {
 
     var isReviewExpanded by remember { mutableStateOf(false) }
     val reviews by reviewViewModel.reviews.collectAsState()
     var showConfirmReportDialog by rememberSaveable { mutableStateOf(false) }
+    val averageScore by reviewViewModel.averageReview.collectAsState()
 
     LaunchedEffect(Unit) {
-        reviewViewModel.getAllProductReviews(productId)
+        reviewViewModel.getAllProductReviews(productId.toString())
+        reviewViewModel.getAverageReview(productId.toString())
+        reviewViewModel.getReviewsScore(productId.toString())
     }
 
     if (showConfirmReportDialog) {
@@ -72,6 +78,16 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Valutazione media: $averageScore",
+            style = TextStyle(
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                fontStyle = MaterialTheme.typography.bodyMedium.fontStyle,),
+            modifier = Modifier.padding(16.dp),
+            color = Color.Gray,
+            maxLines = 1,
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -127,7 +143,7 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                             )
                             Button(onClick = {
                                 reviewViewModel.deleteReview(productId)
-                                //navController.navigate("product_details/${productId}")
+                                navController.navigate(DetailsScreen.ProductDetailsScreen.route+"/${productId}")
                             }) {
                                 Text(text = "Elimina recensione")
                             }
@@ -176,7 +192,7 @@ fun ProductReviews(navController : NavHostController, reviewViewModel: ReviewVie
                         if(isAdmin.value){
                             Button(onClick = {
                                 reviewViewModel.deleteReview(productId)
-                                //navController.navigate("product_details/${review.productID}")
+                                navController.navigate(DetailsScreen.ProductDetailsScreen.route+"/${productId}")
                             })
                             {
                                 Text(text = "Elimina recensione")
