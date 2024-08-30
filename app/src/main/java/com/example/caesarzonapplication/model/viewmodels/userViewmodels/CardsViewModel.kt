@@ -1,15 +1,11 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
-import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
-import com.example.caesarzonapplication.model.entities.userEntity.Card
 import com.example.caesarzonapplication.model.repository.userRepository.CardRepository
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
@@ -25,7 +21,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
-import java.util.ArrayList
 import java.util.UUID
 
 class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
@@ -75,6 +70,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 }
 
                 println("Risposta dal server: $responseBody")
+
                 val gson = Gson()
                 val listType = object : TypeToken<List<UUID>>() {}.type
                 cardsUuid = gson.fromJson(responseBody, listType)
