@@ -44,15 +44,18 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     private val _addresses: MutableStateFlow<List<AddressDTO>> = MutableStateFlow(emptyList())
     val addresses: StateFlow<List<AddressDTO>> = _addresses
 
-    private val _cityData = MutableLiveData<List<String>>()
-    val cityData: LiveData<List<String>> = _cityData
+    private val _addressState: MutableState<AddressDTO?> = mutableStateOf(null)
+    val addressState: State<AddressDTO?> = _addressState
+
+    private val _cityData: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val cityData: StateFlow<List<String>> = _cityData
 
     var addressesUuid: List<UUID> = emptyList()
 
     var selectedCityId: String = ""
 
-    private val _cityDataDTO = MutableLiveData<CityDataDTO?>(null)
-    val cityDataDTO: LiveData<CityDataDTO?> = _cityDataDTO
+    private val _cityDataDTO: MutableStateFlow<CityDataDTO?> = MutableStateFlow(null)
+    val cityDataDTO: StateFlow<CityDataDTO?> = _cityDataDTO
 
     val gson = Gson()
 
@@ -228,7 +231,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 val listType = object : TypeToken<List<String>>() {}.type
                 val cityList = gson.fromJson<List<String>>(responseBody, listType)
 
-                _cityData.postValue(cityList)
+                _cityData.value += cityList
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
@@ -261,7 +264,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 selectedCityId = cityData.id.toString()
 
-                _cityDataDTO.postValue(cityData)
+                _cityDataDTO.value = cityData
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
