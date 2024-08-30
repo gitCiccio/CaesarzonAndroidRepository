@@ -6,5 +6,5 @@ data class WishlistDTO (
     val id: String,
     val name: String,
     val visibility: String,
-    val username: String
+    val userUsername: String
 )

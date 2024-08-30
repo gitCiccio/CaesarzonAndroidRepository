@@ -12,6 +12,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +24,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountI
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userData
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.navigation.AccountTabRow
 import com.example.caesarzonapplication.ui.components.LoadBar
@@ -39,7 +41,9 @@ fun AccountScreen(
     accountInfoViewModel: AccountInfoViewModel,
     addressViewModel: AddressViewModel,
     supportViewModel: SupportRequestsViewModel,
-    cardViewModel: CardsViewModel) {
+    cardViewModel: CardsViewModel,
+    notificationViewModel: NotificationViewModel
+) {
 
 val accountTabs = listOf(
     AccountTabRow.Profile,
@@ -51,7 +55,9 @@ val accountTabs = listOf(
 )
 
 var selectedTab by remember { mutableIntStateOf(0) }
-
+    LaunchedEffect(Unit) {
+        notificationViewModel.getNotification()
+    }
 Column(
     modifier = Modifier.fillMaxSize()
 ) {

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.viewmodels.ProductsViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.ui.components.CategoryGrid
 import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 
@@ -16,6 +17,7 @@ import com.example.caesarzonapplication.ui.components.HorizontalProductSection
 fun HomeScreen(
     navController: NavHostController,
     productsViewModel: ProductsViewModel,
+    notificationViewModel: NotificationViewModel,
 ){
 
     LaunchedEffect(Unit) {

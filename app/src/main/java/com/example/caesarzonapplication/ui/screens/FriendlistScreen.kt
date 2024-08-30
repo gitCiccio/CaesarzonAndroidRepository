@@ -27,6 +27,7 @@ import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.UserSearchDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -40,13 +41,14 @@ enum class UsersTab {
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun FriendlistScreen(navHostController: NavHostController, followersViewModel: FollowersViewModel) {
+fun FriendlistScreen(navHostController: NavHostController, notificationViewModel: NotificationViewModel,followersViewModel: FollowersViewModel) {
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(UsersTab.Utenti) }
 
     LaunchedEffect(Unit){
         followersViewModel.loadAllFollowers()
+        notificationViewModel.getNotification()
     }
 
     Column {
