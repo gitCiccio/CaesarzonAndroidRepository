@@ -12,6 +12,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,13 +30,15 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     val isLoading: State<Boolean> get() = _isLoading
 
     private val client = OkHttpClient()
-    var cards: ArrayList<CardDTO> = ArrayList()
+    private val _cars: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
+    val cards: StateFlow<List<CardDTO>> = _cars
 
     lateinit var cardsUuid: List<UUID>
 
     //caricamento in locale
-    fun getAllAddressesAndCityData(){
-        cards = cardRepository.getAllCards() as ArrayList<CardDTO>
+    fun getAllCards(){
+        getUuidCardsFromServer()
+        getCardsFromServer(cardsUuid)
     }
 
     //chiamata al server per ricevere gli indirizzi
@@ -57,7 +61,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 //serve per deserializzare la stringa JSON in una lista di oggetti Address
                 val listType = object :  TypeToken<List<UUID>>() {}.type
                 cardsUuid = gson.fromJson(responseBody, listType)
-                println("Indirizzi recuperati con successo: ${cards.size}")
+                println("Indirizzi recuperati con successo: ${cards.value.size}")
 
             }catch (e: Exception){
                 e.printStackTrace()
@@ -91,9 +95,9 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                     val valType = object : TypeToken<CardDTO>() {}.type
                     val card = gson.fromJson<CardDTO>(responseBody, valType)
 
-                    cards.add(card)
+                    cards.value.toMutableList().add(card)
                     cardRepository.addCard(card)
-                    println("Indirizzi recuperati con successo: ${cards.size}")
+                    println("Indirizzi recuperati con successo: ${cards.value.size}")
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -170,7 +174,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
                 println("Risposta dal server: $responseBody")
                 //val gson = Gson()
-                cards.add(card)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
+                cards.value.toMutableList().add(card)//poi quando ricarico i dati lo dovrebbe aggiungere con i dati completi
                 cardRepository.addCard(card)//Aggiunge l'indirizzo al db in locale
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){

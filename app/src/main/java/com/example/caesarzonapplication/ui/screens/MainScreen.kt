@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
@@ -35,7 +36,8 @@ fun MainScreen(
     notificationViewModel: NotificationViewModel,
     supportRequestsViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel,
-    wishlistViewModel: WishlistViewModel
+    wishlistViewModel: WishlistViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
     Scaffold(
         topBar = {
@@ -64,7 +66,8 @@ fun MainScreen(
                     supportRequestViewModel = supportRequestsViewModel,
                     reviewViewModel = reviewViewModel,
                     wishlistViewModel = wishlistViewModel,
-                    notificationViewModel = notificationViewModel
+                    notificationViewModel = notificationViewModel,
+                    shoppingCartViewModel = shoppingCartViewModel
                 )
             }
         }

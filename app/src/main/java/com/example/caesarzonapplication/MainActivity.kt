@@ -39,6 +39,7 @@ import com.example.caesarzonapplication.model.repository.userRepository.ProfileI
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.repository.wishlistRepository.WishlistRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModelFactory
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
@@ -89,11 +90,12 @@ class MainActivity : ComponentActivity() {
             WishlistViewModelFactory(WishlistRepository(AppDatabase.getDatabase(this).wishlistDao()))
         }
 
+        val shoppingCartViewModel: ShoppingCartViewModel by viewModels()
         setContent{
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
                 KeycloakService().getBasicToken()
-                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel)
+                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel)
             }
         }
     }
@@ -136,7 +138,8 @@ fun Loading(
     supportRequestsViewModel: SupportRequestsViewModel,
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
     var isLoading by remember { mutableStateOf(true) }
     LoadingScreen()
@@ -159,7 +162,8 @@ fun Loading(
             notificationViewModel = notificationViewModel,
             supportRequestsViewModel = supportRequestsViewModel,
             reviewViewModel = reviewViewModel,
-            wishlistViewModel = wishlistViewModel
+            wishlistViewModel = wishlistViewModel,
+            shoppingCartViewModel = shoppingCartViewModel
         )
     }
 }
