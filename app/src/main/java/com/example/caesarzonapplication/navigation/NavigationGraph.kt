@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
-import com.example.caesarzonapplication.model.viewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.*
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
@@ -18,6 +18,7 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.ui.screens.AccountScreen
@@ -37,7 +38,6 @@ import com.example.caesarzonapplication.ui.screens.adminScreens.ReportsScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.UserSearchScreen
-import java.util.UUID
 
 @Composable
 fun NavigationGraph(
@@ -51,7 +51,8 @@ fun NavigationGraph(
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
     notificationViewModel: NotificationViewModel,
-    shoppingCartViewModel: ShoppingCartViewModel
+    shoppingCartViewModel: ShoppingCartViewModel,
+    ordersViewModel: OrdersViewModel
 ) {
     NavHost(navController, startDestination = BottomBarScreen.Home.route) {
 
@@ -61,7 +62,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Profile.route) {
             if(logged.value)
-                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel, cardViewModel, notificationViewModel)
+                AccountScreen(navController, accountInfoViewModel, addressViewModel, supportRequestViewModel, cardViewModel, notificationViewModel, ordersViewModel)
             else AuthScreen(navController,accountInfoViewModel,followerViewModel)
         }
 
@@ -86,7 +87,7 @@ fun NavigationGraph(
         if(isAdmin.value) {
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
             val reportViewModel = AdminReportViewModel()
-            //val supportRequestViewModel = AdminSupportRequestViewModel()
+            val supportRequestViewModel = AdminSupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
@@ -99,7 +100,7 @@ fun NavigationGraph(
                 ReportsScreen(reportViewModel)
             }
             /*composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                SupportRequestScreen(supportRequestViewModel)
+                AdminSupportRequestViewModel(supportRequestViewModel)
             }*/
             composable(route = AdminBottomBarScreen.SearchUser.route) {
                 UserSearchScreen(searchAndBanUsersViewModel)
