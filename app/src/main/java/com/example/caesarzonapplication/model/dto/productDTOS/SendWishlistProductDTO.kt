@@ -1,7 +1,7 @@
 package com.example.caesarzonapplication.model.dto.productDTOS
 
 data class SendWishlistProductDTO(
-    val productId: String,
-    val wishListId: String
+    val productID: String,
+    val wishlistID: String
 ) {
 }

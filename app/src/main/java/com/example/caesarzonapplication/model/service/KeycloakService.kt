@@ -76,7 +76,7 @@ class KeycloakService {
                 connection.disconnect()
 
                 val gson = Gson()
-                globalUsername = mutableStateOf(username)
+                globalUsername = mutableStateOf(username.lowercase())
                 myToken = gson.fromJson(response.toString(), TokenResponse::class.java)
                 myToken?.accessToken?.let {
                     decodeTokenMio(it)
