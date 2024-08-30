@@ -80,7 +80,7 @@ fun ProductDetailsScreen(
             ) {
                 selectedProduct.value.let {
                     if (it != null) {
-                        Text(text = it.product.sport  ,
+                        Text(text = it.product.sport,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.align(Alignment.Start)
                         )
@@ -229,7 +229,7 @@ fun ProductDetailsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            ProductReviews(navController, reviewViewModel, productID.toString())
+            ProductReviews(navController, reviewViewModel, productID)
         }
     }
 }
