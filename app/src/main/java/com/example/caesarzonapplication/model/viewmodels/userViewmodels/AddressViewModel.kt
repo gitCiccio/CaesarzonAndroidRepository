@@ -56,6 +56,9 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     val gson = Gson()
 
+    fun resetAddresses() {
+        _addresses.value = emptyList()
+    }
     fun loadAddresses() {
         viewModelScope.launch {
             _isLoading.value = true

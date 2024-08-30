@@ -24,6 +24,10 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+
+        addressViewModel.resetAddresses()
+        cardsViewModel.resetCards()
+
         addressViewModel.loadAddresses()
         cardsViewModel.loadCards()
     }
@@ -149,7 +153,7 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
 
                 Button(
                     onClick = {
-                        if (selectedAddress != null || selectedCard != null || payPal) {
+                        if (selectedAddress != null && (selectedCard != null || payPal)) {
                             selectedAddress?.id?.let { selectedCard?.let { it1 -> shoppingCartViewModel.purchase(it, it1.id, payPal, context) } }
                         } else {
                             // Mostra un messaggio di errore o avviso
