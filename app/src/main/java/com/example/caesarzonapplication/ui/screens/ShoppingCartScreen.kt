@@ -50,6 +50,7 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
 
     LaunchedEffect(Unit) {
         shoppingCartViewModel.getCart()
+        shoppingCartViewModel.resetAvailability()
     }
 
     if (showErrorDialog) {

@@ -35,12 +35,20 @@ fun AdminNavigationBottomBar(navController: NavHostController){
                     )
                 },
                 onClick = {
-                    if (currentDestination?.route != screen.route){
-                        navController.navigate(screen.route) {
+                    println("Current: " + screen.route )
+                    println("Miasdasd: " + AdminBottomBarScreen.AddProduct.route)
+                    if(screen.route == AdminBottomBarScreen.AddProduct.route) {
+                        navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${false}"){
                             launchSingleTop = true
                             restoreState = true
                         }
+                    }else if(currentDestination?.route != screen.route){
+                            navController.navigate(screen.route) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                     }
+
                 },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color(238, 137, 60, 129),

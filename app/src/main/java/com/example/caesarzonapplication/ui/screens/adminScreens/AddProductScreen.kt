@@ -43,14 +43,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.caesarzonapplication.model.dto.productDTOS.AvailabilitiesSingle
 import com.example.caesarzonapplication.model.dto.productDTOS.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
 import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
+fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewModel: ProductsViewModel, onChanges: Boolean) {
 
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
@@ -70,7 +72,6 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
             }
         }
     )
-
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var brand by rememberSaveable { mutableStateOf("") }
@@ -83,6 +84,35 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
     var selectedSport by rememberSaveable { mutableStateOf("") }
     var selectedSize by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
+
+    if(onChanges){
+       productName = productViewModel.selectedProduct.value?.product?.name.toString()
+       description = productViewModel.selectedProduct.value?.product?.description.toString()
+        brand = productViewModel.selectedProduct.value?.product?.brand.toString()
+        price = productViewModel.selectedProduct.value?.product?.price.toString()
+        discount = productViewModel.selectedProduct.value?.product?.discount.toString()
+        primaryColor = productViewModel.selectedProduct.value?.product?.primaryColor.toString()
+        secondaryColor = productViewModel.selectedProduct.value?.product?.secondaryColor.toString()
+        isClothing = productViewModel.selectedProduct.value?.product?.is_clothing ?: false
+
+
+        productViewModel.selectedProduct.value?.image?.let { bitmap ->
+            imageBitmap = bitmap.asImageBitmap()
+        }
+
+        availability = productViewModel.selectedProduct.value?.product?.availabilities?.map {
+            SendAvailabilityDTO(
+                amount = it.amount,
+                size = it.size
+            )
+        } ?: listOf()
+
+
+        selectedSport = productViewModel.selectedProduct.value?.product?.sport.toString()
+
+
+    }
+
 
     var sportExpanded by remember { mutableStateOf(false) }
     var sizeExpanded by remember { mutableStateOf(false) }
@@ -297,10 +327,12 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Taglia: ${availabilityItem.size}",
-                        modifier = Modifier.weight(1f)
-                    )
+                    if(isClothing){
+                        Text(
+                            text = "Taglia: ${availabilityItem.size}",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                     Text(
                         text = "Quantità: ${availabilityItem.amount}",
                         modifier = Modifier.weight(1f)
@@ -310,8 +342,15 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                             removeAt(availabilityIndex)
                         }
                     }) {
-                        Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
+                        if(!onChanges) {
+                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove")
+                        }
                     }
+                }
+            }
+            item{
+                if(onChanges){
+                    Text("Disponibilità presenti")
                 }
             }
             item {

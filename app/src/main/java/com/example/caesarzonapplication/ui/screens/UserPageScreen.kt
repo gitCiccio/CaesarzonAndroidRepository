@@ -28,10 +28,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
 import com.example.caesarzonapplication.ui.components.WishListComponent
 
 @Composable
-fun UserPageScreen() {
+fun UserPageScreen(username: String, wishlistViewModel: WishlistViewModel) {
 
     var public by rememberSaveable { mutableStateOf(true) }
     var shared by rememberSaveable { mutableStateOf(false) }
@@ -50,13 +51,10 @@ fun UserPageScreen() {
             contentScale = ContentScale.Crop
         )
         Text(
-            text = "Username",
+            text = username ,
             style = MaterialTheme.typography.headlineMedium
         )
-        Text(
-            text = "nome_utente    cognome_utente",
-            style = MaterialTheme.typography.bodyLarge
-        )
+
         Row(
             horizontalArrangement = Arrangement.spacedBy(30.dp)
         ) {
@@ -69,8 +67,8 @@ fun UserPageScreen() {
         }
         Spacer(modifier = Modifier.height(30.dp))
         if(public)
-            WishListComponent()
+            WishListComponent(wishlistViewModel, 0, username)
         if(shared)
-            WishListComponent()
+            WishListComponent(wishlistViewModel, 1, username)
     }
 }

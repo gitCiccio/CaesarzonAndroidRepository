@@ -373,6 +373,8 @@ class WishlistViewModel(private val wishlistRepository: WishlistRepository): Vie
     }
 
     suspend fun doUpdateUserWishlists(wishId: String, visibility: Int){
+        println("WISHIDSSSSSSSSSSS: "+ wishId)
+        println("VISSSSSSSS: " + visibility)
         val changeVisibility = ChangeVisibilityDTO(wishId, visibility)
         val manageURL = URL("http://25.49.50.144:8090/product-api/wishlist/visibility");
         val JSON = "application/json; charset=utf-8".toMediaType()

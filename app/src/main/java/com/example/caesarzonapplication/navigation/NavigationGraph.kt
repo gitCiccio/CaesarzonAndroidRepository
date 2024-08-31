@@ -30,6 +30,7 @@ import com.example.caesarzonapplication.ui.screens.AuthScreen
 import com.example.caesarzonapplication.ui.screens.CheckoutScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
+import com.example.caesarzonapplication.ui.screens.PaymentSuccessScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 //import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
@@ -83,10 +84,9 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
-                WishlistScreen(navController, notificationViewModel, wishlistViewModel)
+                WishlistScreen(notificationViewModel, wishlistViewModel)
             else AuthScreen(navController, accountInfoViewModel,followerViewModel)
         }
-
 
 
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
@@ -95,25 +95,38 @@ fun NavigationGraph(
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     AdminScreen(navController, productsViewModel)
             }
-            composable(route = AdminBottomBarScreen.AddProduct.route) {
-                if(isAdmin.value)
-                    AddProductScreen(adminProductViewModel)
+
+            composable(
+                route = AdminBottomBarScreen.AddProduct.route + "/{onChanges}",
+                arguments = listOf(navArgument("onChanges") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val onChanges = backStackEntry.arguments?.getBoolean("onChanges")
+                if (isAdmin.value) {
+                    if (onChanges != null)
+                        AddProductScreen(adminProductViewModel, productsViewModel, onChanges)
+
+                } else {
+                    Log.e("NavigationError", "onChanges is null")
+                }
             }
+
             composable(route = AdminBottomBarScreen.Reports.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     ReportsScreen(reportViewModel)
             }
             composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     SupportRequestScreen(supportRequestViewModel)
             }
+
             composable(route = AdminBottomBarScreen.SearchUser.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     UserSearchScreen(navController, searchAndBanUsersViewModel)
             }
+
 
         composable(
             route = DetailsScreen.ProductDetailsScreen.route+"/{productId}",
@@ -135,8 +148,12 @@ fun NavigationGraph(
                 ProductSearchResultsScreen(parameter, productsViewModel, navController)
         }
 
-        composable(route = DetailsScreen.UserPageDetailsScreen.route) {
-            UserPageScreen()
+        composable(route = DetailsScreen.UserPageDetailsScreen.route+"/{username}",
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            if (username.isNotEmpty())
+                UserPageScreen(username, wishlistViewModel)
         }
 
         composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {
@@ -147,5 +164,13 @@ fun NavigationGraph(
             CheckoutScreen(navController, shoppingCartViewModel, addressViewModel, cardViewModel)
         }
 
+
+        composable(route = DetailsScreen.PaymentSuccessScreen.route+"/{redirectUrl}",
+            arguments = listOf(navArgument("redirectUrl") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val redirectUrl = backStackEntry.arguments?.getString("redirectUrl") ?: ""
+            if (redirectUrl.isNotEmpty())
+                PaymentSuccessScreen(redirectUrl, shoppingCartViewModel, notificationViewModel)
+        }
     }
 }

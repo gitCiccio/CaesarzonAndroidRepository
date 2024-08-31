@@ -34,6 +34,8 @@ class AdminProductViewModel {
     private val _productId: MutableStateFlow<String> = MutableStateFlow("")
     val productId: StateFlow<String> = _productId
 
+
+
     fun addProduct(productDTO: SendProductDTO, image: ImageBitmap){
         val manageURL = URL("http://25.49.50.144:8090/product-api/product?new=true")
         val JSON = "application/json; charset=utf-8".toMediaType()

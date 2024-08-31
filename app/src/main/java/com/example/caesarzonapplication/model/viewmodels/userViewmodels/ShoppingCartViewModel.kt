@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ChangeCartDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.PayPalDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductCartDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductCartWithImage
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductCartDTO
@@ -325,10 +326,8 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
     fun checkAvailability(){
-        println("checkAvailability: Lanciato il coroutine per verificare la disponibilità") // Debug print
         viewModelScope.launch {
             try {
-                println("checkAvailability: Sto per chiamare doCheckAvailability") // Debug print
                 doCheckAvailability()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -338,16 +337,13 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
     suspend fun doCheckAvailability() {
-        println("doCheckAvailability: Inizio della funzione") // Debug print
         val manageUrl = URL("http://25.49.50.144:8090/product-api/pre-order")
 
         for (product in _productsInShoppingCart.value) {
-            println("doCheckAvailability: Aggiungo prodotto con ID ${product.product.id} a productCartId") // Debug print
             productCartId.add(product.product.id)
         }
 
         val json = gson.toJson(productCartId)
-        println("doCheckAvailability: JSON creato: $json") // Debug print
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder()
@@ -358,18 +354,14 @@ class ShoppingCartViewModel(): ViewModel() {
 
         withContext(Dispatchers.IO) {
             try {
-                println("doCheckAvailability: Esecuzione della richiesta HTTP") // Debug print
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                println("doCheckAvailability: Risposta ricevuta dal server, codice di stato: ${response.code}") // Debug print
 
                 if (response.isSuccessful && responseBody != null) {
-                    println("doCheckAvailability: La chiamata è andata a buon fine, elaboro la risposta") // Debug print
                     val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
                     val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
 
                     if (gsonAvailability != null) {
-                        println("doCheckAvailability: Prodotti non disponibili rilevati") // Debug print
                         var errorMessage = ""
                         for (av in gsonAvailability) {
                             errorMessage += av.name + " "
@@ -419,11 +411,15 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
-        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal")
 
-        val buyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
-        val json = gson.toJson(buyDTO)
+    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
+        clearBuyDTO(context)
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal&platform=false")
+        val currentBuyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
+
+        saveBuyDTO(context, currentBuyDTO)
+
+        val json = gson.toJson(currentBuyDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
         println("PAYPALLEEE 1 $paypal")
@@ -469,6 +465,164 @@ class ShoppingCartViewModel(): ViewModel() {
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(context, Uri.parse(url))
     }
+
+    fun success(
+        queryParams: String,
+        context: Context
+    ){
+        viewModelScope.launch {
+            try {
+                doSuccess(queryParams, context)
+            }catch (e: Exception){
+                e.printStackTrace()
+                println("Errore durante la chiamata: ${e.message}")
+            }
+        }
+    }
+
+
+    suspend fun doSuccess(queryParams: String, context: Context) {
+
+
+        // Parsing dei parametri di query
+        val params = queryParams.split("&").associate {
+            val (key, value) = it.split("=")
+            key to value
+        }
+
+        // Estrazione dei parametri
+        val paymentId = params["paymentId"] ?: ""
+        val token = params["token"] ?: ""
+        val payerId = params["PayerID"] ?: ""
+
+        // Creazione dell'oggetto PayPalDTO
+        val savedBuyDTO = getBuyDTO(context) ?: throw IllegalStateException("BuyDTO non può essere null")
+
+        // Ora usa savedBuyDTO per procedere
+        val payPalDTO = PayPalDTO(paymentId, token, payerId, savedBuyDTO)
+
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/success")
+
+        val json = gson.toJson(payPalDTO)
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toRequestBody(JSON)
+
+        val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+
+                if (!response.isSuccessful || responseBody == null || responseBody.isEmpty()) {
+                    println("PAYPALLEEE 3.1 Errore nella chiamata PayPal: ${response.code}")
+                    return@withContext
+                }
+
+
+                println("Risposta dal server: $responseBody")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("PAYPALLEEE 7 Errore nell'esecuzione della chiamata: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    fun saveBuyDTO(context: Context, buyDTO: BuyDTO) {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(buyDTO)
+        editor.putString("buy_dto", json)
+        editor.apply()
+    }
+
+    fun getBuyDTO(context: Context): BuyDTO? {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("buy_dto", null)
+        return if (json != null) {
+            gson.fromJson(json, BuyDTO::class.java)
+        } else {
+            null
+        }
+    }
+
+    fun clearBuyDTO(context: Context) {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("buy_dto")
+        editor.apply()
+    }
+
+
+    fun resetAvailability(){
+        viewModelScope.launch {
+            try {
+                doResetAvailability()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("checkAvailability: Errore durante l'esecuzione di doCheckAvailability: ${e.message}") // Debug print
+            }
+        }
+    }
+
+    suspend fun doResetAvailability() {
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/rollback/pre-order")
+
+        for (product in _productsInShoppingCart.value) {
+            productCartId.add(product.product.id)
+        }
+
+        val json = gson.toJson(productCartId)
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toRequestBody(JSON)
+        val request = Request.Builder()
+            .url(manageUrl)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (response.isSuccessful && responseBody != null) {
+                    val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
+                    val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
+
+                    if (gsonAvailability != null) {
+                        println("doCheckAvailability: Tutti i prodotti sono disponibili") // Debug print
+
+                    } else {
+                        println("doCheckAvailability: Tutti i prodotti sono disponibili") // Debug print
+                    }
+                } else {
+                    println("doCheckAvailability: Chiamata fallita o disponibilità non disponibile. Codice di stato: ${response.code}") // Debug print
+                }
+
+                println("doCheckAvailability: Risposta dal server: $responseBody") // Debug print
+                for (product in _productsInShoppingCart.value) {
+                    _total.value += product.product.total-product.product.discountTotal
+                    println("doCheckAvailability: Aggiungo il totale scontato del prodotto: ${product.product.discountTotal}") // Debug print
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("doCheckAvailability: Errore durante la chiamata: ${e.message}") // Debug print
+            }
+        }
+    }
+
 
 
 

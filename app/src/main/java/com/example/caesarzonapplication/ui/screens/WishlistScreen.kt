@@ -34,7 +34,7 @@ enum class WishlistTab {
 }
 
 @Composable
-fun WishlistScreen(navController : NavHostController, notificationViewModel: NotificationViewModel, wishlistViewModel: WishlistViewModel) {
+fun WishlistScreen(notificationViewModel: NotificationViewModel, wishlistViewModel: WishlistViewModel) {
 
     var selectedTab by remember { mutableStateOf(WishlistTab.Pubbliche) }
 

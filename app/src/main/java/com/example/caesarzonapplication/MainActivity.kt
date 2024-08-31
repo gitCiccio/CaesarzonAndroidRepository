@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,15 +57,32 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersVi
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModelFactory
+import com.example.caesarzonapplication.navigation.DetailsScreen
+import com.example.caesarzonapplication.navigation.NavigationGraph
 import com.example.caesarzonapplication.ui.screens.MainScreen
 import com.example.caesarzonapplication.ui.theme.CaesarzonApplicationTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+    // Variabile per tracciare se viene dal pagamento PayPal
+    private var isFromPayPal = false
+    private var redirectUrl = ""
+    // Funzione per gestire l'intent
+    private fun handlePayPalRedirect(intent: Intent?) {
+        intent?.data?.let { uri ->
+            if (uri.scheme == "caesarzon" && uri.host == "payment") {
+                isFromPayPal = true
+                redirectUrl = uri.query.toString()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         val productsViewModel: ProductsViewModel by viewModels()
+
+        handlePayPalRedirect(intent)
+
+        val productsViewModel: ProductsViewModel by viewModels()
 
         val accountInfoViewModel by viewModels<AccountInfoViewModel>{
              AccountInfoViewModelFactory(UserRepository(AppDatabase.getDatabase(this).userDao()),
@@ -95,12 +113,27 @@ class MainActivity : ComponentActivity() {
         setContent{
             CaesarzonApplicationTheme{
                 val navController = rememberNavController()
+
                 KeycloakService().getBasicToken()
-                Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel, ordersViewModel)
+                if(isFromPayPal){
+                    Payment(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel, ordersViewModel, isFromPayPal, redirectUrl)
+                }else{
+                    Loading(navController, productsViewModel, accountInfoViewModel, followersViewModel, addressViewModel, cardViewModel, supportRequestsViewModel, reviewViewModel, wishlistViewModel, notificationViewModel, shoppingCartViewModel, ordersViewModel, isFromPayPal, redirectUrl)
+                }
             }
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handlePayPalRedirect(intent)
+    }
 }
+
+
+
+
+
 
 @Composable
 fun LoadingScreen() {
@@ -141,7 +174,9 @@ fun Loading(
     wishlistViewModel: WishlistViewModel,
     notificationViewModel: NotificationViewModel,
     shoppingCartViewModel: ShoppingCartViewModel,
-    ordersViewModel: OrdersViewModel
+    ordersViewModel: OrdersViewModel,
+    isFromPayPal: Boolean,
+    redirectUrl: String
 ) {
     var isLoading by remember { mutableStateOf(true) }
     LoadingScreen()
@@ -166,7 +201,46 @@ fun Loading(
             reviewViewModel = reviewViewModel,
             wishlistViewModel = wishlistViewModel,
             shoppingCartViewModel = shoppingCartViewModel,
-            ordersViewModel = ordersViewModel
+            ordersViewModel = ordersViewModel,
+            isFromPayPal = isFromPayPal,
+            redirectUrl = redirectUrl
         )
     }
+}
+
+@Composable
+fun Payment(
+    navController: NavHostController,
+    productsViewModel: ProductsViewModel,
+    accountInfoViewModel: AccountInfoViewModel,
+    followersViewModel: FollowersViewModel,
+    addressViewModel: AddressViewModel,
+    cardViewModel: CardsViewModel,
+    supportRequestsViewModel: SupportRequestsViewModel,
+    reviewViewModel: ReviewViewModel,
+    wishlistViewModel: WishlistViewModel,
+    notificationViewModel: NotificationViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel,
+    ordersViewModel: OrdersViewModel,
+    isFromPayPal: Boolean,
+    redirectUrl: String
+) {
+
+    MainScreen(
+        navController = navController,
+        accountInfoViewModel = accountInfoViewModel,
+        productsViewModel = productsViewModel,
+        followersViewModel = followersViewModel,
+        addressViewModel = addressViewModel,
+        cardsViewModel = cardViewModel,
+        notificationViewModel = notificationViewModel,
+        supportRequestsViewModel = supportRequestsViewModel,
+        reviewViewModel = reviewViewModel,
+        wishlistViewModel = wishlistViewModel,
+        shoppingCartViewModel = shoppingCartViewModel,
+        ordersViewModel = ordersViewModel,
+        isFromPayPal = isFromPayPal,
+        redirectUrl = redirectUrl
+    )
+
 }
