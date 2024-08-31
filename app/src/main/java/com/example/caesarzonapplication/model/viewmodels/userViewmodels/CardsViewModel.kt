@@ -34,7 +34,9 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     private val _cards: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
     val cards: StateFlow<List<CardDTO>> = _cards
 
-
+    fun resetCards() {
+        _cards.value = emptyList()
+    }
     fun loadCards() {
         viewModelScope.launch {
             _isLoading.value = true

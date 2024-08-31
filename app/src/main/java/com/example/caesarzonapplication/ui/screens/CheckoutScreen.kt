@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
@@ -16,7 +17,8 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 
 @Composable
-fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewModel: AddressViewModel, cardsViewModel: CardsViewModel) {
+fun CheckoutScreen(navController: NavHostController,
+                   shoppingCartViewModel: ShoppingCartViewModel, addressViewModel: AddressViewModel, cardsViewModel: CardsViewModel) {
 
     val addresses by addressViewModel.addresses.collectAsState()
     val cards by cardsViewModel.cards.collectAsState()
@@ -24,6 +26,10 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+
+        addressViewModel.resetAddresses()
+        cardsViewModel.resetCards()
+
         addressViewModel.loadAddresses()
         cardsViewModel.loadCards()
     }
@@ -64,7 +70,7 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = address.toString())
+                        Text(text = address.roadType+" "+address.roadName+" "+address.houseNumber+" "+address.city.city+" "+address.city.cap+" "+address.city.province)
                     }
                 }
             }
@@ -98,7 +104,7 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = card.toString())
+                        Text(text = card.owner+" "+card.cardNumber+" "+card.expiryDate)
                     }
                 }
             }
@@ -140,7 +146,9 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = { /* Torna al carrello */ },
+                    onClick = {
+                        navController.navigate("shopcart")
+                    },
                     colors = ButtonDefaults.buttonColors(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -149,10 +157,17 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
 
                 Button(
                     onClick = {
-                        if (selectedAddress != null || selectedCard != null || payPal) {
-                            selectedAddress?.id?.let { selectedCard?.let { it1 -> shoppingCartViewModel.purchase(it, it1.id, payPal, context) } }
+                        println("Acquisto: Indirizzo selezionato = $selectedAddress, Carta selezionata = $selectedCard, PayPal = $payPal")
+                        if (selectedAddress != null && (selectedCard != null || payPal)) {
+                            println("Avvio procedura di acquisto")
+                            shoppingCartViewModel.purchase(
+                                selectedAddress?.id ?: "",
+                                selectedCard?.id ?: "",
+                                payPal,
+                                context
+                            )
                         } else {
-                            // Mostra un messaggio di errore o avviso
+                            println("Errore: condizioni non soddisfatte per l'acquisto")
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -161,6 +176,7 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                 ) {
                     Text(text = "Procedi all'acquisto", color = Color.White)
                 }
+
             }
         }
     }
