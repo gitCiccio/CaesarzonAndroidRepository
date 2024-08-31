@@ -15,168 +15,233 @@ import com.example.caesarzonapplication.model.dto.userDTOS.CardDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
+import com.example.caesarzonapplication.ui.components.LoadBar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import okhttp3.internal.wait
+
+import android.util.Log
+import com.example.caesarzonapplication.navigation.DetailsScreen
+import kotlinx.coroutines.delay
 
 @Composable
-fun CheckoutScreen(navController: NavHostController,
-                   shoppingCartViewModel: ShoppingCartViewModel, addressViewModel: AddressViewModel, cardsViewModel: CardsViewModel) {
-
+fun CheckoutScreen(
+    navController: NavHostController,
+    shoppingCartViewModel: ShoppingCartViewModel,
+    addressViewModel: AddressViewModel,
+    cardsViewModel: CardsViewModel
+) {
     val addresses by addressViewModel.addresses.collectAsState()
     val cards by cardsViewModel.cards.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val shoppingCartProducts by shoppingCartViewModel.productsInShoppingCart.collectAsState()
+
+    val total by shoppingCartViewModel.total.collectAsState()
 
     val context = LocalContext.current
 
+    var isLoading by remember { mutableStateOf(true) }
+
     LaunchedEffect(Unit) {
-
-        addressViewModel.resetAddresses()
-        cardsViewModel.resetCards()
-
-        addressViewModel.loadAddresses()
-        cardsViewModel.loadCards()
+        try {
+            cardsViewModel.loadCards()
+            addressViewModel.loadAddresses()
+        } finally {
+            coroutineScope.launch {
+                delay(500)
+                isLoading = false
+            }
+        }
     }
 
     var selectedAddress by remember { mutableStateOf<AddressDTO?>(null) }
     var selectedCard by remember { mutableStateOf<CardDTO?>(null) }
     var payPal by remember { mutableStateOf(false) }
 
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            Text(text = "Seleziona un indirizzo", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
+    if (isLoading) {
+        Log.d("CheckoutScreen", "Displaying LoadBar")
+        LoadBar()
+    } else {
+        Log.d("CheckoutScreen", "Displaying checkout content")
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item {
+                Text(text = "Seleziona un indirizzo", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
 
-            if (cards.isEmpty()) {
-                Button(
-                    onClick = { /* Logica per aggiungere una carta */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors()
-                ) {
-                    Text(text = "Aggiungi Indirizzo")
+                if (addresses.isEmpty()) {
+                    navController.navigate(DetailsScreen.CheckOutScreen.route)
+                    Log.d("CheckoutScreen", "No addresses found")
+                    Button(
+                        onClick = { /* Logica per aggiungere un indirizzo */ },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors()
+                    ) {
+                        Text(text = "Aggiungi Indirizzo")
+                    }
+                } else {
+                    Log.d("CheckoutScreen", "Displaying addresses")
+                    addresses.forEach { address ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            RadioButton(
+                                selected = selectedAddress == address,
+                                onClick = {
+                                    selectedAddress = address
+                                    Log.d("CheckoutScreen", "Selected address: $selectedAddress")
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "${address.roadType} ${address.roadName} ${address.houseNumber} ${address.city.city} ${address.city.cap} ${address.city.province}")
+                        }
+                    }
                 }
-            } else {
-                addresses.forEach { address ->
+            }
+
+            item {
+                Text(text = "Seleziona un metodo di pagamento", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (cards.isEmpty()) {
+                    Log.d("CheckoutScreen", "No cards found")
+                    Button(
+                        onClick = { /* Logica per aggiungere una carta */ },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors()
+                    ) {
+                        Text(text = "Aggiungi Carta")
+                    }
+                } else {
+                    Log.d("CheckoutScreen", "Displaying cards")
+                    cards.forEach { card ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            RadioButton(
+                                selected = selectedCard == card && !payPal,
+                                onClick = {
+                                    selectedCard = card
+                                    payPal = false
+                                    Log.d("CheckoutScreen", "Selected card: $selectedCard, PayPal: $payPal")
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "${card.owner} ${card.cardNumber} ${card.expiryDate}")
+                        }
+                    }
+                }
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "Oppure paga con PayPal",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    RadioButton(
+                        selected = payPal,
+                        onClick = {
+                            payPal = true
+                            selectedCard = null
+                            Log.d("CheckoutScreen", "PayPal selected: $payPal")
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Riepilogo Ordine", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+            }
+
+            item {
+                shoppingCartProducts.forEach { prod ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     ) {
-                        RadioButton(
-                            selected = selectedAddress == address ,
-                            onClick = {
-                                selectedAddress = address
-                            }
-                        )
+
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = address.roadType+" "+address.roadName+" "+address.houseNumber+" "+address.city.city+" "+address.city.cap+" "+address.city.province)
+                        Column {
+                            Text(
+                                text = "${prod.product.name} x ${prod.product.quantity} | ${prod.product.size}"
+                            )
+                            Text(
+                                text = "Prezzo: ${prod.product.total} \n" +
+                                        "Sconto: ${prod.product.discountTotal} \n" +
+                                        "Prezzo finale: ${prod.product.total - prod.product.discountTotal}"
+                            )
+                            Text(
+                                text =  "---------------------------------"
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        item {
-            Text(text = "Seleziona un metodo di pagamento", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
+            item {
+                Text(text = "Totale ordine: €${total}", style = MaterialTheme.typography.bodyLarge)
 
-            if (cards.isEmpty()) {
-                Button(
-                    onClick = { /* Logica per aggiungere una carta */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors()
-                ) {
-                    Text(text = "Aggiungi Carta")
-                }
-            } else {
-                cards.forEach { card ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = selectedCard == card && !payPal,
-                            onClick = {
-                                selectedCard = card
-                                payPal = false
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = card.owner+" "+card.cardNumber+" "+card.expiryDate)
-                    }
-                }
-            }
-        }
-
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Text(
-                    text = "Oppure paga con PayPal",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                RadioButton(
-                    selected = payPal,
-                    onClick = {
-                        payPal = true
-                        selectedCard = null
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            Text(text = "Riepilogo Ordine", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            //Text(text = "Totale: €${"%.2f".format(shoppingCartViewModel.total.toString())}", style = MaterialTheme.typography.bodyLarge)
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = {
-                        navController.navigate("shopcart")
-                    },
-                    colors = ButtonDefaults.buttonColors(),
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Torna al carrello", color = Color.White)
-                }
+                    Button(
+                        onClick = {
+                            navController.navigate("shopcart")
+                            Log.d("CheckoutScreen", "Navigating to shop cart")
+                        },
+                        colors = ButtonDefaults.buttonColors(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "Torna al carrello", color = Color.White)
+                    }
 
-                Button(
-                    onClick = {
-                        println("Acquisto: Indirizzo selezionato = $selectedAddress, Carta selezionata = $selectedCard, PayPal = $payPal")
-                        if (selectedAddress != null && (selectedCard != null || payPal)) {
-                            println("Avvio procedura di acquisto")
-                            shoppingCartViewModel.purchase(
-                                selectedAddress?.id ?: "",
-                                selectedCard?.id ?: "",
-                                payPal,
-                                context
-                            )
-                        } else {
-                            println("Errore: condizioni non soddisfatte per l'acquisto")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(),
-                    enabled = selectedAddress != null && (selectedCard != null || payPal)
-                ) {
-                    Text(text = "Procedi all'acquisto", color = Color.White)
-                }
+                    Button(
+                        onClick = {
+                            Log.d("CheckoutScreen", "Purchase initiated")
+                            Log.d("CheckoutScreen", "Selected address: $selectedAddress, Selected card: $selectedCard, PayPal: $payPal")
+                            if (selectedAddress != null && (selectedCard != null || payPal)) {
+                                Log.d("CheckoutScreen", "Proceeding with purchase")
+                                shoppingCartViewModel.purchase(
+                                    selectedAddress?.id ?: "",
+                                    selectedCard?.id ?: "",
+                                    payPal,
+                                    context
+                                )
+                            } else {
+                                Log.d("CheckoutScreen", "Error: Conditions not met for purchase")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(),
+                        enabled = selectedAddress != null && (selectedCard != null || payPal)
+                    ) {
+                        Text(text = "Procedi all'acquisto", color = Color.White)
+                    }
 
+                }
             }
         }
     }

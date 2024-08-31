@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.ui.screens
 
+import android.util.MutableBoolean
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +16,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,23 +35,27 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Shopping
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.ui.components.EmptyShoppingCart
 import com.example.caesarzonapplication.ui.components.ShoppingCartCard
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: ShoppingCartViewModel) {
+
     val shoppingCartProducts by shoppingCartViewModel.productsInShoppingCart.collectAsState()
     val buyLaterProducts by shoppingCartViewModel.buyLaterProducts.collectAsState()
     val errorMessage by shoppingCartViewModel.errorMessages.collectAsState()
-    val canNavigate by shoppingCartViewModel.canNavigate.collectAsState()
+
+    val showErrorDialog by shoppingCartViewModel.showErrorDialog.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         shoppingCartViewModel.getCart()
     }
 
-    if (errorMessage.isNotEmpty()) {
+    if (showErrorDialog) {
         AlertDialog(
             onDismissRequest = {
                 shoppingCartViewModel.clearErrorMessages()
-                shoppingCartViewModel.changeOnNavigate()
             },
             title = { Text(text = "Sono cambiate delle disponibilità") },
             text = { Text(text = errorMessage) },
@@ -55,8 +63,6 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                 Button(
                     onClick = {
                         shoppingCartViewModel.clearErrorMessages()
-                        shoppingCartViewModel.changeOnNavigate()
-
                     }
                 ) {
                     Text("OK")
@@ -64,7 +70,6 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
             }
         )
     }
-
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -103,7 +108,7 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                             .padding(15.dp)
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray
+                            containerColor = Color(0xFF89CFF0)  // Cambia qui il colore del pulsante "Continua a comprare"
                         )
                     ) {
                         Text(
@@ -112,19 +117,25 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                             softWrap = false
                         )
                     }
+
                     Button(
                         onClick = {
                             shoppingCartViewModel.checkAvailability()
-                            if(canNavigate){
-                                navController.navigate(DetailsScreen.CheckOutScreen.route)
+                            coroutineScope.launch {
+                                delay(1000)
+                                if (!showErrorDialog) {
+                                    navController.navigate(DetailsScreen.CheckOutScreen.route)
+                                }
                             }
+
                         },
                         modifier = Modifier
                             .padding(15.dp)
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Green
-                        )
+                            containerColor = Color(0xFF622BE2)  // Cambia qui il colore del pulsante "Procedi"
+                        ),
+                        enabled = shoppingCartProducts.isNotEmpty()  // Disabilita il pulsante se il carrello è vuoto
                     ) {
                         Text(
                             text = "Procedi",

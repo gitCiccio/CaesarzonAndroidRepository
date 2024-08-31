@@ -54,7 +54,7 @@ class KeycloakService {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-                val postData = "username=${URLEncoder.encode("cesareking", "UTF-8")}" +
+                val postData = "username=${URLEncoder.encode("barbaluffa", "UTF-8")}" +
                         "&password=${URLEncoder.encode("CiaoCiao!2", "UTF-8")}" +
                         "&grant_type=password" +
                         "&client_id=caesar-app"
