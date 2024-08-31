@@ -62,7 +62,7 @@ fun SupportRequestScreen(adminSupportRequestViewModel: AdminSupportRequestViewMo
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 ),
-                text = "Non si sono richieste di assistenza"
+                text = "Non ci sono richieste di assistenza"
             )
         }
     }

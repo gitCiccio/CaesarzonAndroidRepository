@@ -10,20 +10,15 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.utils.BitmapConverter
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
-import java.time.LocalDate
 
 class SearchAndBanUsersViewModel: ViewModel() {
     val client = OkHttpClient()
@@ -34,26 +29,23 @@ class SearchAndBanUsersViewModel: ViewModel() {
     private val _searchResults: MutableStateFlow<List<UserFindDTO>> = MutableStateFlow(emptyList())
     val searchResults: StateFlow<List<UserFindDTO>> get() = _searchResults
 
-
-    private val _bans = mutableStateListOf<BanDTO>()
-    val bans: List<BanDTO> get() = _bans
+    private val _bans = MutableStateFlow<List<BanDTO>>(emptyList())
+    val bans: StateFlow<List<BanDTO>> get() = _bans
 
     private val str:Int = 0
 
-    fun searchUsers() {
+    fun searchUsers(searchText: String) {
         viewModelScope.launch {
-            doSearchUsers()
+            doSearchUsers(searchText)
         }
     }
 
-
-
-    suspend fun doSearchUsers(){
-        val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=${str}");
+    suspend fun doSearchUsers(searchText: String) {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=${str}")
         val request = Request.Builder().url(manageURL)
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
@@ -63,13 +55,28 @@ class SearchAndBanUsersViewModel: ViewModel() {
                     return@withContext
                 }
 
-                _searchResults.value = emptyList()
                 val usersFindDTO = Gson().fromJson(responseBody, Array<UserFindDTO>::class.java)
+                val existingUsers = _searchResults.value.associateBy { it.username }
+
+                val newUsers = mutableListOf<UserFindDTO>()
                 for (user in usersFindDTO) {
                     val image = loadUserImage(user.username)
-                    _searchResults.value += UserFindDTO(user.username, image)
+
+                    if (!existingUsers.containsKey(user.username)) {
+                        println("Utente non trovato: ${user.username}")
+                        newUsers.add(UserFindDTO(user.username, image))
+                    }
                 }
+
+                if (newUsers.isNotEmpty()) {
+                    _searchResults.value += newUsers
+                }
+
                 str.inc()
+
+                _searchResults.value = searchResults.value.filter { user ->
+                    user.username.contains(searchText, ignoreCase = true)
+                }
 
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -77,7 +84,6 @@ class SearchAndBanUsersViewModel: ViewModel() {
             }
         }
     }
-
 
     suspend fun loadUserImage(username: String): Bitmap? {
         return withContext(Dispatchers.IO) {

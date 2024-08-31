@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCard
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -94,16 +95,34 @@ fun UserSearchComponent(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             IconButton(onClick = { /*Naviga verso il profilo dell'utente*/ }) {
-                                Icon(imageVector = Icons.Default.Person, contentDescription = "Dati Profilo Utente")
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Dati Profilo Utente"
+                                )
                             }
                             IconButton(onClick = { /*Naviga verso l'elenco degli indirizzi dell'utente*/ }) {
-                                Icon(imageVector = Icons.Default.AddLocation, contentDescription = "Indirizzi Utente")
+                                Icon(
+                                    imageVector = Icons.Default.AddLocation,
+                                    contentDescription = "Indirizzi Utente"
+                                )
                             }
                             IconButton(onClick = { /*Naviga verso i metodi di pagamento dell'utente*/ }) {
-                                Icon(imageVector = Icons.Default.AddCard, contentDescription = "Metodi di Pagamento Utente")
+                                Icon(
+                                    imageVector = Icons.Default.AddCard,
+                                    contentDescription = "Metodi di Pagamento Utente"
+                                )
                             }
                             IconButton(onClick = { /*Naviga verso il carrello dell'utente*/ }) {
-                                Icon(imageVector = Icons.Default.AddShoppingCart, contentDescription = "Carrello Utente")
+                                Icon(
+                                    imageVector = Icons.Default.AddShoppingCart,
+                                    contentDescription = "Carrello Utente"
+                                )
+                            }
+                            IconButton(onClick = { /*Banna l'utente*/ }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Banna Utente"
+                                )
                             }
                         }
                     }
