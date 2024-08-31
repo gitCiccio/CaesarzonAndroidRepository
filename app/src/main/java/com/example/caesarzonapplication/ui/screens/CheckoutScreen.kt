@@ -38,12 +38,12 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
         modifier = Modifier.fillMaxSize()
     ) {
         item {
-            Text(text = "Seleziona un indirizzo per la spedizione", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Seleziona un indirizzo", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (addresses.isEmpty()) {
+            if (cards.isEmpty()) {
                 Button(
-                    onClick = { /*Aggiungi navigate per aggiungere indirizzo*/ },
+                    onClick = { /* Logica per aggiungere una carta */ },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors()
                 ) {
@@ -55,13 +55,12 @@ fun CheckoutScreen(shoppingCartViewModel: ShoppingCartViewModel, addressViewMode
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 4.dp)
                     ) {
                         RadioButton(
-                            selected = selectedAddress == address,
+                            selected = selectedAddress == address ,
                             onClick = {
                                 selectedAddress = address
-
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
