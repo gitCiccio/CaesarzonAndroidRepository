@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ChangeCartDTO
+import com.example.caesarzonapplication.model.dto.productDTOS.PayPalDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductCartDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductCartWithImage
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductCartDTO
@@ -419,11 +420,14 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
-        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal")
 
-        val buyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
-        val json = gson.toJson(buyDTO)
+    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal&platform=false")
+        val currentBuyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
+
+        saveBuyDTO(context, currentBuyDTO)
+
+        val json = gson.toJson(currentBuyDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
         println("PAYPALLEEE 1 $paypal")
@@ -469,6 +473,105 @@ class ShoppingCartViewModel(): ViewModel() {
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(context, Uri.parse(url))
     }
+
+    fun success(
+        queryParams: String,
+        context: Context
+    ){
+        viewModelScope.launch {
+            try {
+                doSuccess(queryParams, context)
+            }catch (e: Exception){
+                e.printStackTrace()
+                println("Errore durante la chiamata: ${e.message}")
+            }
+        }
+    }
+
+
+    suspend fun doSuccess(queryParams: String, context: Context) {
+
+
+        // Parsing dei parametri di query
+        val params = queryParams.split("&").associate {
+            val (key, value) = it.split("=")
+            key to value
+        }
+
+        // Estrazione dei parametri
+        val paymentId = params["paymentId"] ?: ""
+        val token = params["token"] ?: ""
+        val payerId = params["PayerID"] ?: ""
+
+        // Creazione dell'oggetto PayPalDTO
+        val savedBuyDTO = getBuyDTO(context) ?: throw IllegalStateException("BuyDTO non può essere null")
+
+        // Ora usa savedBuyDTO per procedere
+        val payPalDTO = PayPalDTO(paymentId, token, payerId, savedBuyDTO)
+
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/success")
+
+        val json = gson.toJson(payPalDTO)
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toRequestBody(JSON)
+
+        val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+
+                if (!response.isSuccessful || responseBody == null || responseBody.isEmpty()) {
+                    println("PAYPALLEEE 3.1 Errore nella chiamata PayPal: ${response.code}")
+                    return@withContext
+                }
+
+
+                println("Risposta dal server: $responseBody")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("PAYPALLEEE 7 Errore nell'esecuzione della chiamata: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    fun saveBuyDTO(context: Context, buyDTO: BuyDTO) {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(buyDTO)
+        editor.putString("buy_dto", json)
+        editor.apply()
+    }
+
+    fun getBuyDTO(context: Context): BuyDTO? {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("buy_dto", null)
+        return if (json != null) {
+            gson.fromJson(json, BuyDTO::class.java)
+        } else {
+            null
+        }
+    }
+
+    fun clearBuyDTO(context: Context) {
+        val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.remove("buy_dto")
+        editor.apply()
+    }
+
 
 
 

@@ -30,6 +30,7 @@ import com.example.caesarzonapplication.ui.screens.AuthScreen
 import com.example.caesarzonapplication.ui.screens.CheckoutScreen
 import com.example.caesarzonapplication.ui.screens.FriendlistScreen
 import com.example.caesarzonapplication.ui.screens.HomeScreen
+import com.example.caesarzonapplication.ui.screens.PaymentSuccessScreen
 import com.example.caesarzonapplication.ui.screens.ProductDetailsScreen
 //import com.example.caesarzonapplication.ui.screens.ShoppingCartScreen
 import com.example.caesarzonapplication.ui.screens.WishlistScreen
@@ -83,7 +84,7 @@ fun NavigationGraph(
 
         composable(route = BottomBarScreen.Wishlist.route) {
             if(logged.value)
-                WishlistScreen(navController, notificationViewModel, wishlistViewModel)
+                WishlistScreen(notificationViewModel, wishlistViewModel)
             else AuthScreen(navController, accountInfoViewModel,followerViewModel)
         }
 
@@ -152,7 +153,7 @@ fun NavigationGraph(
         ) { backStackEntry ->
             val username = backStackEntry.arguments?.getString("username") ?: ""
             if (username.isNotEmpty())
-                UserPageScreen(username)
+                UserPageScreen(username, wishlistViewModel)
         }
 
         composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {
@@ -163,5 +164,13 @@ fun NavigationGraph(
             CheckoutScreen(navController, shoppingCartViewModel, addressViewModel, cardViewModel)
         }
 
+
+        composable(route = DetailsScreen.PaymentSuccessScreen.route+"/{redirectUrl}",
+            arguments = listOf(navArgument("redirectUrl") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val redirectUrl = backStackEntry.arguments?.getString("redirectUrl") ?: ""
+            if (redirectUrl.isNotEmpty())
+                PaymentSuccessScreen(redirectUrl, shoppingCartViewModel, notificationViewModel)
+        }
     }
 }

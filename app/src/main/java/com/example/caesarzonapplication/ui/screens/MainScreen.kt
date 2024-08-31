@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
@@ -21,7 +22,9 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Notifica
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
+import com.example.caesarzonapplication.navigation.AdminBottomBarScreen
 import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.example.caesarzonapplication.navigation.NavigationBottomBar
 import com.example.caesarzonapplication.navigation.NavigationGraph
 import com.example.caesarzonapplication.ui.components.SearchBar
@@ -39,7 +42,9 @@ fun MainScreen(
     reviewViewModel: ReviewViewModel,
     wishlistViewModel: WishlistViewModel,
     shoppingCartViewModel: ShoppingCartViewModel,
-    ordersViewModel: OrdersViewModel
+    ordersViewModel: OrdersViewModel,
+    isFromPayPal: Boolean,
+    redirectUrl: String
 ) {
     Scaffold(
         topBar = {
@@ -72,6 +77,13 @@ fun MainScreen(
                     shoppingCartViewModel = shoppingCartViewModel,
                     ordersViewModel = ordersViewModel
                 )
+
+                LaunchedEffect(Unit) {
+                    if (isFromPayPal) {
+                        navController.navigate(DetailsScreen.PaymentSuccessScreen.route+"/${redirectUrl}")
+                    }
+                }
+
             }
         }
     )

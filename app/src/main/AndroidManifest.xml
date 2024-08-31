@@ -27,7 +27,7 @@
             </intent-filter>
 
 
-<!--            PER PAYPAL-->
+<!--        PER PAYPAL-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -36,7 +36,7 @@
 
                 <data
                     android:scheme="caesarzon"
-                    android:host="payment-success" />
+                    android:host="payment" />
             </intent-filter>
 
             <intent-filter>
@@ -47,7 +47,7 @@
 
                 <data
                     android:scheme="caesarzon"
-                    android:host="payment-cancel" />
+                    android:host="payment" />
             </intent-filter>
         </activity>
 

@@ -29,4 +29,9 @@ sealed class DetailsScreen(
         title = "CHECKOUT",
     )
 
+    data object PaymentSuccessScreen : DetailsScreen(
+        route = "paymentsuccesscreen",
+        title = "PAYMENTSUCCESSCREEN",
+    )
+
 }
