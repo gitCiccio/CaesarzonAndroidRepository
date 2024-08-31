@@ -30,7 +30,7 @@ fun BanSection(banViewModel: SearchAndBanUsersViewModel) {
                     Text(text = ban.userUsername)
                     Text(text = ban.reason)
                     Row {
-                        Button(onClick = { banViewModel.deleteBan(ban)}){
+                        Button(onClick = { /*banViewModel.deleteBan(ban)*/}){
                             Text(text = "Rimuovi ban")
                         }
                     }

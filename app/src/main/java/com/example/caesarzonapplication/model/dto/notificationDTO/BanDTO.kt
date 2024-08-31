@@ -5,6 +5,7 @@ data class BanDTO (
     val startDate: String,
     val endDate: String,
     val userUsername: String,
-    val adminUsername: String
+    val adminUsername: String,
+    val confirmed: Boolean
 
 )

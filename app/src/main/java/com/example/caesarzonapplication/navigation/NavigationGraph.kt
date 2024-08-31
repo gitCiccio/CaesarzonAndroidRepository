@@ -21,6 +21,9 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Notifica
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
+import com.example.caesarzonapplication.ui.components.OrderManagementSection
+import com.example.caesarzonapplication.ui.components.PaymentManagementSection
+import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -37,6 +40,7 @@ import com.example.caesarzonapplication.ui.screens.adminScreens.ReportsScreen
 //import com.example.caesarzonapplication.ui.screens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
+import com.example.caesarzonapplication.ui.screens.adminScreens.SupportRequestScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.UserSearchScreen
 
 @Composable
@@ -84,28 +88,32 @@ fun NavigationGraph(
         }
 
 
-        if(isAdmin.value) {
+
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
             val reportViewModel = AdminReportViewModel()
             val supportRequestViewModel = AdminSupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
-                AdminScreen(navController, productsViewModel)
+                if(isAdmin.value)
+                    AdminScreen(navController, productsViewModel)
             }
             composable(route = AdminBottomBarScreen.AddProduct.route) {
-                AddProductScreen(adminProductViewModel)
+                if(isAdmin.value)
+                    AddProductScreen(adminProductViewModel)
             }
             composable(route = AdminBottomBarScreen.Reports.route) {
-                ReportsScreen(reportViewModel)
+                if(isAdmin.value)
+                    ReportsScreen(reportViewModel)
             }
-            /*composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                AdminSupportRequestViewModel(supportRequestViewModel)
-            }*/
+            composable(route = AdminBottomBarScreen.SupportRequest.route) {
+                if(isAdmin.value)
+                    SupportRequestScreen(supportRequestViewModel)
+            }
             composable(route = AdminBottomBarScreen.SearchUser.route) {
-                UserSearchScreen(searchAndBanUsersViewModel)
+                if(isAdmin.value)
+                    UserSearchScreen(navController, searchAndBanUsersViewModel)
             }
-        }
 
         composable(
             route = DetailsScreen.ProductDetailsScreen.route+"/{productId}",
@@ -113,7 +121,6 @@ fun NavigationGraph(
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")
             if (productId != null) {
-                println("u prodotto: "+productId)
                     ProductDetailsScreen(productID = productId, navController, productsViewModel,reviewViewModel,wishlistViewModel,shoppingCartViewModel)
             } else {
                 Log.e("NavigationError", "productId is null")

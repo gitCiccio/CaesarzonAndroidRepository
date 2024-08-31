@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -20,6 +23,12 @@ import com.example.caesarzonapplication.ui.components.SupportUser
 
 @Composable
 fun SupportRequestScreen(adminSupportRequestViewModel: AdminSupportRequestViewModel) {
+
+    val supportRequests by adminSupportRequestViewModel.supportRequests.collectAsState()
+
+    LaunchedEffect(Unit) {
+        adminSupportRequestViewModel.searchSupportRequests()
+    }
 
     Column {
         Text(
@@ -35,12 +44,12 @@ fun SupportRequestScreen(adminSupportRequestViewModel: AdminSupportRequestViewMo
                 .padding(top = 30.dp),
             color = Color.Black,
         )
-        if(adminSupportRequestViewModel.supportRequests.isNotEmpty()){
+        if(supportRequests.isNotEmpty()){
             LazyColumn(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                items(adminSupportRequestViewModel.supportRequests.size) { support ->
-                    SupportUser(adminSupportRequestViewModel.supportRequests[support], adminSupportRequestViewModel)
+                items(supportRequests.size) { support ->
+                    SupportUser(supportRequests[support], adminSupportRequestViewModel)
                 }
             }
         }else{

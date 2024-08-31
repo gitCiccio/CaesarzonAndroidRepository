@@ -48,14 +48,14 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressV
 fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
 
     val addresses by addressViewModel.addresses.collectAsState()
-    var selectedAddress by rememberSaveable { mutableStateOf(addresses.getOrNull(0)) }
+    var selectedAddress by remember { mutableStateOf<AddressDTO?>(null) }
     var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
     var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
     var cityDropdownExpanded by rememberSaveable { mutableStateOf(false) }
     var roadTypeDropdownExpanded by rememberSaveable { mutableStateOf(false) }
 
-    val filteredCities by addressViewModel.cityData.observeAsState(emptyList())
-    val cityDataDTO by addressViewModel.cityDataDTO.observeAsState(null)
+    val filteredCities by addressViewModel.cityData.collectAsState(emptyList())
+    val cityDataDTO by addressViewModel.cityDataDTO.collectAsState(null)
 
     val cityFocusRequester = remember { FocusRequester() }
 
