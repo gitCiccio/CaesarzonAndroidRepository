@@ -68,11 +68,13 @@ fun ProductActions(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Taglia:",
-                    modifier = Modifier.padding(end = 10.dp),
-                    style = TextStyle(fontSize = 16.sp)
-                )
+                if(productDTO.is_clothing){
+                    Text(
+                        text = "Taglia:",
+                        modifier = Modifier.padding(end = 10.dp),
+                        style = TextStyle(fontSize = 16.sp)
+                    )
+                }
                 Box {
                     Button(
                         onClick = { expanded = !expanded },
@@ -146,7 +148,12 @@ fun ProductActions(
                 Button(
                     onClick = {
                         showPopup = true
-                        shoppingCartViewModel.addProductCart(productDTO.id, size = selectedSize, quantity.toInt())
+                        if(productDTO.is_clothing){
+                            shoppingCartViewModel.addProductCart(productDTO.id, size = selectedSize, quantity.toInt())
+                        }else{
+                            shoppingCartViewModel.addProductCart(productDTO.id, "", quantity.toInt())
+
+                        }
                     },
                     modifier = Modifier
                         .weight(1f)

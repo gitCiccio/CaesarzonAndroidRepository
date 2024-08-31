@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
@@ -49,6 +50,10 @@ class ShoppingCartViewModel(): ViewModel() {
     val total: StateFlow<Double> = _total
 
     private var productCartId = ArrayList<String>()
+
+
+    private val _canNavigate: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val canNavigate: StateFlow<Boolean> = _canNavigate
 
     //Agigungi messaggio di errore
     suspend fun loadProductImage(productId: String): Bitmap? {
@@ -137,7 +142,10 @@ class ShoppingCartViewModel(): ViewModel() {
 
     suspend fun doSaveForLaterOrChangeQuantityAndSize(productId: String, num: Int, size: String, quantity: Int) {
         val manageUrl = URL("http://25.49.50.144:8090/product-api/cart/product/${productId}?action=${num}")
-
+        println("NUM: "+ num)
+        println("QUANTITY: "+ quantity)
+        println("SIZE: "+ size)
+        println("PRODUCTID: "+ productId)
         val changeDTO = ChangeCartDTO(quantity, size)
         val json = gson.toJson(changeDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
@@ -155,23 +163,25 @@ class ShoppingCartViewModel(): ViewModel() {
 
                 println("Risposta dal server: $responseBody")
 
-                val productToMove = _productsInShoppingCart.value.find { it.product.id == productId }
-                    ?: _buyLaterProducts.value.find { it.product.id == productId }
+                // Solo se num è 0, sposta in "salva per dopo"
+                if (num == 0) {
+                    val productToMove = _productsInShoppingCart.value.find { it.product.id == productId }
+                        ?: _buyLaterProducts.value.find { it.product.id == productId }
 
-                if (productToMove != null) {
-                    if (_productsInShoppingCart.value.contains(productToMove)) {
-                        _productsInShoppingCart.update { it - productToMove }
-                        _buyLaterProducts.update {
-                            it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
-                        }
-                    } else if (_buyLaterProducts.value.contains(productToMove)) {
-                        _buyLaterProducts.update { it - productToMove }
-                        _productsInShoppingCart.update {
-                            it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
+                    if (productToMove != null) {
+                        if (_productsInShoppingCart.value.contains(productToMove)) {
+                            _productsInShoppingCart.update { it - productToMove }
+                            _buyLaterProducts.update {
+                                it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
+                            }
+                        } else if (_buyLaterProducts.value.contains(productToMove)) {
+                            _buyLaterProducts.update { it - productToMove }
+                            _productsInShoppingCart.update {
+                                it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
+                            }
                         }
                     }
                 }
-
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -252,6 +262,10 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
+    fun changeOnNavigate(){
+        _canNavigate.value = false
+    }
+
     fun deleteCart(){
         viewModelScope.launch {
             try{
@@ -313,23 +327,33 @@ class ShoppingCartViewModel(): ViewModel() {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                if(!response.isSuccessful || responseBody != null){
+                if(response.isSuccessful || responseBody != null){
                     println("Chiamata fallita o disponibilità non disponibile. Codice di stato: ${response.code}")
-                    var errorMessage = ""
                     val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
-                    val gsonAvailability : List<UnvailableDTO> = gson.fromJson(responseBody, availability)
-                    for(av in gsonAvailability){
-                        errorMessage+=av.name+" "
-                        for(a in av.availabilities){
-                            if(a.size != null){
-                                errorMessage+=a.size+" "
+                    val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
+                    if (gsonAvailability != null) {
+                        var errorMessage = ""
+                        for (av in gsonAvailability) {
+                            errorMessage += av.name + " "
+                            for (a in av.availabilities) {
+                                if (a.size != null) {
+                                    errorMessage += a.size + " "
+                                }
+                                errorMessage += a.amount.toString() + "\n"
                             }
-                            errorMessage+=a.amount.toString()+"\n"
                         }
+                        _errorMessages.value = errorMessage
+                        if (_errorMessages.value == "") {
+                            _canNavigate.value = true
+                        } else {
+                            _canNavigate.value = false
+                        }
+                    } else {
+                        _canNavigate.value = true
                     }
-                    _errorMessages.value = errorMessage
-                }
 
+                }
+                _canNavigate.value = true
 
                 println("ripsosta dal server: $responseBody")
                 for(product in _productsInShoppingCart.value){
@@ -364,53 +388,58 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-    suspend fun doPurchase( addressID: String,  cardID: String, paypal: Boolean, context: Context){
-        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=${paypal}")
+    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal")
 
         val buyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
         val json = gson.toJson(buyDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
+        println("PAYPALLEEE 1 $paypal")
 
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        println("PAYPALLEEE 2 $paypal")
 
-        withContext(Dispatchers.IO){
-            try{
+        withContext(Dispatchers.IO) {
+            try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                if(!response.isSuccessful || responseBody == "Errore..."){
-                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    _errorMessages.value += "Problemi nell'acquisto, controllare dati o saldo carta."
+                println("PAYPALLEEE 3 $paypal")
+
+                if (!response.isSuccessful || responseBody == null || responseBody.isEmpty()) {
+                    println("PAYPALLEEE 3.1 Errore nella chiamata PayPal: ${response.code}")
                     return@withContext
                 }
 
+                println("PAYPALLEEE 4 $paypal")
+
                 if (paypal) {
+                    println("PAYPALLEEE 5: Attempting to open PayPal link")
                     withContext(Dispatchers.Main) {
-                        if (responseBody != null) {
-                            openPaypalLink(responseBody, context)
-                        }
+                        openLinkInCustomTab(context, responseBody)
                     }
                 }
+                println("PAYPALLEEE 6 $paypal")
 
                 println("Risposta dal server: $responseBody")
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
+                println("PAYPALLEEE 7 Errore nell'esecuzione della chiamata: ${e.message}")
             }
         }
     }
 
-    fun openPaypalLink(link: String, context: Context) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(link)
-        }
-        // Verifica se c'è almeno un'app che può gestire l'intent prima di lanciarlo
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            println("Nessuna app disponibile per gestire l'intent")
-        }
+
+
+    fun openLinkInCustomTab(context: Context, url: String) {
+        val builder = CustomTabsIntent.Builder()
+        val customTabsIntent = builder.build()
+        customTabsIntent.launchUrl(context, Uri.parse(url))
     }
+
+
+
 
 }

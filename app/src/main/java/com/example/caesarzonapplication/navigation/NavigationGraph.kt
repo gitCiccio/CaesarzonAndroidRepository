@@ -137,7 +137,7 @@ fun NavigationGraph(
         }
 
         composable(route = DetailsScreen.CheckOutScreen.route) {
-            CheckoutScreen(shoppingCartViewModel, addressViewModel, cardViewModel)
+            CheckoutScreen(navController, shoppingCartViewModel, addressViewModel, cardViewModel)
         }
 
     }

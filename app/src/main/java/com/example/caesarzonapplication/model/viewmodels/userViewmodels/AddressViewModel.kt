@@ -183,7 +183,7 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     suspend fun doAddAddress(address: AddressDTO){
-        val manageUrl = URL("http://25.1.9.69:8090/user-api/address")
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address")
         val JSON = "application/json; charset=utf-8".toMediaType()
 
         val json = gson.toJson(address)
