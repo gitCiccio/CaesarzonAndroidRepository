@@ -1,5 +1,6 @@
 package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
+import android.graphics.Bitmap
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.google.gson.Gson
@@ -7,31 +8,34 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
-import android.content.Context
-import android.net.Uri
-import android.util.Log
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.core.net.toFile
+import com.example.caesarzonapplication.model.utils.BitmapConverter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-import java.io.InputStream
+import java.io.ByteArrayOutputStream
 
 class AdminProductViewModel {
 
     val client = OkHttpClient()
     val gson = Gson()
 
-    private val _productIds: MutableStateFlow<String> = MutableStateFlow("")
-    val productIds: StateFlow<String> = _productIds
+    val bitmapConverter = BitmapConverter()
 
-    fun addProduct(productDTO: SendProductDTO){
-        val manageURL = URL("http://25.49.50.144:8090/product-api/product")
+    private val _productId: MutableStateFlow<String> = MutableStateFlow("")
+    val productId: StateFlow<String> = _productId
+
+    fun addProduct(productDTO: SendProductDTO, image: ImageBitmap){
+        val manageURL = URL("http://25.49.50.144:8090/product-api/product?new=true")
         val JSON = "application/json; charset=utf-8".toMediaType()
         val json = gson.toJson(productDTO)
         val requestBody = json.toRequestBody(JSON)
@@ -40,7 +44,6 @@ class AdminProductViewModel {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
@@ -49,8 +52,11 @@ class AdminProductViewModel {
                 }
 
                 println("Risposta dal server: ${responseBody.toString()}")
-                println("Prodotto aggiunto con successo")
-                _productIds.value += productDTO.id
+                println("Codice di stato: ${response.code}")
+                println("Messaggio di risposta: ${response.message}")
+
+
+                postProductImage(responseBody.toString(), image)
             }
             catch (e: Exception){
                 e.printStackTrace()
@@ -58,13 +64,50 @@ class AdminProductViewModel {
         }
     }
 
-    fun getImage(){
-        /*TODO*/
+    private suspend fun postProductImage(productId: String, imageBitmap: ImageBitmap): String? {
+
+        val id = productId.trim('"')
+        return withContext(Dispatchers.IO) {
+            val manageURL = URL("http://25.49.50.144:8090/product-api/image/$id")
+            println("URL: $manageURL")
+            val bitmap = imageBitmap.asAndroidBitmap()
+
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val byteArray = bitmapConverter.converterBitmap2ByteArray(bitmap)
+
+
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", "image.jpg", byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull(), 0, byteArray.size))
+                .build()
+
+
+            val request = Request.Builder()
+                .url(manageURL)
+                .put(requestBody)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    println("Problemi nel caricamento dell'immagine: ${response.message} code: ${response.code}")
+                    return@withContext null
+                }
+
+                response.body?.string()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Errore nel caricamento dell'immagine")
+                return@withContext null
+            }
+        }
     }
 
 
     fun deleteProduct(productID: String){
-        println("id del prodtto: "+productID)
+        println("id del prodtto: $productID")
         val manageURL = URL("http://25.49.50.144:8090/product-api/product?productID=$productID")
 
         val request = Request
