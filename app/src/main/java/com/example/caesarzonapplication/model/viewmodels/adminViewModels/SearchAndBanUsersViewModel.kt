@@ -1,19 +1,21 @@
 package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.notificationDTO.BanDTO
+import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.SbanDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.UserFindDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.utils.BitmapConverter
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,63 +25,75 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
-import java.time.LocalDate
 
-class SearchAndBanUsersViewModel: ViewModel() {
-    val client = OkHttpClient()
-    val gson = Gson()
-    val bitampConverter = BitmapConverter()
-
+class SearchAndBanUsersViewModel : ViewModel() {
+    private val client = OkHttpClient()
+    private val gson = Gson()
+    private val bitmapConverter = BitmapConverter()
 
     private val _searchResults: MutableStateFlow<List<UserFindDTO>> = MutableStateFlow(emptyList())
     val searchResults: StateFlow<List<UserFindDTO>> get() = _searchResults
 
+    private val _bannedUsers: MutableStateFlow<List<BanDTO>> = MutableStateFlow(emptyList())
+    val bannedUsers: StateFlow<List<BanDTO>> get() = _bannedUsers
 
-    private val _bans = mutableStateListOf<BanDTO>()
-    val bans: List<BanDTO> get() = _bans
+    private var str: Int = 0
 
-    private val str:Int = 0
 
-    fun searchUsers() {
+    init {
+        loadBannedUsers()
+    }
+
+    fun searchUsers(searchText: String) {
         viewModelScope.launch {
-            doSearchUsers()
+            doSearchUsers(searchText)
         }
     }
 
-
-
-    suspend fun doSearchUsers(){
-        val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=${str}");
+    private suspend fun doSearchUsers(searchText: String) {
+        val manageURL = URL("http://25.49.50.144:8090/user-api/users?str=$str")
         val request = Request.Builder().url(manageURL)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
 
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
-                    println("Errore nel caricamento degli utenti")
+                    println("Error loading users: ${response.message}")
+                    response.close()
                     return@withContext
                 }
 
-                _searchResults.value = emptyList()
-                val usersFindDTO = Gson().fromJson(responseBody, Array<UserFindDTO>::class.java)
-                for (user in usersFindDTO) {
+                val usersFindDTO = gson.fromJson(responseBody, Array<UserFindDTO>::class.java)
+                response.close()
+                val existingUsers = _searchResults.value.associateBy { it.username }
+
+                val newUsers = usersFindDTO.filterNot { existingUsers.containsKey(it.username) }.map { user ->
                     val image = loadUserImage(user.username)
-                    _searchResults.value += UserFindDTO(user.username, image)
+                    UserFindDTO(user.username, image)
                 }
-                str.inc()
+
+                if (newUsers.isNotEmpty()) {
+                    _searchResults.update { it + newUsers }
+                }
+
+                str++
+
+                _searchResults.update { users ->
+                    users.filter { it.username.contains(searchText, ignoreCase = true) }
+                }
 
             } catch (e: IOException) {
                 e.printStackTrace()
-                println("Errore nel caricamento degli utenti")
+                println("Error loading users")
             }
         }
     }
 
-
-    suspend fun loadUserImage(username: String): Bitmap? {
+    private suspend fun loadUserImage(username: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             val manageUrl = URL("http://25.49.50.144:8090/user-api/image/$username")
             val request = Request.Builder()
@@ -89,121 +103,126 @@ class SearchAndBanUsersViewModel: ViewModel() {
 
             try {
                 val response = client.newCall(request).execute()
-                if (!response.isSuccessful || response.body == null) {
-                    println("Problemi nel caricamento della foto profilo" + response.message + " code: " + response.code)
-                    return@withContext null
+                response.use {
+                    if (!response.isSuccessful) {
+                        println("Error loading profile picture: ${response.message} code: ${response.code}")
+                        return@withContext null
+                    }
+                    val imageByteArray = response.body?.byteStream()?.readBytes()
+                    return@withContext imageByteArray?.let { bitmapConverter.converterByteArray2Bitmap(it) }
                 }
-                val imageByteArray = response.body?.byteStream()?.readBytes()
-
-                if (imageByteArray != null) {
-                    val profileImage = bitampConverter.converterByteArray2Bitmap(imageByteArray)
-                    println("immagine presae: " + response.message + " " + response.code)
-                    return@withContext profileImage
-                } else {
-                    println("Response body is null")
-                }
-
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Errore nel caricamento dell'immagine")
+                println("Error loading image")
+                return@withContext null
             }
-            return@withContext null
         }
     }
 
-    /*
-    fun banUser(ban: UserFindDTO){
-        CoroutineScope(Dispatchers.IO).launch {
+    fun banUser(ban: UserFindDTO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val manageURL = URL("http://25.49.50.144:8090/user-api/ban")
-            val banDTO = BanDTO(reason = "Decisione dell'admin", startDate = LocalDate.now().toString(), endDate = "", userUsername = ban.username, adminUsername = "cesare")
-            val gson = Gson()
+            val banDTO = BanDTO(
+                reason = "Decisione dell'admin",
+                startDate = "",
+                endDate = "",
+                userUsername = ban.username,
+                adminUsername = "",
+                confirmed = false
+            )
             val json = gson.toJson(banDTO)
             val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
             val requestBody = json.toRequestBody(mediaType)
-            val request = Request
-                .Builder()
+            val request = Request.Builder()
                 .url(manageURL)
                 .post(requestBody)
                 .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
                 .build()
-            try{
+
+            try {
                 val response = client.newCall(request).execute()
-                println("messaggio: "+response.message)
-                if(response.isSuccessful) {
-                    _searchResults.removeIf { it.username == ban.username}
-                    println("Utente bannato con successo")
+                response.use {
+                    if (response.isSuccessful) {
+                        _searchResults.update { it.filter { user -> user.username != ban.username } }
+                        println("User banned successfully")
+                    } else {
+                        println("Error banning user: ${response.message}")
+                    }
                 }
-                else{
-                    println("Errore nella bannatura dell'utente")
-                    return@launch
-                }
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
-                println("Errore nella bannatura dell'utente")
-            }
-        }
-    }
-    fun loadBannedUser(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/bans?str=0")
-            val request = Request
-                .Builder()
-                .url(manageURL)
-                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                .build()
-            try{
-                val response = client.newCall(request).execute()
-                println("response ban"+response.message)
-                if(!response.isSuccessful)
-                    return@launch
-                _bans.clear()
-                val responseBody = response.body?.string()
-                val jsonResponse = JSONArray(responseBody)
-                for(i in 0 until jsonResponse.length()){
-                    val username = jsonResponse.getJSONObject(i).getString("username")
-                    _bans.add(BanDTO("", "", "", username, ""))
-                }
-                for(ban in _bans)
-                    println(ban.userUsername)
-            }catch (e: IOException){
-                e.printStackTrace()
+                println("Error banning user")
             }
         }
     }
 
-    fun deleteBan(ban: BanDTO){
-        CoroutineScope(Dispatchers.IO).launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/ban/"+ban.userUsername)
-            val request = Request
-                .Builder()
+    fun loadBannedUsers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val manageURL = URL("http://25.49.50.144:8090/notify-api/bans?num=0")
+            val request = Request.Builder()
                 .url(manageURL)
-                .put("".toRequestBody())
                 .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
                 .build()
-            try{
+
+            try {
                 val response = client.newCall(request).execute()
-                println("messaggio: "+response.message)
-                if(!response.isSuccessful)
-                    return@launch
-                val manageURLProfilePic =
-                    URL("http://25.49.50.144:8090/user-api/image/${ban.userUsername}")
-                val responseImage = client.newCall(
-                    Request.Builder().url(manageURLProfilePic)
-                        .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-                        .build()
-                ).execute()
-                println("second response: "+responseImage.message)
-                if (!responseImage.isSuccessful)
-                    return@launch
-                val responseBodyImage = responseImage.body?.string()
-                val profilePictureBase64 = responseBodyImage ?: ""
-                _searchResults.add(UserFindDTO(ban.userUsername, profilePictureBase64))
-                _bans.remove(ban)
-                println("Ban eliminato con successo")
-            }catch (e:IOException){
+                response.use {
+                    if (!response.isSuccessful) {
+                        println("Error loading banned users: ${response.message}")
+                        return@launch
+                    }
+
+                    val responseBody = response.body?.string()
+                    val jsonResponse = JSONArray(responseBody)
+
+                    val bansList = object : TypeToken<List<BanDTO>>() {}.type
+                    _bannedUsers.value = gson.fromJson(jsonResponse.toString(), bansList)
+                    _searchResults.value = emptyList()
+
+                    for (ban in _bannedUsers.value) {
+                        println("Banned user: ${ban.userUsername}")
+                    }
+                }
+            } catch (e: IOException) {
                 e.printStackTrace()
+                println("Error loading banned users")
             }
         }
-    }*/
+    }
+
+    fun deleteBan(ban: BanDTO) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val sbanDTO = SbanDTO(username = ban.userUsername)
+            val manageURL = URL("http://25.49.50.144:8090/user-api/sban")
+            val json = gson.toJson(sbanDTO)
+            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val requestBody = json.toRequestBody(mediaType)
+
+            val request = Request.Builder()
+                .url(manageURL)
+                .put(requestBody)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        println("Error deleting ban: ${response.message}")
+                        return@launch
+                    }
+
+                    _bannedUsers.update { currentBans ->
+                        currentBans.filter { banUser -> banUser.userUsername != ban.userUsername }
+                    }
+
+                    println("risposta: ${response.message}"+response.code)
+                    println("Ban deleted successfully")
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                println("Error deleting ban")
+            }
+        }
+    }
 
 }

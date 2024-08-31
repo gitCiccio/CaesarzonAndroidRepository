@@ -279,6 +279,23 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
                 {
                     Text(text = "Logout")
                 }
+                Button(
+                    enabled = logged.value,
+                    onClick = {
+                        accountInfoViewModel.deleteAccount(username)
+                        logged.value = false
+                        myToken?.refreshToken = ""
+                        myToken?.accessToken = ""
+                    },
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    )
+                ){
+                    Text ( "Elimina account")
+                }
             }
         }
     }
