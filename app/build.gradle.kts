@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.identity.jvm)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.browser)
+    implementation(libs.places)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.adapters)
     implementation(libs.androidx.activity.compose.v172) // per inserire nuove immagini

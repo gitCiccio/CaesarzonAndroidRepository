@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import okhttp3.internal.wait
 
 import android.util.Log
+import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import kotlinx.coroutines.delay
 
@@ -78,7 +79,9 @@ fun CheckoutScreen(
                     navController.navigate(DetailsScreen.CheckOutScreen.route)
                     Log.d("CheckoutScreen", "No addresses found")
                     Button(
-                        onClick = { /* Logica per aggiungere un indirizzo */ },
+                        onClick = {
+                            navController.navigate(BottomBarScreen.Profile.route)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors()
                     ) {
