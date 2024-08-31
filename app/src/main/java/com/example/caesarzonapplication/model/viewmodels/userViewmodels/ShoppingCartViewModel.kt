@@ -326,10 +326,8 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
     fun checkAvailability(){
-        println("checkAvailability: Lanciato il coroutine per verificare la disponibilità") // Debug print
         viewModelScope.launch {
             try {
-                println("checkAvailability: Sto per chiamare doCheckAvailability") // Debug print
                 doCheckAvailability()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -339,16 +337,13 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
     suspend fun doCheckAvailability() {
-        println("doCheckAvailability: Inizio della funzione") // Debug print
         val manageUrl = URL("http://25.49.50.144:8090/product-api/pre-order")
 
         for (product in _productsInShoppingCart.value) {
-            println("doCheckAvailability: Aggiungo prodotto con ID ${product.product.id} a productCartId") // Debug print
             productCartId.add(product.product.id)
         }
 
         val json = gson.toJson(productCartId)
-        println("doCheckAvailability: JSON creato: $json") // Debug print
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder()
@@ -359,18 +354,14 @@ class ShoppingCartViewModel(): ViewModel() {
 
         withContext(Dispatchers.IO) {
             try {
-                println("doCheckAvailability: Esecuzione della richiesta HTTP") // Debug print
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
-                println("doCheckAvailability: Risposta ricevuta dal server, codice di stato: ${response.code}") // Debug print
 
                 if (response.isSuccessful && responseBody != null) {
-                    println("doCheckAvailability: La chiamata è andata a buon fine, elaboro la risposta") // Debug print
                     val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
                     val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
 
                     if (gsonAvailability != null) {
-                        println("doCheckAvailability: Prodotti non disponibili rilevati") // Debug print
                         var errorMessage = ""
                         for (av in gsonAvailability) {
                             errorMessage += av.name + " "
@@ -422,6 +413,7 @@ class ShoppingCartViewModel(): ViewModel() {
 
 
     suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
+        clearBuyDTO(context)
         val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal&platform=false")
         val currentBuyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
 
@@ -570,6 +562,65 @@ class ShoppingCartViewModel(): ViewModel() {
         val editor = sharedPreferences.edit()
         editor.remove("buy_dto")
         editor.apply()
+    }
+
+
+    fun resetAvailability(){
+        viewModelScope.launch {
+            try {
+                doResetAvailability()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("checkAvailability: Errore durante l'esecuzione di doCheckAvailability: ${e.message}") // Debug print
+            }
+        }
+    }
+
+    suspend fun doResetAvailability() {
+        val manageUrl = URL("http://25.49.50.144:8090/product-api/rollback/pre-order")
+
+        for (product in _productsInShoppingCart.value) {
+            productCartId.add(product.product.id)
+        }
+
+        val json = gson.toJson(productCartId)
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val requestBody = json.toRequestBody(JSON)
+        val request = Request.Builder()
+            .url(manageUrl)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (response.isSuccessful && responseBody != null) {
+                    val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
+                    val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
+
+                    if (gsonAvailability != null) {
+                        println("doCheckAvailability: Tutti i prodotti sono disponibili") // Debug print
+
+                    } else {
+                        println("doCheckAvailability: Tutti i prodotti sono disponibili") // Debug print
+                    }
+                } else {
+                    println("doCheckAvailability: Chiamata fallita o disponibilità non disponibile. Codice di stato: ${response.code}") // Debug print
+                }
+
+                println("doCheckAvailability: Risposta dal server: $responseBody") // Debug print
+                for (product in _productsInShoppingCart.value) {
+                    _total.value += product.product.total-product.product.discountTotal
+                    println("doCheckAvailability: Aggiungo il totale scontato del prodotto: ${product.product.discountTotal}") // Debug print
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("doCheckAvailability: Errore durante la chiamata: ${e.message}") // Debug print
+            }
+        }
     }
 
 
