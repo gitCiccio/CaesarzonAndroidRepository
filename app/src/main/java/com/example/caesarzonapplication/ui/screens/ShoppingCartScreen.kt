@@ -34,10 +34,10 @@ import com.example.caesarzonapplication.ui.components.ShoppingCartCard
 
 @Composable
 fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: ShoppingCartViewModel) {
-    var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     val shoppingCartProducts by shoppingCartViewModel.productsInShoppingCart.collectAsState()
     val buyLaterProducts by shoppingCartViewModel.buyLaterProducts.collectAsState()
-    val errorMessage by shoppingCartViewModel.errorMessages.collectAsState() // Usa collectAsState per ottenere lo stato aggiornato
+    val errorMessage by shoppingCartViewModel.errorMessages.collectAsState()
+    val canNavigate by shoppingCartViewModel.canNavigate.collectAsState()
 
     LaunchedEffect(Unit) {
         shoppingCartViewModel.getCart()
@@ -47,6 +47,7 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
         AlertDialog(
             onDismissRequest = {
                 shoppingCartViewModel.clearErrorMessages()
+                shoppingCartViewModel.changeOnNavigate()
             },
             title = { Text(text = "Sono cambiate delle disponibilità") },
             text = { Text(text = errorMessage) },
@@ -54,6 +55,8 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                 Button(
                     onClick = {
                         shoppingCartViewModel.clearErrorMessages()
+                        shoppingCartViewModel.changeOnNavigate()
+
                     }
                 ) {
                     Text("OK")
@@ -61,6 +64,7 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
             }
         )
     }
+
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -111,8 +115,9 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                     Button(
                         onClick = {
                             shoppingCartViewModel.checkAvailability()
-                            if(errorMessage.isEmpty())
+                            if(canNavigate){
                                 navController.navigate(DetailsScreen.CheckOutScreen.route)
+                            }
                         },
                         modifier = Modifier
                             .padding(15.dp)

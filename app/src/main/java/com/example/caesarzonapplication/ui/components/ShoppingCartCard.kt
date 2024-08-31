@@ -51,8 +51,9 @@ fun ShoppingCartCard(
     navController: NavHostController
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedSize by remember { mutableStateOf(product.product.size) }
-    var quantity by remember { mutableStateOf(product.product.quantity.toString()) }
+    var selectedSize by remember { mutableStateOf(product.product.size ?: "") }
+    var quantity by remember { mutableStateOf(product.product.quantity) }
+    var buyLater by remember { mutableStateOf(product.product.buyLater) }
 
     Card(
         modifier = Modifier
@@ -112,35 +113,37 @@ fun ShoppingCartCard(
                     )
                 }
 
-                Text(
-                    text = "Taglia:",
-                    style = TextStyle(fontSize = 16.sp)
-                )
+                if (product.product.size != null) {
+                    Text(
+                        text = "Taglia:",
+                        style = TextStyle(fontSize = 16.sp)
+                    )
 
-                Box {
-                    Button(
-                        onClick = { expanded = !expanded },
-                        modifier = Modifier.padding(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
-                    ) {
-                        Text(selectedSize, style = TextStyle(fontSize = 14.sp, color = Color.White))
-                    }
+                    Box {
+                        Button(
+                            onClick = { expanded = !expanded },
+                            modifier = Modifier.padding(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                        ) {
+                            Text(selectedSize, style = TextStyle(fontSize = 14.sp, color = Color.White))
+                        }
 
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        listOf("XS", "S", "M", "L", "XL").forEach { size ->
-                            DropdownMenuItem(
-                                text = { Text(text = size) },
-                                onClick = {
-                                    selectedSize = size
-                                    expanded = false
-                                    shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
-                                        product.product.id, 1, size, quantity.toInt()
-                                    )
-                                }
-                            )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            listOf("XS", "S", "M", "L", "XL").forEach { size ->
+                                DropdownMenuItem(
+                                    text = { Text(text = size) },
+                                    onClick = {
+                                        selectedSize = size
+                                        expanded = false
+                                        shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
+                                            product.product.id, 1, size, quantity
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -158,20 +161,47 @@ fun ShoppingCartCard(
                     style = TextStyle(fontSize = 16.sp)
                 )
 
-                TextField(
-                    value = quantity,
-                    onValueChange = {
-                        quantity = it
-                        shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
-                            product.product.id, 1, selectedSize, it.toIntOrNull() ?: 1
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            if (quantity > 1) {
+                                quantity -= 1
+                                shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
+                                    product.product.id, 1, selectedSize, quantity
+                                )
+                            }
+                        },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.minus), // Devi avere un'icona "minus"
+                            contentDescription = "Decrement quantity"
                         )
-                    },
-                    modifier = Modifier
-                        .width(80.dp)
-                        .padding(10.dp),
-                    textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                )
+                    }
+
+                    Text(
+                        text = quantity.toString(),
+                        style = TextStyle(fontSize = 16.sp),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    IconButton(
+                        onClick = {
+                            quantity += 1
+                            shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
+                                product.product.id, 1, selectedSize, quantity
+                            )
+                        },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.plus), // Devi avere un'icona "plus"
+                            contentDescription = "Increment quantity"
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -179,17 +209,17 @@ fun ShoppingCartCard(
             Button(
                 modifier = Modifier.align(Alignment.End),
                 onClick = {
+                    buyLater = product.product.buyLater
                     shoppingCartViewModel.saveForLaterOrChangeQuantityAndSize(
                         product.product.id,
-                        if (product.product.buyLater) 1 else 0,
+                        0,
                         selectedSize,
-                        quantity.toIntOrNull() ?: 1
+                        quantity
                     )
                 }
             ) {
-                Text(text = if (product.product.buyLater) "Sposta nel carrello" else "Salva per dopo")
+                Text(text = if (buyLater) "Sposta nel carrello" else "Salva per dopo")
             }
         }
     }
 }
-
