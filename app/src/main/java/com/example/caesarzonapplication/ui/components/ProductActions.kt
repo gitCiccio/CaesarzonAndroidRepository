@@ -24,6 +24,8 @@ import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.WishlistViewModel
+import com.example.caesarzonapplication.navigation.AdminBottomBarScreen
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.google.gson.Gson
 
 @Composable
@@ -190,9 +192,7 @@ fun ProductActions(
         // Azioni disponibili per admin
         Row {
             Button(onClick = {
-                val gson = Gson()
-                val productJson = gson.toJson(productDTO)
-                navController.navigate("addProduct/$productJson")
+                navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${true}")
             }) {
                 Text(text = "Modifica")
             }

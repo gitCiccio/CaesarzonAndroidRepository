@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -152,7 +151,7 @@ fun ShoppingCartCard(
                 }
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
                     modifier = Modifier
@@ -197,7 +196,7 @@ fun ShoppingCartCard(
                         },
                         textStyle = TextStyle(fontSize = 16.sp),
                         modifier = Modifier
-                            .width(50.dp)
+                            .width(85.dp)
                             .padding(horizontal = 8.dp),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions.Default.copy(

@@ -16,7 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
 @Composable
 fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAndBanUsersViewModel) {
@@ -33,15 +37,38 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Button(
+                modifier = Modifier.padding(horizontal = 30.dp),
+                onClick = {
+                    isAdmin.value = false
+                    logged.value = false
+                    myToken?.refreshToken=""
+                    myToken?.accessToken=""
+                    navController.navigate(BottomBarScreen.Home.route)},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                ),
+
+                )
+            {
+                Text(text = "Logout")
+            }
+
+            Text(
+                text = "Ricerca utenti",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
         // Header Text
-        Text(
-            text = "Ricerca utenti",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-            .align(Alignment.CenterHorizontally)
-        )
+
 
         // Row to contain TextField and Button
         Row(

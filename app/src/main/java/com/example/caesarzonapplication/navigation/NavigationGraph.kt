@@ -88,32 +88,44 @@ fun NavigationGraph(
         }
 
 
-
             val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
             val reportViewModel = AdminReportViewModel()
             val supportRequestViewModel = AdminSupportRequestViewModel()
             val adminProductViewModel = AdminProductViewModel()
 
             composable(route = AdminBottomBarScreen.Home.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     AdminScreen(navController, productsViewModel)
             }
-            composable(route = AdminBottomBarScreen.AddProduct.route) {
-                if(isAdmin.value)
-                    AddProductScreen(adminProductViewModel)
+
+            composable(
+                route = AdminBottomBarScreen.AddProduct.route + "/{onChanges}",
+                arguments = listOf(navArgument("onChanges") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val onChanges = backStackEntry.arguments?.getBoolean("onChanges")
+                if (isAdmin.value) {
+                    if (onChanges != null)
+                        AddProductScreen(adminProductViewModel, productsViewModel, onChanges)
+
+                } else {
+                    Log.e("NavigationError", "onChanges is null")
+                }
             }
+
             composable(route = AdminBottomBarScreen.Reports.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     ReportsScreen(reportViewModel)
             }
             composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     SupportRequestScreen(supportRequestViewModel)
             }
+
             composable(route = AdminBottomBarScreen.SearchUser.route) {
-                if(isAdmin.value)
+                if (isAdmin.value)
                     UserSearchScreen(navController, searchAndBanUsersViewModel)
             }
+
 
         composable(
             route = DetailsScreen.ProductDetailsScreen.route+"/{productId}",
