@@ -83,7 +83,7 @@ fun UserSearchComponent(
                             tint = Color.Gray
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(15.dp))
                     Text(
                         text = foundUser.username,
                         modifier = Modifier.weight(1f),
@@ -118,7 +118,10 @@ fun UserSearchComponent(
                                     contentDescription = "Carrello Utente"
                                 )
                             }
-                            IconButton(onClick = { /*Banna l'utente*/ }) {
+                            IconButton(onClick = {
+                                searchAndBanUsersViewModel.banUser(foundUser)
+                                selectedUser = null
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = "Banna Utente"

@@ -35,8 +35,9 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-            .align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Row(
@@ -66,6 +67,18 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = {
+                showBannedUsers = !showBannedUsers
+                if (showBannedUsers) {
+                    searchViewModel.loadBannedUsers()
+                }
+            })
+        {
+            Text(text = if (showBannedUsers) "Nascondi utenti bannati" else "Mostra utenti bannati")
+        }
         if (showBannedUsers) {
             LazyColumn {
                 item {
@@ -80,15 +93,7 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
                     UserSearchComponent(navController, searchViewModel)
                 }
             }
-        } else
-        Text(
-            text = "Nessun utente trovato",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-                .align(Alignment.CenterHorizontally)
-        )
+        }
     }
 }
 

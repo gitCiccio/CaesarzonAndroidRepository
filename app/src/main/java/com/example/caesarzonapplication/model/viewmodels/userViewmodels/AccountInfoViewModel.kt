@@ -405,6 +405,30 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             )
         }
     }
+
+    fun deleteAccount(username: String?) {
+        viewModelScope.launch {
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user/$username")
+            val request = Request.Builder()
+                .url(manageURL)
+                .delete()
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
+            try {
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    println("Chiamata fallita. Codice di stato: ${response.code}")
+                    return@launch
+            }
+                println("Chiamata avvenuta con successo. Codice di stato: ${response.code}")
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+                println("Errore di rete o I/O: ${e.message}")
+            }
+        }
+    }
 }
 
 class AccountInfoViewModelFactory(

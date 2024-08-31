@@ -33,6 +33,7 @@ uiDesktop = "1.6.8"
 identityJvm = "202408.1"
 firebaseCrashlyticsBuildtools = "3.0.2"
 browser = "1.8.0"
+places = "3.5.0"
 
 
 
@@ -80,6 +81,7 @@ androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", vers
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

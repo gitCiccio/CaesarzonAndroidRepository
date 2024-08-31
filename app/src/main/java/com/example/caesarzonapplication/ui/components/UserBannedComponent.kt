@@ -10,11 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCard
-import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.AddReaction
-import androidx.compose.material.icons.filled.AddShoppingCart
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,13 +37,12 @@ import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchA
 fun UserBannedComponent(
     navController: NavHostController,
     searchAndBanUsersViewModel: SearchAndBanUsersViewModel
-){
+) {
+    val bannedUsers by searchAndBanUsersViewModel.bannedUsers.collectAsState()
 
-    val bannedUsers by searchAndBanUsersViewModel.bans.collectAsState()
-    val selectedUser by remember { mutableStateOf<UserFindDTO?>(null) }
     var selectedBannedUser by remember { mutableStateOf<BanDTO?>(null) }
 
-    Column {
+    Column(modifier = Modifier.padding(16.dp)) {
         if (bannedUsers.isEmpty()) {
             Text(
                 modifier = Modifier
@@ -68,7 +62,8 @@ fun UserBannedComponent(
                         .fillMaxWidth()
                         .padding(8.dp)
                         .clickable {
-                            selectedBannedUser = if (selectedBannedUser == bannedUser) null else bannedUser
+                            selectedBannedUser =
+                                if (selectedBannedUser == bannedUser) null else bannedUser
                         },
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -78,30 +73,46 @@ fun UserBannedComponent(
                         modifier = Modifier.size(50.dp),
                         tint = Color.Gray
                     )
-                }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
                     Text(
                         text = bannedUser.userUsername,
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleMedium
+                        modifier = Modifier
+                            .padding(top = 15.dp)
+                            .weight(1f),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 20.sp
                     )
+                    Spacer(modifier = Modifier.width(15.dp))
+                }
 
-                    if (selectedBannedUser == bannedUser) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            IconButton(onClick = { /*Sbanna l'utente*/ }) {
-                                Icon(
-                                    imageVector = Icons.Default.AddReaction,
-                                    contentDescription = "Sbanna Utente"
-                                )
+                if (selectedBannedUser == bannedUser) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Data inizio ban: ${bannedUser.startDate}",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = "Ban ancora attivo",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        IconButton(
+                            onClick = {
+                                searchAndBanUsersViewModel.deleteBan(bannedUser)
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddReaction,
+                                contentDescription = "Sbanna Utente"
+                            )
                         }
                     }
                 }
+                Spacer(modifier = Modifier.width(30.dp))
             }
         }
     }
 }
-
-
