@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
 
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
+    val product by adminProductViewModel.productIds.collectAsState()
 
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -248,6 +250,10 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
             item {
                 Button(
                     onClick = {
+                        if (imageUri != null && productId != null) {
+                            //adminProductViewModel.uploadImageUsingOkHttpClient(context, product.toString(), imageUri!!)
+                        }
+
                         adminProductViewModel.addProduct(
                             SendProductDTO(
                                 id = productId,
@@ -262,10 +268,12 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                                 sport = sport,
                                 availabilities = availability
                             )
-                        ) }
+                        )
+                    }
                 ) {
                     Text(text = "Aggiungi prodotto")
                 }
+
             }
         }
     )

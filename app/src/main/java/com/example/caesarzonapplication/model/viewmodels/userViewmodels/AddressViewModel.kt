@@ -4,8 +4,6 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
@@ -43,9 +41,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     private val _addresses: MutableStateFlow<List<AddressDTO>> = MutableStateFlow(emptyList())
     val addresses: StateFlow<List<AddressDTO>> = _addresses
-
-    private val _addressState: MutableState<AddressDTO?> = mutableStateOf(null)
-    val addressState: State<AddressDTO?> = _addressState
 
     private val _cityData: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val cityData: StateFlow<List<String>> = _cityData

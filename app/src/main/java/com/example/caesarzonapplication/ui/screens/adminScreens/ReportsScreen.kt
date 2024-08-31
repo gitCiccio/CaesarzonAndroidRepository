@@ -9,6 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -23,7 +26,10 @@ import com.example.caesarzonapplication.ui.components.ReportCardTab
 @Composable
 fun ReportsScreen(reportViewModel: AdminReportViewModel) {
 
-    reportViewModel.loadReports()
+    val reports by reportViewModel.reports.collectAsState()
+    LaunchedEffect(Unit) {
+        reportViewModel.loadReports()
+    }
 
     Column {
         Box(
@@ -48,8 +54,8 @@ fun ReportsScreen(reportViewModel: AdminReportViewModel) {
         }
         LazyColumn(modifier = Modifier.padding())
         {
-            if (reportViewModel.reports.isNotEmpty()) {
-                items(reportViewModel.reports) { report ->
+            if (reports.isNotEmpty()) {
+                items(reports) { report ->
                     ReportCardTab(report, reportViewModel)
                 }
             } else {

@@ -16,6 +16,9 @@
       <SelectionState runConfigName="LoadingScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="UserSearchScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

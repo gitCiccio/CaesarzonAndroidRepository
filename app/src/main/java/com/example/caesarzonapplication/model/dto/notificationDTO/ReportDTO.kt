@@ -9,5 +9,7 @@ data class ReportDTO(
     val description: String,
     val usernameUser1: String,
     val usernameUser2: String,
+    val explain: String,
+    val reviewText: String,
     val reviewId: UUID
 )

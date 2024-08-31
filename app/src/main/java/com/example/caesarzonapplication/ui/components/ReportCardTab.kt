@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,6 +35,7 @@ fun ReportCardTab(report : ReportDTO, reportViewModel: AdminReportViewModel) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var popupMessage by rememberSaveable { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
+
 
     Card(
         modifier = Modifier
