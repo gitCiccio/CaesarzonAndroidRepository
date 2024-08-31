@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
@@ -40,8 +42,8 @@ class ShoppingCartViewModel(): ViewModel() {
     private val _productsInShoppingCart: MutableStateFlow<List<ProductCartWithImage>> = MutableStateFlow(emptyList())
     val productsInShoppingCart: StateFlow<List<ProductCartWithImage>> = _productsInShoppingCart
 
-    private var _buyLaterProducts: MutableStateFlow<List<ProductCartWithImage>> = MutableStateFlow(emptyList())
-    val buyLaterProducts: StateFlow<List<ProductCartWithImage>> =_buyLaterProducts
+    private val _buyLaterProducts: MutableStateFlow<List<ProductCartWithImage>> = MutableStateFlow(emptyList())
+    val buyLaterProducts: StateFlow<List<ProductCartWithImage>> = _buyLaterProducts
 
     private val _errorMessages: MutableStateFlow<String> = MutableStateFlow("")
     val errorMessages: StateFlow<String> = _errorMessages
@@ -51,9 +53,11 @@ class ShoppingCartViewModel(): ViewModel() {
 
     private var productCartId = ArrayList<String>()
 
+    private var _showErrorDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    var showErrorDialog: StateFlow<Boolean> = _showErrorDialog
 
-    private val _canNavigate: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val canNavigate: StateFlow<Boolean> = _canNavigate
+
+
 
     //Agigungi messaggio di errore
     suspend fun loadProductImage(productId: String): Bitmap? {
@@ -88,6 +92,10 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
 
+    fun setShowErrorToTrue(){
+        _showErrorDialog.value = true
+    }
+
     fun getCart(){
         viewModelScope.launch {
             try{
@@ -118,10 +126,14 @@ class ShoppingCartViewModel(): ViewModel() {
                     val products = gson.fromJson<List<ProductCartDTO>>(responseBody, cart)
                     for(product in products){
                         val image = loadProductImage(product.id)
+                        println("VALORE BUYLATER:" + product.buyLater)
                         if(product.buyLater)
                             _buyLaterProducts.value += ProductCartWithImage(product, image)
                         else
                             _productsInShoppingCart.value += ProductCartWithImage(product, image)
+
+                        println(_buyLaterProducts.value)
+                        println(_productsInShoppingCart.value)
                     }
                 }catch (e: Exception){
                     e.printStackTrace()
@@ -142,10 +154,7 @@ class ShoppingCartViewModel(): ViewModel() {
 
     suspend fun doSaveForLaterOrChangeQuantityAndSize(productId: String, num: Int, size: String, quantity: Int) {
         val manageUrl = URL("http://25.49.50.144:8090/product-api/cart/product/${productId}?action=${num}")
-        println("NUM: "+ num)
-        println("QUANTITY: "+ quantity)
-        println("SIZE: "+ size)
-        println("PRODUCTID: "+ productId)
+
         val changeDTO = ChangeCartDTO(quantity, size)
         val json = gson.toJson(changeDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
@@ -172,16 +181,29 @@ class ShoppingCartViewModel(): ViewModel() {
                         if (_productsInShoppingCart.value.contains(productToMove)) {
                             _productsInShoppingCart.update { it - productToMove }
                             _buyLaterProducts.update {
-                                it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
+                                it + productToMove.copy(
+                                    product = productToMove.product.copy(
+                                        quantity = quantity,
+                                        size = size,
+                                        buyLater = true  // Imposta buyLater a true quando sposti ai prodotti salvati per dopo
+                                    )
+                                )
                             }
                         } else if (_buyLaterProducts.value.contains(productToMove)) {
                             _buyLaterProducts.update { it - productToMove }
                             _productsInShoppingCart.update {
-                                it + productToMove.copy(product = productToMove.product.copy(quantity = quantity, size = size))
+                                it + productToMove.copy(
+                                    product = productToMove.product.copy(
+                                        quantity = quantity,
+                                        size = size,
+                                        buyLater = false  // Imposta buyLater a false quando sposti al carrello
+                                    )
+                                )
                             }
                         }
                     }
                 }
+
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -192,7 +214,7 @@ class ShoppingCartViewModel(): ViewModel() {
 
 
 
-    fun addProductCart(productId: String, size: String, quantity: Int){
+    fun addProductCart(productId: String, size: String?, quantity: Int){
         viewModelScope.launch {
             try{
                 doAddProductCart(productId, size, quantity)
@@ -202,9 +224,9 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-    suspend fun doAddProductCart(productId: String, size: String, quantity: Int){
+    suspend fun doAddProductCart(productId: String, size: String?, quantity: Int){
         val manageUrl = URL("http://25.49.50.144:8090/product-api/cart")
-        val prodDTO = SendProductCartDTO(productId, quantity, size)
+        val prodDTO = size?.let { SendProductCartDTO(productId, quantity, it) }
         val json = gson.toJson(prodDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
@@ -255,6 +277,7 @@ class ShoppingCartViewModel(): ViewModel() {
 
                 println("ripsosta dal server: $responseBody")
                 _productsInShoppingCart.value = _productsInShoppingCart.value.filterNot { it.product.id == productId }
+                _buyLaterProducts.value = _productsInShoppingCart.value.filterNot { it.product.id == productId }
             }catch (e: Exception){
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
@@ -262,9 +285,11 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-    fun changeOnNavigate(){
-        _canNavigate.value = false
+    fun clearErrorMessages() {
+        _errorMessages.value = ""
+        _showErrorDialog.value = false
     }
+
 
     fun deleteCart(){
         viewModelScope.launch {
@@ -300,38 +325,51 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
     fun checkAvailability(){
+        println("checkAvailability: Lanciato il coroutine per verificare la disponibilità") // Debug print
         viewModelScope.launch {
-            try{
+            try {
+                println("checkAvailability: Sto per chiamare doCheckAvailability") // Debug print
                 doCheckAvailability()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
+                println("checkAvailability: Errore durante l'esecuzione di doCheckAvailability: ${e.message}") // Debug print
             }
         }
     }
 
-    suspend fun doCheckAvailability(){
+    suspend fun doCheckAvailability() {
+        println("doCheckAvailability: Inizio della funzione") // Debug print
         val manageUrl = URL("http://25.49.50.144:8090/product-api/pre-order")
 
-        for(product in _productsInShoppingCart.value){
+        for (product in _productsInShoppingCart.value) {
+            println("doCheckAvailability: Aggiungo prodotto con ID ${product.product.id} a productCartId") // Debug print
             productCartId.add(product.product.id)
         }
 
         val json = gson.toJson(productCartId)
+        println("doCheckAvailability: JSON creato: $json") // Debug print
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
-        val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        val request = Request.Builder()
+            .url(manageUrl)
+            .post(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
 
-        withContext(Dispatchers.IO){
-
-            try{
+        withContext(Dispatchers.IO) {
+            try {
+                println("doCheckAvailability: Esecuzione della richiesta HTTP") // Debug print
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
+                println("doCheckAvailability: Risposta ricevuta dal server, codice di stato: ${response.code}") // Debug print
 
-                if(response.isSuccessful || responseBody != null){
-                    println("Chiamata fallita o disponibilità non disponibile. Codice di stato: ${response.code}")
+                if (response.isSuccessful && responseBody != null) {
+                    println("doCheckAvailability: La chiamata è andata a buon fine, elaboro la risposta") // Debug print
                     val availability = object : TypeToken<List<UnvailableDTO>>() {}.type
                     val gsonAvailability: List<UnvailableDTO>? = gson.fromJson(responseBody, availability)
+
                     if (gsonAvailability != null) {
+                        println("doCheckAvailability: Prodotti non disponibili rilevati") // Debug print
                         var errorMessage = ""
                         for (av in gsonAvailability) {
                             errorMessage += av.name + " "
@@ -343,34 +381,27 @@ class ShoppingCartViewModel(): ViewModel() {
                             }
                         }
                         _errorMessages.value = errorMessage
-                        if (_errorMessages.value == "") {
-                            _canNavigate.value = true
-                        } else {
-                            _canNavigate.value = false
-                        }
+                        setShowErrorToTrue()
                     } else {
-                        _canNavigate.value = true
+                        println("doCheckAvailability: Tutti i prodotti sono disponibili") // Debug print
                     }
-
-                }
-                _canNavigate.value = true
-
-                println("ripsosta dal server: $responseBody")
-                for(product in _productsInShoppingCart.value){
-                    _total.value += product.product.discountTotal
+                } else {
+                    println("doCheckAvailability: Chiamata fallita o disponibilità non disponibile. Codice di stato: ${response.code}") // Debug print
                 }
 
-            }catch (e: Exception){
+                println("doCheckAvailability: Risposta dal server: $responseBody") // Debug print
+                for (product in _productsInShoppingCart.value) {
+                    _total.value += product.product.total-product.product.discountTotal
+                    println("doCheckAvailability: Aggiungo il totale scontato del prodotto: ${product.product.discountTotal}") // Debug print
+                }
+            } catch (e: Exception) {
                 e.printStackTrace()
-                println("Errore durante la chiamata: ${e.message}")
+                println("doCheckAvailability: Errore durante la chiamata: ${e.message}") // Debug print
             }
-
         }
+    }
 
-    }
-    fun clearErrorMessages() {
-        _errorMessages.value = ""
-    }
+
 
     fun purchase(
         addressID: String,

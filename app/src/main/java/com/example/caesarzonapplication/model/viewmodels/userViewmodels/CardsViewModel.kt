@@ -37,22 +37,31 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     fun resetCards() {
         _cards.value = emptyList()
     }
+
+
     fun loadCards() {
         viewModelScope.launch {
+            resetCards()
             _isLoading.value = true
             try {
                 getUuidCardsFromServer()
-                cardsUuid.forEach {
-                    getCardFromServer(it)
+                val cardsList = mutableListOf<CardDTO>()
+                cardsUuid.forEach { uuid ->
+                    val card = getCardFromServer(uuid)
+                    if (card != null) {
+                        cardsList.add(card)
+                    }
                 }
+                _cards.value = cardsList // Assegna l'intera lista una volta completata
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
             }
         }
-
     }
+
+
 
     suspend fun getUuidCardsFromServer() {
         val manageUrl = URL("http://25.49.50.144:8090/user-api/cards")
@@ -83,40 +92,35 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
         }
     }
 
-    suspend fun getCardFromServer(cardUuid: UUID) {
+    suspend fun getCardFromServer(cardUuid: UUID): CardDTO? {
         val manageUrl = URL("http://25.49.50.144:8090/user-api/card?card_id=$cardUuid")
         val request = Request.Builder()
             .url(manageUrl)
             .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
 
-        withContext(Dispatchers.IO) {
-            _isLoading.value = true
+        return withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
                 if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    return@withContext
+                    return@withContext null
                 }
 
                 println("Risposta dal server: $responseBody")
                 val gson = Gson()
                 val card = gson.fromJson(responseBody, CardDTO::class.java)
                 card.id = cardUuid.toString()
-
-                withContext(Dispatchers.Main) {
-                    cardRepository.addCard(card)
-                    _cards.value += card
-                }
+                card
             } catch (e: Exception) {
                 e.printStackTrace()
-            } finally {
-                _isLoading.value = false
+                null
             }
         }
     }
+
 
 
     fun deleteCard(card: CardDTO){

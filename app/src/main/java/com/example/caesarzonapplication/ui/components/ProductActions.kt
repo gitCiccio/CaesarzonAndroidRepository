@@ -74,35 +74,34 @@ fun ProductActions(
                         modifier = Modifier.padding(end = 10.dp),
                         style = TextStyle(fontSize = 16.sp)
                     )
-                }
-                Box {
-                    Button(
-                        onClick = { expanded = !expanded },
-                        modifier = Modifier.padding(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
-                    ) {
-                        Text(selectedSize, style = TextStyle(fontSize = 14.sp, color = Color.White))
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        listOf("XS", "S", "M", "L", "XL").forEach { size ->
-                            DropdownMenuItem(
-                                text = { Text(text = size) },
-                                onClick = {
-                                    selectedSize = size
-                                    expanded = false
-                                    //showPopup = true
-                                }
-                            )
+                    Box {
+                        Button(
+                            onClick = { expanded = !expanded },
+                            modifier = Modifier.padding(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                        ) {
+                            Text(selectedSize, style = TextStyle(fontSize = 14.sp, color = Color.White))
                         }
-                    } // Fine di DropdownMenu
-                } // Fine di Box
-            } // Fine di Row
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            listOf("XS", "S", "M", "L", "XL").forEach { size ->
+                                DropdownMenuItem(
+                                    text = { Text(text = size) },
+                                    onClick = {
+                                        selectedSize = size
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+            }
 
 
-            // Campo di input per la quantità
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -151,7 +150,7 @@ fun ProductActions(
                         if(productDTO.is_clothing){
                             shoppingCartViewModel.addProductCart(productDTO.id, size = selectedSize, quantity.toInt())
                         }else{
-                            shoppingCartViewModel.addProductCart(productDTO.id, "", quantity.toInt())
+                            shoppingCartViewModel.addProductCart(productDTO.id, null, quantity.toInt())
 
                         }
                     },
