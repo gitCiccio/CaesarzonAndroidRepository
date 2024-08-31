@@ -147,8 +147,12 @@ fun NavigationGraph(
                 ProductSearchResultsScreen(parameter, productsViewModel, navController)
         }
 
-        composable(route = DetailsScreen.UserPageDetailsScreen.route) {
-            UserPageScreen()
+        composable(route = DetailsScreen.UserPageDetailsScreen.route+"/{username}",
+            arguments = listOf(navArgument("username") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            if (username.isNotEmpty())
+                UserPageScreen(username)
         }
 
         composable(route = DetailsScreen.UserRegistrationDetailsScreen.route) {

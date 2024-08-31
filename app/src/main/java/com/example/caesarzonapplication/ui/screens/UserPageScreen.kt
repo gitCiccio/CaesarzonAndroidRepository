@@ -31,7 +31,7 @@ import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.ui.components.WishListComponent
 
 @Composable
-fun UserPageScreen() {
+fun UserPageScreen(username: String) {
 
     var public by rememberSaveable { mutableStateOf(true) }
     var shared by rememberSaveable { mutableStateOf(false) }
@@ -50,13 +50,10 @@ fun UserPageScreen() {
             contentScale = ContentScale.Crop
         )
         Text(
-            text = "Username",
+            text = username ,
             style = MaterialTheme.typography.headlineMedium
         )
-        Text(
-            text = "nome_utente    cognome_utente",
-            style = MaterialTheme.typography.bodyLarge
-        )
+
         Row(
             horizontalArrangement = Arrangement.spacedBy(30.dp)
         ) {

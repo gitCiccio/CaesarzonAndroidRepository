@@ -23,11 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.notificationDTO.UserSearchDTO
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.FollowersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
+import com.example.caesarzonapplication.navigation.AdminBottomBarScreen
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -41,13 +44,14 @@ enum class UsersTab {
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun FriendlistScreen(navHostController: NavHostController, notificationViewModel: NotificationViewModel,followersViewModel: FollowersViewModel) {
+fun FriendlistScreen(navController: NavController, notificationViewModel: NotificationViewModel,followersViewModel: FollowersViewModel) {
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(UsersTab.Utenti) }
 
     LaunchedEffect(Unit){
         followersViewModel.loadAllFollowers()
+        followersViewModel.loadAllFriends()
         notificationViewModel.getNotification()
     }
 
@@ -146,7 +150,7 @@ fun FriendlistScreen(navHostController: NavHostController, notificationViewModel
                             key = { it.username }
                         )
                         { userSearchDTO ->
-                            UserRow(userSearchDTO, followersViewModel, navHostController)
+                            UserRow(userSearchDTO, followersViewModel, navController, userSearchDTO.username)
                         }
                     }
                 } else {
@@ -158,7 +162,7 @@ fun FriendlistScreen(navHostController: NavHostController, notificationViewModel
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
-                        ), text = "Non ci sono utenti"
+                        ), text = "Cerca un utente"
                     )
                 }
             UsersTab.Seguiti ->
@@ -172,7 +176,7 @@ fun FriendlistScreen(navHostController: NavHostController, notificationViewModel
                             items = followersViewModel.followers.filter { it.username.contains(searchQuery, ignoreCase = true) },
                             key = { it.username }
                         ) { user ->
-                            FriendsRow(user, followersViewModel, navHostController)
+                            FriendsRow(user, followersViewModel, navController, user.username)
                         }
                     }
                 } else {
@@ -199,7 +203,7 @@ fun FriendlistScreen(navHostController: NavHostController, notificationViewModel
                             key = { it.username }
                         )
                         { user ->
-                            FriendsRow(user, followersViewModel, navHostController)
+                            FriendsRow(user, followersViewModel, navController, user.username)
                         }
                     }
                 } else {
@@ -226,14 +230,18 @@ fun FriendlistScreen(navHostController: NavHostController, notificationViewModel
 fun UserRow(
     user: UserSearchDTO,
     followersAndFriendsViewModel: FollowersViewModel,
-    navHostController: NavHostController
+    navController: NavController,
+    username: String
+
 ) {
     var isFollower by rememberSaveable { mutableStateOf(user.follower) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navHostController.navigate("userpage") },
+            .clickable {
+                navController.navigate(DetailsScreen.UserPageDetailsScreen.route+"/${username}")
+                       },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -281,14 +289,18 @@ fun UserRow(
 fun FriendsRow(
     user: UserSearchDTO,
     followersAndFriendsViewModel: FollowersViewModel,
-    navHostController: NavHostController
+    navController: NavController,
+    username: String
 ) {
     var isFriend by rememberSaveable { mutableStateOf(user.friend) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navHostController.navigate("userpage") },
+            .clickable {
+                navController.navigate(DetailsScreen.UserPageDetailsScreen.route+"/${username}")
+
+                },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
