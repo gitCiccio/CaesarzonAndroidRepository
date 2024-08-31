@@ -12,16 +12,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,12 +48,12 @@ import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import java.io.InputStream
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
 
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
-    val product by adminProductViewModel.productIds.collectAsState()
 
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -66,7 +71,6 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
         }
     )
 
-    var productId by rememberSaveable { mutableStateOf("") }
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var brand by rememberSaveable { mutableStateOf("") }
@@ -76,11 +80,19 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
     var secondaryColor by rememberSaveable { mutableStateOf("") }
     var isClothing by rememberSaveable { mutableStateOf(false) }
     var availability by rememberSaveable { mutableStateOf(listOf<SendAvailabilityDTO>()) }
-    var sport by rememberSaveable { mutableStateOf("") }
-
+    var selectedSport by rememberSaveable { mutableStateOf("") }
     var selectedSize by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
 
+    var sportExpanded by remember { mutableStateOf(false) }
+    var sizeExpanded by remember { mutableStateOf(false) }
+
+    val sports = listOf(
+        "Atletica", "Pallavolo", "Basket", "Tennis", "Nuoto",
+        "Calcio", "Arti Marziali", "Ciclismo", "Sci"
+    )
+
+    val sizes = listOf("XS", "S", "M", "L", "XL")
 
     LazyColumn(
         modifier = Modifier
@@ -89,8 +101,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        content =
-        {
+        content = {
             item {
                 Text(
                     text = "Aggiungi prodotto",
@@ -162,44 +173,118 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
                 )
             }
             item {
-                OutlinedTextField(
-                    value = sport,
-                    onValueChange = { sport = it },
-                    label = { Text("Sport") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                ExposedDropdownMenuBox(
+                    expanded = sportExpanded,
+                    onExpandedChange = { sportExpanded = !sportExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = selectedSport,
+                        onValueChange = { selectedSport = it },
+                        label = { Text("Sport") },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        readOnly = true
+                    )
+                    ExposedDropdownMenu(
+                        expanded = sportExpanded,
+                        onDismissRequest = { sportExpanded = false }
+                    ) {
+                        sports.forEach { sport ->
+                            DropdownMenuItem(
+                                text = { Text(sport) },
+                                onClick = {
+                                    selectedSport = sport
+                                    sportExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
-            item {
+            item{
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        value = selectedSize,
-                        onValueChange = { selectedSize = it },
-                        label = { Text("Taglia") },
-                        modifier = Modifier.weight(1f)
+                    RadioButton(
+                        selected = isClothing,
+                        onClick = { isClothing = true }
                     )
+                    Text(
+                        text = "Abbigliamento",
+                    )
+                    RadioButton(
+                        selected = !isClothing,
+                        onClick = { isClothing = false }
+                    )
+                    Text(
+                        text = "Attrezzatura",
+                    )
+                }
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isClothing) {
+                        ExposedDropdownMenuBox(
+                            expanded = sizeExpanded,
+                            onExpandedChange = { sizeExpanded = !sizeExpanded }
+                        ) {
+                            OutlinedTextField(
+                                value = selectedSize,
+                                onValueChange = { selectedSize = it },
+                                label = { Text("Taglia") },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .width(100.dp), // Riduci la larghezza della TextField "Taglia"
+                                readOnly = true
+                            )
+                            ExposedDropdownMenu(
+                                expanded = sizeExpanded,
+                                onDismissRequest = { sizeExpanded = false }
+                            ) {
+                                sizes.forEach { size ->
+                                    DropdownMenuItem(
+                                        text = { Text(size) },
+                                        onClick = {
+                                            selectedSize = size
+                                            sizeExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     OutlinedTextField(
                         value = quantity,
                         onValueChange = { quantity = it },
                         label = { Text("Quantità") },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.width(100.dp) // Imposta una larghezza simile per la TextField "Quantità"
                     )
-                    Button(onClick = {
-                        if (selectedSize.isNotBlank() && quantity.isNotBlank()) {
-                            val qty = quantity.toIntOrNull() ?: 0
-                            if (qty > 0) {
-                                availability = availability.toMutableList().apply {
-                                    add(SendAvailabilityDTO(amount = qty, size = selectedSize))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            if ((isClothing && selectedSize.isNotBlank() || !isClothing) && quantity.isNotBlank()) {
+                                val qty = quantity.toIntOrNull() ?: 0
+                                if (qty > 0) {
+                                    availability = availability.toMutableList().apply {
+                                        add(SendAvailabilityDTO(amount = qty, size = selectedSize))
+                                    }
+                                    if (isClothing) {
+                                        selectedSize = ""
+                                    }
+                                    quantity = ""
                                 }
-                                selectedSize = ""
-                                quantity = ""
                             }
                         }
-                    }) {
+                    ) {
                         Text("Aggiungi")
                     }
                 }
@@ -250,25 +335,24 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
             item {
                 Button(
                     onClick = {
-                        if (imageUri != null && productId != null) {
-                            //adminProductViewModel.uploadImageUsingOkHttpClient(context, product.toString(), imageUri!!)
-                        }
-
-                        adminProductViewModel.addProduct(
-                            SendProductDTO(
-                                id = productId,
-                                name = productName,
-                                description = description,
-                                brand = brand,
-                                price = price.toDouble(),
-                                discount = discount.toDouble(),
-                                primaryColor = primaryColor,
-                                secondaryColor = secondaryColor,
-                                is_clothing = isClothing,
-                                sport = sport,
-                                availabilities = availability
+                        if (imageBitmap != null) {
+                            adminProductViewModel.addProduct(
+                                SendProductDTO(
+                                    id = "",
+                                    name = productName,
+                                    description = description,
+                                    brand = brand,
+                                    price = price.toDouble(),
+                                    discount = discount.toDouble(),
+                                    primaryColor = primaryColor,
+                                    secondaryColor = secondaryColor,
+                                    is_clothing = isClothing,
+                                    sport = selectedSport,
+                                    availabilities = availability
+                                ),
+                                imageBitmap!!
                             )
-                        )
+                        }
                     }
                 ) {
                     Text(text = "Aggiungi prodotto")
@@ -278,4 +362,3 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel) {
         }
     )
 }
-
