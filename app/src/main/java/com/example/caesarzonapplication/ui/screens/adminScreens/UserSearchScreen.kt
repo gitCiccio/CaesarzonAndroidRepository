@@ -20,17 +20,14 @@ import com.example.caesarzonapplication.model.service.KeycloakService.Companion.
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.ui.components.UserBannedComponent
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
 @Composable
 fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAndBanUsersViewModel) {
     var searchText by rememberSaveable { mutableStateOf("") }
-    var showBannedUsers by rememberSaveable { mutableStateOf(false) }
+    var showBannedUsers by remember { mutableStateOf(false) }
     val users by searchViewModel.searchResults.collectAsState()
-
-    LaunchedEffect(Unit) {
-        searchViewModel.searchUsers()
-    }
 
     Column(
         modifier = Modifier
@@ -67,15 +64,10 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
-        // Header Text
-
-
-        // Row to contain TextField and Button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Search TextField
             OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
@@ -85,9 +77,9 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
                     .background(color = Color.White)
                     .weight(1f)
             )
-            // Search Button
             IconButton(
                 onClick = {
+                    searchViewModel.searchUsers(searchText)
                     showBannedUsers = false
                 },
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -98,9 +90,30 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
                 )
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = {
+                showBannedUsers = !showBannedUsers
+                if (showBannedUsers) {
+                    searchViewModel.loadBannedUsers()
+                }
+            })
+        {
+            Text(text = if (showBannedUsers) "Nascondi utenti bannati" else "Mostra utenti bannati")
+        }
+        if (showBannedUsers) {
+            LazyColumn {
+                item {
+                    UserBannedComponent(navController, searchViewModel)
+                }
+            }
+        }
         if(users.isNotEmpty()){
-            LazyColumn{
-                items(users.size){
+            LazyColumn {
+                item()
+                {
                     UserSearchComponent(navController, searchViewModel)
                 }
             }
