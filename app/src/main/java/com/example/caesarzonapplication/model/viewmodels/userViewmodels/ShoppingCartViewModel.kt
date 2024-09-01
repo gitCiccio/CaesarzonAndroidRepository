@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +11,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.compose.rememberNavController
+import com.example.caesarzonapplication.R
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.ChangeCartDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.PayPalDTO
@@ -19,6 +25,7 @@ import com.example.caesarzonapplication.model.dto.productDTOS.UnvailableDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.utils.BitmapConverter
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +39,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.UUID
 
 class ShoppingCartViewModel(): ViewModel() {
+
 
     private val client = OkHttpClient()
     val gson = Gson()
@@ -112,7 +123,6 @@ class ShoppingCartViewModel(): ViewModel() {
         val request =  Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
         _productsInShoppingCart.value = emptyList()
         _buyLaterProducts.value = emptyList()
-
         withContext(Dispatchers.IO){
                 try{
                     val response = client.newCall(request).execute()
@@ -399,11 +409,12 @@ class ShoppingCartViewModel(): ViewModel() {
         addressID: String,
         cardID: String,
         payPal: Boolean,
-        context: Context
+        context: Context,
+        navigateToSuccess: () -> Unit
     ){
         viewModelScope.launch {
             try {
-                doPurchase(addressID, cardID, payPal, context)
+                doPurchase(addressID, cardID, payPal, context, navigateToSuccess)
             }catch (e: Exception){
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
@@ -412,7 +423,7 @@ class ShoppingCartViewModel(): ViewModel() {
     }
 
 
-    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
+    suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context, navigateToSuccess: () -> Unit) {
         clearBuyDTO(context)
         val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal&platform=false")
         val currentBuyDTO = BuyDTO(addressID, cardID, _total.value, productCartId)
@@ -445,6 +456,20 @@ class ShoppingCartViewModel(): ViewModel() {
                     println("PAYPALLEEE 5: Attempting to open PayPal link")
                     withContext(Dispatchers.Main) {
                         openLinkInCustomTab(context, responseBody)
+                    }
+                }else{
+                    if (responseBody == "Errore...") {
+                        withContext(Dispatchers.Main) {
+                            AlertDialog.Builder(context)
+                                .setTitle("Errore")
+                                .setMessage("Si è verificato un errore durante il pagamento. Riprova più tardi.")
+                                .setPositiveButton("OK") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .show()
+                        }
+                }else {
+                        navigateToSuccess()
                     }
                 }
                 println("PAYPALLEEE 6 $paypal")

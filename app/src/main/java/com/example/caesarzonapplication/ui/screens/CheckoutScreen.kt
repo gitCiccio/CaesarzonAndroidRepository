@@ -228,7 +228,10 @@ fun CheckoutScreen(
                                     selectedAddress?.id ?: "",
                                     selectedCard?.id ?: "",
                                     payPal,
-                                    context
+                                    context,
+                                    navigateToSuccess = {
+                                        navController.navigate(DetailsScreen.PaymentSuccessScreen.route)
+                                    }
                                 )
                             } else {
                                 Log.d("CheckoutScreen", "Error: Conditions not met for purchase")

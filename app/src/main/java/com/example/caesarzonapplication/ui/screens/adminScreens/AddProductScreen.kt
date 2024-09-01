@@ -43,11 +43,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.dto.productDTOS.AvailabilitiesSingle
 import com.example.caesarzonapplication.model.dto.productDTOS.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +74,8 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
             }
         }
     )
+    val navController = rememberNavController()
+
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var brand by rememberSaveable { mutableStateOf("") }
@@ -389,7 +393,12 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
                                     sport = selectedSport,
                                     availabilities = availability
                                 ),
-                                imageBitmap!!
+                                imageBitmap!!,
+                                context,
+
+                                onContinueShopping ={
+                                    navController.navigate("home")
+                                }
                             )
                         }
                     }
