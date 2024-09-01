@@ -54,8 +54,8 @@ class KeycloakService {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-                val postData = "username=${URLEncoder.encode("cesareking", "UTF-8")}" +
-                        "&password=${URLEncoder.encode("CiaoCiao!2", "UTF-8")}" +
+                val postData = "username=${URLEncoder.encode(username, "UTF-8")}" +
+                        "&password=${URLEncoder.encode(password, "UTF-8")}" +
                         "&grant_type=password" +
                         "&client_id=caesar-app"
                 val outputStream = OutputStreamWriter(connection.outputStream)
@@ -87,8 +87,6 @@ class KeycloakService {
             }
         }
     }
-
-
 
     fun getBasicToken() {
         println("Sono nella funzione per prendere il basic token")
@@ -144,9 +142,11 @@ class KeycloakService {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+            finally {
+                println("questo è il basic token: $basicToken")
+            }
         }
     }
-
 
     fun decodeTokenMio(accessToken: String) {
         try {
@@ -158,15 +158,11 @@ class KeycloakService {
                 (resourceAccess as Map<*, *>)["roles"]?.let { roles.addAll(it as List<String>) }
             }
 
-            // Check if the roles contain 'admin' and update isAdmin accordingly
             isAdmin.value = roles.contains("admin")
         } catch (e: Exception) {
             e.printStackTrace()
-            // Ensure isAdmin is false if there's an error decoding the token
             isAdmin.value = false
         }
     }
-
-
 
 }

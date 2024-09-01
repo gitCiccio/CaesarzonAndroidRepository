@@ -35,10 +35,8 @@ fun AdminNavigationBottomBar(navController: NavHostController){
                     )
                 },
                 onClick = {
-                    println("Current: " + screen.route )
-                    println("Miasdasd: " + AdminBottomBarScreen.AddProduct.route)
                     if(screen.route == AdminBottomBarScreen.AddProduct.route) {
-                        navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${false}"){
+                        navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${true}"){
                             launchSingleTop = true
                             restoreState = true
                         }

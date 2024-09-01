@@ -30,13 +30,13 @@ class UserRepository(private val userDao: UserDao) {
     }
 
 
-
+    /*
     // Recupera i dati dell'utente
     suspend fun getUserData(username: String): UserDTO {
         val normalizedUsername = username.lowercase() // Converti l'username in minuscolo
         val user = userDao.getUserData(normalizedUsername)
         return UserDTO(user.username, user.firstName, user.lastName, user.phoneNumber, user.email)
-    }
+    }*/
 
 
     // Elimina i dati dell'utente

@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCard
 import androidx.compose.material.icons.filled.AddLocation
-import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -34,13 +33,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.userDTOS.UserFindDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
-import com.example.caesarzonapplication.navigation.DetailsScreen
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserSearchComponent(
     navController: NavHostController,
-    searchAndBanUsersViewModel: SearchAndBanUsersViewModel
-
+    searchAndBanUsersViewModel: SearchAndBanUsersViewModel,
+    accountInfoViewModel: AccountInfoViewModel,
+    addressViewModel: AddressViewModel,
+    cardViewModel: CardsViewModel
 ) {
     val searchResults by searchAndBanUsersViewModel.searchResults.collectAsState()
     var selectedUser by remember { mutableStateOf<UserFindDTO?>(null) }
@@ -94,28 +101,38 @@ fun UserSearchComponent(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            IconButton(onClick = { /*Naviga verso il profilo dell'utente*/ }) {
+                            IconButton(onClick = {
+                                accountInfoViewModel.getUserDataByAdmin(foundUser.username)
+                                navController.navigate("userProfileAdminScreen")
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Person,
                                     contentDescription = "Dati Profilo Utente"
                                 )
                             }
-                            IconButton(onClick = { /*Naviga verso l'elenco degli indirizzi dell'utente*/ }) {
+                            IconButton(onClick = {
+                                addressViewModel.getUuidAddressesFromServerByAdmin(foundUser.username)
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    addressViewModel.loadAddressesForAdmin(foundUser.username)
+                                }
+                                navController.navigate("userAddressAdminScreen")
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.AddLocation,
                                     contentDescription = "Indirizzi Utente"
                                 )
                             }
-                            IconButton(onClick = { /*Naviga verso i metodi di pagamento dell'utente*/ }) {
+                            IconButton(onClick = {
+                                cardViewModel.loadCardsByAdmin(foundUser.username)
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    cardViewModel.getUuidCardsFromServerByAdmin(foundUser.username)
+                                    cardViewModel.loadCardsByAdmin(foundUser.username)
+                                }
+                                navController.navigate("userCardsAdminScreen")
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.AddCard,
                                     contentDescription = "Metodi di Pagamento Utente"
-                                )
-                            }
-                            IconButton(onClick = { /*Naviga verso il carrello dell'utente*/ }) {
-                                Icon(
-                                    imageVector = Icons.Default.AddShoppingCart,
-                                    contentDescription = "Carrello Utente"
                                 )
                             }
                             IconButton(onClick = {

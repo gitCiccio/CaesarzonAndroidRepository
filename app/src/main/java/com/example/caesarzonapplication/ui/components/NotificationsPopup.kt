@@ -21,9 +21,6 @@ fun NotificationsPopup(
     notificationViewModel: NotificationViewModel,
     notifications: StateFlow<List<UserNotificationDTO>>, onDismissRequest: () -> Unit) {
 
-
-
-
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = MaterialTheme.shapes.medium,

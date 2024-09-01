@@ -17,14 +17,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.SearchAndBanUsersViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.CardsViewModel
 import com.example.caesarzonapplication.ui.components.UserBannedComponent
 import com.example.caesarzonapplication.navigation.BottomBarScreen
 import com.example.caesarzonapplication.ui.components.UserSearchComponent
 @Composable
-fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAndBanUsersViewModel) {
+fun UserSearchScreen(
+    navController: NavHostController,
+    searchViewModel: SearchAndBanUsersViewModel,
+    accountInfoViewModel: AccountInfoViewModel,
+    addressViewModel: AddressViewModel,
+    cardViewModel: CardsViewModel
+) {
     var searchText by rememberSaveable { mutableStateOf("") }
     var showBannedUsers by remember { mutableStateOf(false) }
     val users by searchViewModel.searchResults.collectAsState()
@@ -41,10 +48,8 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
             Button(
                 modifier = Modifier.padding(horizontal = 30.dp),
                 onClick = {
+                    accountInfoViewModel.logout()
                     isAdmin.value = false
-                    logged.value = false
-                    myToken?.refreshToken=""
-                    myToken?.accessToken=""
                     navController.navigate(BottomBarScreen.Home.route)},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Red,
@@ -114,7 +119,7 @@ fun UserSearchScreen(navController: NavHostController, searchViewModel: SearchAn
             LazyColumn {
                 item()
                 {
-                    UserSearchComponent(navController, searchViewModel)
+                    UserSearchComponent(navController, searchViewModel, accountInfoViewModel, addressViewModel, cardViewModel)
                 }
             }
         }
