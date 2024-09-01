@@ -80,8 +80,6 @@ class SearchAndBanUsersViewModel : ViewModel() {
                     _searchResults.update { it + newUsers }
                 }
 
-                str++
-
                 _searchResults.update { users ->
                     users.filter { it.username.contains(searchText, ignoreCase = true) }
                 }

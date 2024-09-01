@@ -10,10 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.authDTOS.PasswordChangeDTO
 import com.example.caesarzonapplication.model.dto.userDTOS.UserDTO
 import com.example.caesarzonapplication.model.dto.authDTOS.UserRegistrationDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.LogoutDTO
 import com.example.caesarzonapplication.model.entities.userEntity.ProfileImage
 import com.example.caesarzonapplication.model.repository.userRepository.ProfileImageRepository
 import com.example.caesarzonapplication.model.repository.userRepository.UserRepository
 import com.example.caesarzonapplication.model.service.KeycloakService
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.basicToken
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import kotlinx.coroutines.CoroutineScope
@@ -32,8 +35,9 @@ import java.net.URL
 
 class AccountInfoViewModel(private val userRepository: UserRepository, private val imageRepository: ProfileImageRepository) : ViewModel() {
 
-    companion object{
+    companion object {
         var userData: UserDTO? = null
+        var userDataForAdmin: UserDTO? = null
     }
 
     var profileImage: LiveData<ProfileImage?> = imageRepository.getProfileImage()
@@ -83,7 +87,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
             .put("username", newUserDTO.username)
             .put("firstName", newUserDTO.firstName)
             .put("lastName", newUserDTO.lastName)
-            .put("username", newUserDTO.username)
             .put("phoneNumber", newUserDTO.phoneNumber)
             .put("email", newUserDTO.email)
 
@@ -105,12 +108,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 if (!response.isSuccessful) {
                     return@withContext "error: ${response.message} ${response.code}"
                 }
-                val oldUser = userRepository.getUserData(username)
-                oldUser.firstName = newUserDTO.firstName
-                oldUser.lastName = newUserDTO.lastName
-                oldUser.email = newUserDTO.email
-                oldUser.phoneNumber = newUserDTO.phoneNumber
-                userRepository.updateUser(oldUser)
                 "success"
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -119,7 +116,6 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 
-    //Fase di registrazione funziona
     fun registerUser(
         username: String,
         firstName: String,
@@ -289,10 +285,10 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
     ): String {
         viewModelScope.launch {
             _isLoading.value = true
-            if (doChangePassword(password, username, recovery) == "success"){
+            if (doChangePassword(password, username, recovery) == "success") {
                 _isLoading.value = false
                 callback("success")
-            }else{
+            } else {
                 _isLoading.value = false
                 return@launch
             }
@@ -406,9 +402,10 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
         }
     }
 
-    fun deleteAccount(username: String?) {
-        viewModelScope.launch {
-            val manageURL = URL("http://25.49.50.144:8090/user-api/user/$username")
+    fun deleteAccount() {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val manageURL = URL("http://25.49.50.144:8090/user-api/user")
             val request = Request.Builder()
                 .url(manageURL)
                 .delete()
@@ -420,12 +417,162 @@ class AccountInfoViewModel(private val userRepository: UserRepository, private v
                 if (!response.isSuccessful) {
                     println("Chiamata fallita. Codice di stato: ${response.code}")
                     return@launch
-            }
+                }
                 println("Chiamata avvenuta con successo. Codice di stato: ${response.code}")
 
             } catch (e: IOException) {
                 e.printStackTrace()
                 println("Errore di rete o I/O: ${e.message}")
+            }
+        }
+    }
+
+    fun logout() {
+
+        isAdmin.value = false
+        logged.value = false
+
+        viewModelScope.launch {
+            val logoutDTO = LogoutDTO(true)
+            val jsonObject = JSONObject()
+                .put("logout", logoutDTO.logout)
+
+            val json = jsonObject.toString()
+            val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val requestBody = json.toRequestBody(mediaType)
+
+            try {
+                val manageURL = URL("http://25.49.50.144:8090/user-api/logout")
+                val request = Request.Builder()
+                    .url(manageURL)
+                    .put(requestBody)
+                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                    .build()
+
+                withContext(Dispatchers.IO) {
+                    val response = client.newCall(request).execute()
+                    if (!response.isSuccessful) {
+                        println("Chiamata fallita. Codice di stato: ${response.code}")
+                        return@withContext
+                    }
+                    println("Chiamata avvenuta con successo. Codice di stato: ${response.code}")
+                }
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+                println("Errore di rete o I/O: ${e.message}")
+            }
+            finally {
+                KeycloakService().getBasicToken()
+            }
+        }
+    }
+
+    fun getUserDataByAdmin(username: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _isLoading.value = true
+            try {
+                println("sono nel try del get data")
+                val manageURL = URL("http://25.49.50.144:8090/user-api/user/$username")
+                val request = Request.Builder()
+                    .url(manageURL)
+                    .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                    .build()
+
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@launch
+                }
+
+                println("Risposta dal server: $responseBody")
+
+                val jsonObject = JSONObject(responseBody)
+
+                val firstName = jsonObject.optString("firstName", "")
+                val lastName = jsonObject.optString("lastName", "")
+                val userUsername = jsonObject.optString("username", "")
+                val email = jsonObject.optString("email", "")
+                val phoneNumber = jsonObject.optString("phoneNumber", "")
+
+                userDataForAdmin = UserDTO(userUsername, firstName, lastName, phoneNumber, email)
+                addUserData(UserRegistrationDTO(firstName, lastName, userUsername, email, ""))
+                println("Dati utente recuperati con successo: ${userDataForAdmin?.username}")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                println("Errore di rete o I/O: ${e.message}")
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                println("Errore nel parsing della risposta JSON: ${e.message}")
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun modifyUserDataByAdmin(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+        callback: (result: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val result = doModifyUserByAdmin(firstName, lastName, username, email, phoneNumber)
+                callback(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                callback("error: ${e.message}")
+            }
+            _isLoading.value = false
+        }
+    }
+
+    suspend fun doModifyUserByAdmin(
+        firstName: String,
+        lastName: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+    ): String {
+        val newUserDTO = UserDTO(username, firstName, lastName, email, phoneNumber)
+        val jsonObject = JSONObject()
+            .put("username", newUserDTO.username)
+            .put("firstName", newUserDTO.firstName)
+            .put("lastName", newUserDTO.lastName)
+            .put("email", newUserDTO.phoneNumber)
+            .put("phoneNumber", newUserDTO.email)
+
+        println(jsonObject.toString())
+        println(email)
+
+        val json = jsonObject.toString()
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val requestBody = json.toRequestBody(mediaType)
+
+        val manageURL = URL("http://25.49.50.144:8090/user-api/user/$username")
+        val request = Request.Builder()
+            .url(manageURL)
+            .put(requestBody)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    return@withContext "error: ${response.message} ${response.code}"
+                }
+
+                "success"
+            } catch (e: IOException) {
+                e.printStackTrace()
+                "error: ${e.message}"
             }
         }
     }
@@ -444,3 +591,4 @@ class AccountInfoViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

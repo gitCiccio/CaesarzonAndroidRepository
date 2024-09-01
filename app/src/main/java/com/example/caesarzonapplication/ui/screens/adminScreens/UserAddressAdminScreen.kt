@@ -1,0 +1,263 @@
+package com.example.caesarzonapplication.ui.screens.adminScreens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.example.caesarzonapplication.model.dto.userDTOS.AddressDTO
+import com.example.caesarzonapplication.model.dto.userDTOS.CityDataDTO
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userDataForAdmin
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AddressViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserAddressAdminScreen(
+    addressViewModel: AccountInfoViewModel,
+    addressViewModel1: AddressViewModel
+) {
+
+    val addresses by addressViewModel1.addressesByAdmin.collectAsState()
+    var selectedAddress by remember { mutableStateOf<AddressDTO?>(null) }
+    var showAddAddressDialog by rememberSaveable { mutableStateOf(false) }
+    var addressDropdownExpanded by rememberSaveable { mutableStateOf(false) }
+    var roadTypeDropdownExpanded by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect (Unit){
+        if(addresses.isEmpty()) {
+            userDataForAdmin?.username?.let { addressViewModel1.loadAddressesForAdmin(it) }
+        }
+        else{
+            for (address in addresses) {
+                println(address.roadName)
+            }
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        item{
+            Text("Gestione Indirizzi", style = MaterialTheme.typography.headlineMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                TextField(
+                    value = selectedAddress?.let {
+                        "${it.roadName} ${it.houseNumber} ${it.city?.city}"
+                    } ?: "Nessun indirizzo disponibile",
+                    onValueChange = {},
+                    label = { Text("Indirizzo di spedizione") },
+                    enabled = false,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Drop-down arrow",
+                            tint = if (addressDropdownExpanded) MaterialTheme.colorScheme.primary else Color.Gray,
+                            modifier = Modifier.clickable { addressDropdownExpanded = !addressDropdownExpanded }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { addressDropdownExpanded = true }
+                )
+                DropdownMenu(
+                    expanded = addressDropdownExpanded,
+                    onDismissRequest = { addressDropdownExpanded = false },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    addresses.forEach { address ->
+                        DropdownMenuItem(
+                            text = { Text(text = "${address.roadName} ${address.houseNumber} ${address.city?.city}") },
+                            onClick = {
+                                selectedAddress = address
+                                addressDropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = { showAddAddressDialog = true },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                ) {
+                    Text(text = "Aggiungi indirizzo")
+                }
+                Button(
+                    onClick = { selectedAddress?.let { addressViewModel1.deleteAddressByAdmin(it) } },
+                    enabled = addresses.isNotEmpty(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                ) {
+                    Text(text = "Rimuovi indirizzo")
+                }
+            }
+
+            if (showAddAddressDialog) {
+                var street by rememberSaveable { mutableStateOf("") }
+                var houseNumber by rememberSaveable { mutableStateOf("") }
+                var roadType by rememberSaveable { mutableStateOf("") }
+                var city by rememberSaveable { mutableStateOf("") }
+                var zipCode by rememberSaveable { mutableStateOf("") }
+                var province by rememberSaveable { mutableStateOf("") }
+                var region by rememberSaveable { mutableStateOf("") }
+
+                val isFormValid = street.isNotBlank() && houseNumber.isNotBlank() && roadType.isNotBlank() &&
+                        city.isNotBlank() && zipCode.isNotBlank() && province.isNotBlank() && region.isNotBlank()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, shape = MaterialTheme.shapes.medium)
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Aggiungi Indirizzo",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+                    OutlinedTextField(
+                        value = street,
+                        onValueChange = {
+                            val streetRegex = Regex("^(?=(?:.*[a-zA-Z]){2,})[a-zA-Z0-9 ]{2,30}\$")
+                            if (streetRegex.matches(it))
+                                street = it
+                            else if (it.isNotEmpty())
+                                street = it.dropLast(1) },
+                        label = { Text("Via") },
+                        singleLine = true,
+                    )
+                    ExposedDropdownMenuBox(
+                        expanded = roadTypeDropdownExpanded,
+                        onExpandedChange = { roadTypeDropdownExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = roadType,
+                            onValueChange = { roadType = it },
+                            label = { Text("Tipologia via") },
+                            singleLine = true,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = roadTypeDropdownExpanded)
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = roadTypeDropdownExpanded,
+                            onDismissRequest = { roadTypeDropdownExpanded = false }
+                        ) {
+                            val roadTypes = listOf(
+                                "Via", "Vicolo", "Viale", "Traversa", "Borgo", "Piazzale", "Piazza", "Largo", "Lungarno"
+                            )
+                            roadTypes.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(text = type) },
+                                    onClick = {
+                                        roadType = type
+                                        roadTypeDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    OutlinedTextField(
+                        value = houseNumber,
+                        onValueChange = {
+                            val houseNumberRegex = Regex("^[0-9a-zA-Z]{1,8}\$")
+                            if (houseNumberRegex.matches(it))
+                                houseNumber = it
+                            else if (it.isNotEmpty())
+                                houseNumber = it.dropLast(1) },
+                        label = { Text("Numero civico") },
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        value = zipCode,
+                        onValueChange = { zipCode = it },
+                        label = { Text("CAP") },
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        value = province,
+                        onValueChange = { province = it },
+                        label = { Text("Provincia") },
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        value = region,
+                        onValueChange = { region = it },
+                        label = { Text("Regione") },
+                        singleLine = true,
+                    )
+                    Button(
+                        onClick = {
+                            if (isFormValid) {
+                                val newAddressDTO = AddressDTO(
+                                    id = "",
+                                    roadName = street,
+                                    houseNumber = houseNumber,
+                                    roadType = roadType,
+                                    city = null
+                                )
+                                //addressViewModel.addAddress(newAddressDTO)
+                                showAddAddressDialog = false
+                            }
+                        },
+                        enabled = isFormValid,
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text(text = "Salva")
+                    } }
+            }
+        }
+    }
+}

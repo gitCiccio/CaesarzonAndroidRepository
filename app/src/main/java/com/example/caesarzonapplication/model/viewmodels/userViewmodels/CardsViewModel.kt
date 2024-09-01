@@ -29,15 +29,20 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
     val isLoading: State<Boolean> get() = _isLoading
 
     private val client = OkHttpClient()
+
     var cardsUuid: List<UUID> = emptyList()
+    var cardsUuidForAdmin: List<UUID> = emptyList()
 
     private val _cards: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
     val cards: StateFlow<List<CardDTO>> = _cards
 
+    private val _userCardsForAdmin: MutableStateFlow<List<CardDTO>> = MutableStateFlow(emptyList())
+    val userCardsForAdmin: StateFlow<List<CardDTO>> = _userCardsForAdmin
+
     fun resetCards() {
         _cards.value = emptyList()
+        _userCardsForAdmin.value = emptyList()
     }
-
 
     fun loadCards() {
         viewModelScope.launch {
@@ -52,7 +57,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                         cardsList.add(card)
                     }
                 }
-                _cards.value = cardsList // Assegna l'intera lista una volta completata
+                _cards.value = cardsList
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -61,7 +66,28 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
         }
     }
 
-
+    fun loadCardsByAdmin(userUsername: String) {
+        viewModelScope.launch {
+            resetCards()
+            _isLoading.value = true
+            try {
+                getUuidCardsFromServerByAdmin(userUsername)
+                val cardsList = mutableListOf<CardDTO>()
+                cardsUuidForAdmin.forEach { uuid ->
+                    val card = getCardFromServer(uuid)
+                    if (card != null) {
+                        cardsList.add(card)
+                    }
+                    println("CARTA DA AGGIUNGERE:" + card?.cardNumber)
+                }
+                _userCardsForAdmin.value = cardsList
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     suspend fun getUuidCardsFromServer() {
         val manageUrl = URL("http://25.49.50.144:8090/user-api/cards")
@@ -87,6 +113,34 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
                 cardsUuid = gson.fromJson(responseBody, listType)
             } catch (e: Exception) {
 
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun getUuidCardsFromServerByAdmin(userUsername: String) {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/cards/$userUsername")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@withContext
+                }
+
+                println("Risposta dal server: $responseBody")
+
+                val gson = Gson()
+                val listType = object : TypeToken<List<UUID>>() {}.type
+                cardsUuidForAdmin = gson.fromJson(responseBody, listType)
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -121,8 +175,6 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
         }
     }
 
-
-
     fun deleteCard(card: CardDTO){
         CoroutineScope(Dispatchers.IO).launch {
             _isLoading.value = true
@@ -149,6 +201,7 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
 
                 cardRepository.deleteCardById(card.id)
                 _cards.value -= card
+                _userCardsForAdmin.value -= card
                 println("Carta eliminato con successo")
             }
         }catch (e: Exception){
@@ -156,7 +209,6 @@ class CardsViewModel(private val cardRepository: CardRepository): ViewModel() {
             println("Errore durante la chiamata: ${e.message}")
         }
     }
-
 
     fun addCard(card: CardDTO){
         viewModelScope.launch {

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.caesarzonapplication.model.dto.productDTOS.ProductDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.isAdmin
+import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
 import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 import com.example.caesarzonapplication.ui.components.WishlistPopup
@@ -27,6 +28,8 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Wishlist
 import com.example.caesarzonapplication.navigation.AdminBottomBarScreen
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductActions(
@@ -38,9 +41,11 @@ fun ProductActions(
 ) {
     var showPopup by rememberSaveable { mutableStateOf(false) }
     var showWishlistPopup by rememberSaveable { mutableStateOf(false) }
-    var selectedSize by remember { mutableStateOf("M") } // Taglia predefinita
-    var quantity by remember { mutableStateOf("1") } // Quantità predefinita
+    var selectedSize by remember { mutableStateOf("M") }
+    var quantity by remember { mutableStateOf("1") }
     var expanded by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
 
     if (!isAdmin.value) {
         if (showPopup) {
@@ -64,7 +69,6 @@ fun ProductActions(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Dropdown per selezionare la taglia
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -100,9 +104,7 @@ fun ProductActions(
                         }
                     }
                 }
-
             }
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -125,7 +127,6 @@ fun ProductActions(
                 )
             }
 
-            // Bottoni per azioni
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,15 +134,32 @@ fun ProductActions(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-                    onClick = { /* Azione per acquistare subito */ },
+                    onClick = {
+                        if(productDTO.is_clothing){
+                            shoppingCartViewModel.addProductCart(productDTO.id, size = selectedSize, quantity.toInt())
+                            shoppingCartViewModel.checkAvailability()
+                            coroutineScope.launch {
+                                delay(1000)
+                                navController.navigate(DetailsScreen.CheckOutScreen.route)
+                            }
+                        }else{
+                            shoppingCartViewModel.addProductCart(productDTO.id, null, quantity.toInt())
+                            shoppingCartViewModel.checkAvailability()
+                            coroutineScope.launch {
+                                delay(1000)
+                                navController.navigate(DetailsScreen.CheckOutScreen.route)
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(72.dp)
                         .padding(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500)),
+                    enabled = logged.value
                 ) {
                     Text(
-                        "Acquista",
+                        "Acquista subito",
                         style = TextStyle(fontSize = 14.sp, color = Color.White),
                         textAlign = TextAlign.Center
                     )
@@ -153,14 +171,14 @@ fun ProductActions(
                             shoppingCartViewModel.addProductCart(productDTO.id, size = selectedSize, quantity.toInt())
                         }else{
                             shoppingCartViewModel.addProductCart(productDTO.id, null, quantity.toInt())
-
                         }
                     },
                     modifier = Modifier
                         .weight(1f)
                         .height(72.dp)
                         .padding(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA500)),
+                    enabled = logged.value
                 ) {
                     Text(
                         "Aggiungi al carrello",
@@ -170,7 +188,6 @@ fun ProductActions(
                 }
             }
 
-            // Bottone per aggiungere alla lista desideri
             Button(
                 onClick = {
                     showWishlistPopup = true
@@ -179,7 +196,8 @@ fun ProductActions(
                     .align(Alignment.CenterHorizontally)
                     .height(48.dp)
                     .fillMaxWidth(0.5f),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(103, 58, 183, 255))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(103, 58, 183, 255)),
+                enabled = logged.value
             ) {
                 Text(
                     "Aggiungi alla lista desideri",
@@ -189,10 +207,9 @@ fun ProductActions(
             }
         }
     } else {
-        // Azioni disponibili per admin
         Row {
             Button(onClick = {
-                navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${true}")
+                navController.navigate(AdminBottomBarScreen.AddProduct.route+"/${false}")
             }) {
                 Text(text = "Modifica")
             }

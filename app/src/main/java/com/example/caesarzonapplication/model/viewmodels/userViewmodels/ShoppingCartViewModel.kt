@@ -1,12 +1,9 @@
 package com.example.caesarzonapplication.model.viewmodels.userViewmodels
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caesarzonapplication.model.dto.productDTOS.BuyDTO
@@ -38,7 +35,7 @@ class ShoppingCartViewModel(): ViewModel() {
 
     private val client = OkHttpClient()
     val gson = Gson()
-    val bitmapConverter = BitmapConverter()
+    private val bitmapConverter = BitmapConverter()
 
     private val _productsInShoppingCart: MutableStateFlow<List<ProductCartWithImage>> = MutableStateFlow(emptyList())
     val productsInShoppingCart: StateFlow<List<ProductCartWithImage>> = _productsInShoppingCart
@@ -58,9 +55,6 @@ class ShoppingCartViewModel(): ViewModel() {
     var showErrorDialog: StateFlow<Boolean> = _showErrorDialog
 
 
-
-
-    //Agigungi messaggio di errore
     suspend fun loadProductImage(productId: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             val uuidProduct = UUID.fromString(productId)
@@ -92,7 +86,6 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-
     fun setShowErrorToTrue(){
         _showErrorDialog.value = true
     }
@@ -114,32 +107,32 @@ class ShoppingCartViewModel(): ViewModel() {
         _buyLaterProducts.value = emptyList()
 
         withContext(Dispatchers.IO){
-                try{
-                    val response = client.newCall(request).execute()
-                    val responseBody = response.body?.string()
+            try{
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
 
-                    if(!response.isSuccessful || responseBody.isNullOrEmpty()){
-                        println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
-                    }
-
-                    println("Risposta dal server: $responseBody")
-                    val cart = object : TypeToken<List<ProductCartDTO>>() {}.type
-                    val products = gson.fromJson<List<ProductCartDTO>>(responseBody, cart)
-                    for(product in products){
-                        val image = loadProductImage(product.id)
-                        println("VALORE BUYLATER:" + product.buyLater)
-                        if(product.buyLater)
-                            _buyLaterProducts.value += ProductCartWithImage(product, image)
-                        else
-                            _productsInShoppingCart.value += ProductCartWithImage(product, image)
-
-                        println(_buyLaterProducts.value)
-                        println(_productsInShoppingCart.value)
-                    }
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    println("Errore durante la chiamata: ${e.message}")
+                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
+
+                println("Risposta dal server: $responseBody")
+                val cart = object : TypeToken<List<ProductCartDTO>>() {}.type
+                val products = gson.fromJson<List<ProductCartDTO>>(responseBody, cart)
+                for(product in products){
+                    val image = loadProductImage(product.id)
+                    println("VALORE BUYLATER:" + product.buyLater)
+                    if(product.buyLater)
+                        _buyLaterProducts.value += ProductCartWithImage(product, image)
+                    else
+                        _productsInShoppingCart.value += ProductCartWithImage(product, image)
+
+                    println(_buyLaterProducts.value)
+                    println(_productsInShoppingCart.value)
+                }
+            }catch (e: Exception){
+                e.printStackTrace()
+                println("Errore durante la chiamata: ${e.message}")
+            }
         }
     }
 
@@ -204,16 +197,12 @@ class ShoppingCartViewModel(): ViewModel() {
                         }
                     }
                 }
-
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Errore durante la chiamata: ${e.message}")
             }
         }
     }
-
-
 
     fun addProductCart(productId: String, size: String?, quantity: Int){
         viewModelScope.launch {
@@ -227,12 +216,19 @@ class ShoppingCartViewModel(): ViewModel() {
 
     suspend fun doAddProductCart(productId: String, size: String?, quantity: Int){
         val manageUrl = URL("http://25.49.50.144:8090/product-api/cart")
-        val prodDTO = size?.let { SendProductCartDTO(productId, quantity, it) }
+
+        val prodDTO: SendProductCartDTO = if(size == null){
+            SendProductCartDTO(productId, quantity, null )
+        }else{
+            SendProductCartDTO(productId, quantity, size )
+        }
+
         val json = gson.toJson(prodDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
 
+        println("json: $json")
         withContext(Dispatchers.IO){
             try{
                 val response = client.newCall(request).execute()
@@ -242,7 +238,7 @@ class ShoppingCartViewModel(): ViewModel() {
                     println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
                 }
 
-                println("ripsosta dal server: $responseBody")
+                println("risposta dal server: $responseBody")
 
             }catch (e: Exception){
                 e.printStackTrace()
@@ -393,8 +389,6 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-
-
     fun purchase(
         addressID: String,
         cardID: String,
@@ -411,7 +405,6 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-
     suspend fun doPurchase(addressID: String, cardID: String, paypal: Boolean, context: Context) {
         clearBuyDTO(context)
         val manageUrl = URL("http://25.49.50.144:8090/product-api/purchase?pay-method=$paypal&platform=false")
@@ -422,43 +415,33 @@ class ShoppingCartViewModel(): ViewModel() {
         val json = gson.toJson(currentBuyDTO)
         val JSON = "application/json; charset=utf-8".toMediaType()
         val requestBody = json.toRequestBody(JSON)
-        println("PAYPALLEEE 1 $paypal")
 
         val request = Request.Builder().url(manageUrl).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
-        println("PAYPALLEEE 2 $paypal")
 
         withContext(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                println("PAYPALLEEE 3 $paypal")
 
-                if (!response.isSuccessful || responseBody == null || responseBody.isEmpty()) {
-                    println("PAYPALLEEE 3.1 Errore nella chiamata PayPal: ${response.code}")
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Errore nella chiamata PayPal: ${response.code}")
                     return@withContext
                 }
 
-                println("PAYPALLEEE 4 $paypal")
-
                 if (paypal) {
-                    println("PAYPALLEEE 5: Attempting to open PayPal link")
                     withContext(Dispatchers.Main) {
                         openLinkInCustomTab(context, responseBody)
                     }
                 }
-                println("PAYPALLEEE 6 $paypal")
 
                 println("Risposta dal server: $responseBody")
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("PAYPALLEEE 7 Errore nell'esecuzione della chiamata: ${e.message}")
             }
         }
     }
-
-
 
     fun openLinkInCustomTab(context: Context, url: String) {
         val builder = CustomTabsIntent.Builder()
@@ -480,25 +463,19 @@ class ShoppingCartViewModel(): ViewModel() {
         }
     }
 
-
     suspend fun doSuccess(queryParams: String, context: Context) {
 
-
-        // Parsing dei parametri di query
         val params = queryParams.split("&").associate {
             val (key, value) = it.split("=")
             key to value
         }
 
-        // Estrazione dei parametri
         val paymentId = params["paymentId"] ?: ""
         val token = params["token"] ?: ""
         val payerId = params["PayerID"] ?: ""
 
-        // Creazione dell'oggetto PayPalDTO
         val savedBuyDTO = getBuyDTO(context) ?: throw IllegalStateException("BuyDTO non può essere null")
 
-        // Ora usa savedBuyDTO per procedere
         val payPalDTO = PayPalDTO(paymentId, token, payerId, savedBuyDTO)
 
         val manageUrl = URL("http://25.49.50.144:8090/product-api/success")
@@ -516,26 +493,18 @@ class ShoppingCartViewModel(): ViewModel() {
 
 
                 if (!response.isSuccessful || responseBody == null || responseBody.isEmpty()) {
-                    println("PAYPALLEEE 3.1 Errore nella chiamata PayPal: ${response.code}")
+                    println("Errore nella chiamata PayPal: ${response.code}")
                     return@withContext
                 }
-
 
                 println("Risposta dal server: $responseBody")
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("PAYPALLEEE 7 Errore nell'esecuzione della chiamata: ${e.message}")
+                println("Errore nell'esecuzione della chiamata: ${e.message}")
             }
         }
     }
-
-
-
-
-
-
-
 
     fun saveBuyDTO(context: Context, buyDTO: BuyDTO) {
         val sharedPreferences = context.getSharedPreferences("buy_data", Context.MODE_PRIVATE)
@@ -563,7 +532,6 @@ class ShoppingCartViewModel(): ViewModel() {
         editor.remove("buy_dto")
         editor.apply()
     }
-
 
     fun resetAvailability(){
         viewModelScope.launch {
@@ -622,9 +590,5 @@ class ShoppingCartViewModel(): ViewModel() {
             }
         }
     }
-
-
-
-
 
 }

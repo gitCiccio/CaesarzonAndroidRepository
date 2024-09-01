@@ -24,6 +24,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -42,10 +44,14 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     private val _addresses: MutableStateFlow<List<AddressDTO>> = MutableStateFlow(emptyList())
     val addresses: StateFlow<List<AddressDTO>> = _addresses
 
+    private val _addressesByAdmin: MutableStateFlow<List<AddressDTO>> = MutableStateFlow(emptyList())
+    val addressesByAdmin: StateFlow<List<AddressDTO>> = _addressesByAdmin
+
     private val _cityData: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val cityData: StateFlow<List<String>> = _cityData
 
     var addressesUuid: List<UUID> = emptyList()
+    var addressesUuidForAdmin: List<UUID> = emptyList()
 
     var selectedCityId: String = ""
 
@@ -54,8 +60,11 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
     val gson = Gson()
 
+    private val coroutineSemaphore = Semaphore(10)
+
     fun resetAddresses() {
         _addresses.value = emptyList()
+        _addressesByAdmin.value = emptyList()
     }
 
     fun loadAddresses() {
@@ -64,14 +73,13 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
             _isLoading.value = true
             try {
                 getUuidAddressesFromServer()
-                val addressesList = mutableListOf<AddressDTO>()
                 addressesUuid.forEach { uuid ->
                     val address = getAddressFromServer(uuid)
                     if (address != null) {
-                        addressesList.add(address)
+                        _addresses.value += address
                     }
+                    else println("Problemi nel recupero dell'indirizzo con id: $uuid")
                 }
-                _addresses.value = addressesList
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -79,7 +87,53 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
             }
         }
     }
-    //chiamata al server per ricevere gli indirizzi
+
+    fun loadAddressesForAdmin(userUsername: String) {
+        viewModelScope.launch {
+            resetAddresses()
+            _isLoading.value = true
+            try {
+                getUuidAddressesFromServerByAdmin(userUsername)
+                addressesUuid.forEach { uuid ->
+                    val address = getAddressFromServerByAdmin(uuid)
+                    if (address != null) {
+                        _addressesByAdmin.value += address
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun getUuidAddressesFromServerByAdmin(userUsername: String){
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/addresses/$userUsername")
+        val request =  Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@launch
+                }
+
+                println("Risposta dal server: $responseBody")
+
+                val gson = Gson()
+                val listType = object :  TypeToken<List<UUID>>() {}.type
+                addressesUuidForAdmin = gson.fromJson(responseBody, listType)
+                println("Indirizzi recuperati con successo: ${addressesUuidForAdmin.size}")
+
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun getUuidAddressesFromServer(){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/addresses")
         val request =  Request.Builder().url(manageUrl).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
@@ -103,20 +157,19 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
             }catch (e: Exception){
                 e.printStackTrace()
             }
-
         }
-
     }
 
-    // Function to fetch a single address
     private suspend fun getAddressFromServer(addressUuid: UUID): AddressDTO? {
-        val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
-        val request = Request.Builder()
-            .url(manageUrl)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
-            .build()
-
+        coroutineSemaphore.withPermit {
         return withContext(Dispatchers.IO) {
+            println("Recupero l'indirizzo con questo id: $addressUuid")
+            val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
+            val request = Request.Builder()
+                .url(manageUrl)
+                .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+                .build()
+
             try {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
@@ -135,9 +188,10 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
                 null
             }
         }
+        }
     }
 
-    //Funzione per eliminare indirizzo
+
     fun deleteAddress(address: AddressDTO){
         CoroutineScope(Dispatchers.IO).launch {
             doDeleteAddress(address)
@@ -145,6 +199,37 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
     }
 
     suspend fun doDeleteAddress(address: AddressDTO) {
+
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=${address.id}")
+        val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+
+        try{
+            withContext(Dispatchers.IO){
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                }
+
+                println("Risposta dal server: $responseBody")
+                addressRepository.deleteAddressByCityId(address)
+                _addresses.value -= address
+                println("Indirizzo eliminato con successo")
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            println("Errore durante la chiamata: ${e.message}")
+        }
+    }
+
+    fun deleteAddressByAdmin(address: AddressDTO){
+        CoroutineScope(Dispatchers.IO).launch {
+            doDeleteAddressByAdmin(address)
+        }
+    }
+
+    suspend fun doDeleteAddressByAdmin(address: AddressDTO) {
 
         val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=${address.id}")
         val request = Request.Builder().url(manageUrl).delete().addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
@@ -197,19 +282,18 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
                 _addresses.value += address
-                addressRepository.addAddress(address)
                 println("Indirizzo aggiunto con successo")
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
-    //riesco a prendere i suggerimenti di città
+
      fun getCityTip(cityTip: String){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/city?sugg=$cityTip")
         val request = Request.Builder()
             .url(manageUrl)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken}") // Assicurati che il token non sia nullo
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
             .build()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -224,7 +308,6 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
 
                 println("Risposta dal server: $responseBody")
 
-                // Utilizza Gson per convertire la risposta JSON in una lista di Stringhe
                 val listType = object : TypeToken<List<String>>() {}.type
                 val cityList = gson.fromJson<List<String>>(responseBody, listType)
 
@@ -237,12 +320,11 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
         }
     }
 
-    //Deve tornare un city data dto con tutte le informazioni
     fun getFullCityData(cityName: String){
         val manageUrl = URL("http://25.49.50.144:8090/user-api/city-data?city=$cityName")
         val request = Request.Builder()
             .url(manageUrl)
-            .addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}") // Assicurati che il token non sia nullo
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken ?: ""}")
             .build()
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -269,6 +351,35 @@ class AddressViewModel(private val addressRepository: AddressRepository, private
             }
         }
     }
+
+    private suspend fun getAddressFromServerByAdmin(addressUuid: UUID): AddressDTO? {
+        val manageUrl = URL("http://25.49.50.144:8090/user-api/address?address_id=$addressUuid")
+        val request = Request.Builder()
+            .url(manageUrl)
+            .addHeader("Authorization", "Bearer ${myToken?.accessToken}")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if (!response.isSuccessful || responseBody.isNullOrEmpty()) {
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                    return@withContext null
+                }
+
+                println("Risposta dal server: $responseBody")
+                val address = gson.fromJson(responseBody, AddressDTO::class.java)
+                address.id = addressUuid.toString()
+                address
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
 }
 
 class AddressViewModelFactory(

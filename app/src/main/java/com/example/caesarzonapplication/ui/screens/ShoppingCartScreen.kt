@@ -109,7 +109,7 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                             .padding(15.dp)
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF89CFF0)  // Cambia qui il colore del pulsante "Continua a comprare"
+                            containerColor = Color(0xFF89CFF0)
                         )
                     ) {
                         Text(
@@ -134,9 +134,9 @@ fun ShoppingCartScreen(navController: NavHostController, shoppingCartViewModel: 
                             .padding(15.dp)
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF622BE2)  // Cambia qui il colore del pulsante "Procedi"
+                            containerColor = Color(0xFF622BE2)
                         ),
-                        enabled = shoppingCartProducts.isNotEmpty()  // Disabilita il pulsante se il carrello è vuoto
+                        enabled = shoppingCartProducts.isNotEmpty()
                     ) {
                         Text(
                             text = "Procedi",
