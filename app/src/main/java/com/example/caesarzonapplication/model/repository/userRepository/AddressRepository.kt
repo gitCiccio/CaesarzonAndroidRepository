@@ -40,7 +40,7 @@ class AddressRepository(private val addressDao: AddressDao) {
         }
     }
 
-
+    /*
     // Inserisci un nuovo indirizzo
     suspend fun addAddress(address: AddressDTO): Boolean {
         println("sono in addAddress")
@@ -65,12 +65,12 @@ class AddressRepository(private val addressDao: AddressDao) {
             println("Impossibile aggiungere l'indirizzo")
             false
         }
-    }
+    }*/
 
     // Elimina un indirizzo per ID
     suspend fun deleteAddressByCityId(address: AddressDTO): Boolean{
         return try{//da testare
-            addressDao.deleteAddressByCityId(address.city.id.toString())
+            addressDao.deleteAddressByCityId(address.city?.id.toString())
             true
         }catch (e: Exception){
             e.printStackTrace()

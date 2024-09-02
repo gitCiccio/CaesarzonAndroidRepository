@@ -79,7 +79,7 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
         ) {
             TextField(
                 value = selectedAddress?.let {
-                    "${it.roadName} ${it.houseNumber} ${it.city.city}"
+                    "${it.roadName} ${it.houseNumber} ${it.city?.city}"
                 } ?: "Nessun indirizzo disponibile",
                 onValueChange = {},
                 label = { Text("Indirizzo di spedizione") },
@@ -103,7 +103,7 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
             ) {
                 addresses.forEach { address ->
                     DropdownMenuItem(
-                        text = { Text(text = "${address.roadName} ${address.houseNumber} ${address.city.city}") },
+                        text = { Text(text = "${address.roadName} ${address.houseNumber} ${address.city?.city}") },
                         onClick = {
                             selectedAddress = address
                             addressDropdownExpanded = false
@@ -170,12 +170,7 @@ fun UserAddressInfoSection(addressViewModel: AddressViewModel) {
                 )
                 OutlinedTextField(
                     value = street,
-                    onValueChange = {
-                        val streetRegex = Regex("^(?=(?:.*[a-zA-Z]){2,})[a-zA-Z0-9 ]{2,30}\$")
-                        if (streetRegex.matches(it))
-                            street = it
-                        else if (it.isNotEmpty())
-                            street = it.dropLast(1) },
+                    onValueChange = { street = it },
                     label = { Text("Via") },
                     singleLine = true,
                 )

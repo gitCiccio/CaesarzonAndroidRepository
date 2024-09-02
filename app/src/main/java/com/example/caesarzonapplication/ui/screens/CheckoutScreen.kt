@@ -104,7 +104,7 @@ fun CheckoutScreen(
                                 }
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "${address.roadType} ${address.roadName} ${address.houseNumber} ${address.city.city} ${address.city.cap} ${address.city.province}")
+                            Text(text = "${address.roadType} ${address.roadName} ${address.houseNumber} ${address.city?.city} ${address.city?.cap} ${address.city?.province}")
                         }
                     }
                 }
@@ -117,7 +117,7 @@ fun CheckoutScreen(
                 if (cards.isEmpty()) {
                     Log.d("CheckoutScreen", "No cards found")
                     Button(
-                        onClick = { /* Logica per aggiungere una carta */ },
+                        onClick = { navController.navigate(BottomBarScreen.Profile.route) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors()
                     ) {
@@ -171,8 +171,6 @@ fun CheckoutScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Riepilogo Ordine", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
-
-
             }
 
             item {
@@ -246,7 +244,6 @@ fun CheckoutScreen(
                     ) {
                         Text(text = "Procedi all'acquisto", color = Color.White)
                     }
-
                 }
             }
         }

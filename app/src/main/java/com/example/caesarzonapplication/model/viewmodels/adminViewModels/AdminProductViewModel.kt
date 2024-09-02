@@ -37,6 +37,34 @@ class AdminProductViewModel {
     val productId: StateFlow<String> = _productId
 
 
+    fun modifyProduct(productDTO: SendProductDTO, image: ImageBitmap){
+        val manageURL = URL("http://25.49.50.144:8090/product-api/product?new=false")
+        val JSON = "application/json; charset=utf-8".toMediaType()
+        val json = gson.toJson(productDTO)
+        val requestBody = json.toRequestBody(JSON)
+
+        val request = Request.Builder().url(manageURL).post(requestBody).addHeader("Authorization", "Bearer ${myToken?.accessToken}").build()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                if(!response.isSuccessful || responseBody.isNullOrEmpty()){
+                    println("Chiamata fallita o risposta vuota. Codice di stato: ${response.code}")
+                }
+
+                println("Risposta dal server: ${responseBody.toString()}")
+                println("Codice di stato: ${response.code}")
+                println("Messaggio di risposta: ${response.message}")
+
+                postProductImage(responseBody.toString(), image)
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun addProduct(productDTO: SendProductDTO, image: ImageBitmap, context: Context,
                    onContinueShopping: () -> Unit){
@@ -60,8 +88,8 @@ class AdminProductViewModel {
                 println("Codice di stato: ${response.code}")
                 println("Messaggio di risposta: ${response.message}")
 
+                postProductImage(responseBody.toString(), image)
 
-                postProductImage(responseBody.toString(), image, context, onContinueShopping = onContinueShopping )
             }
             catch (e: Exception){
                 e.printStackTrace()

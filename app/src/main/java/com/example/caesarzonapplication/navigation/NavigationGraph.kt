@@ -21,9 +21,6 @@ import com.example.caesarzonapplication.model.viewmodels.userViewmodels.Notifica
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.OrdersViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ReviewViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.SupportRequestsViewModel
-import com.example.caesarzonapplication.ui.components.OrderManagementSection
-import com.example.caesarzonapplication.ui.components.PaymentManagementSection
-import com.example.caesarzonapplication.ui.components.UserAddressInfoSection
 import com.example.caesarzonapplication.ui.screens.AccountScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.AddProductScreen
 import com.example.caesarzonapplication.ui.screens.AuthScreen
@@ -42,6 +39,9 @@ import com.example.caesarzonapplication.ui.screens.adminScreens.ReportsScreen
 import com.example.caesarzonapplication.ui.screens.UserPageScreen
 import com.example.caesarzonapplication.ui.screens.UserRegistrationScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.SupportRequestScreen
+import com.example.caesarzonapplication.ui.screens.adminScreens.UserAddressAdminScreen
+import com.example.caesarzonapplication.ui.screens.adminScreens.UserCardsAdminScreen
+import com.example.caesarzonapplication.ui.screens.adminScreens.UserProfileAdminScreen
 import com.example.caesarzonapplication.ui.screens.adminScreens.UserSearchScreen
 
 @Composable
@@ -89,43 +89,57 @@ fun NavigationGraph(
         }
 
 
-            val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
-            val reportViewModel = AdminReportViewModel()
-            val supportRequestViewModel = AdminSupportRequestViewModel()
-            val adminProductViewModel = AdminProductViewModel()
+        val searchAndBanUsersViewModel = SearchAndBanUsersViewModel()
+        val reportViewModel = AdminReportViewModel()
+        val supportRequestViewModel = AdminSupportRequestViewModel()
+        val adminProductViewModel = AdminProductViewModel()
 
-            composable(route = AdminBottomBarScreen.Home.route) {
-                if (isAdmin.value)
-                    AdminScreen(navController, productsViewModel)
-            }
+        composable(route = AdminBottomBarScreen.Home.route) {
+            if (isAdmin.value)
+                AdminScreen(navController, productsViewModel)
+        }
 
-            composable(
-                route = AdminBottomBarScreen.AddProduct.route + "/{onChanges}",
-                arguments = listOf(navArgument("onChanges") { type = NavType.BoolType })
-            ) { backStackEntry ->
-                val onChanges = backStackEntry.arguments?.getBoolean("onChanges")
-                if (isAdmin.value) {
-                    if (onChanges != null)
-                        AddProductScreen(adminProductViewModel, productsViewModel, onChanges)
+        composable(route = "userProfileAdminScreen") {
+            if (isAdmin.value)
+                UserProfileAdminScreen(accountInfoViewModel)
+        }
 
-                } else {
-                    Log.e("NavigationError", "onChanges is null")
-                }
-            }
+        composable(route = "userAddressAdminScreen") {
+            if (isAdmin.value)
+                UserAddressAdminScreen(accountInfoViewModel, addressViewModel)
+        }
 
-            composable(route = AdminBottomBarScreen.Reports.route) {
-                if (isAdmin.value)
-                    ReportsScreen(reportViewModel)
-            }
-            composable(route = AdminBottomBarScreen.SupportRequest.route) {
-                if (isAdmin.value)
-                    SupportRequestScreen(supportRequestViewModel)
-            }
+        composable(route = "userCardsAdminScreen") {
+            if (isAdmin.value)
+                UserCardsAdminScreen(cardViewModel)
+        }
 
-            composable(route = AdminBottomBarScreen.SearchUser.route) {
-                if (isAdmin.value)
-                    UserSearchScreen(navController, searchAndBanUsersViewModel)
+        composable(
+            route = AdminBottomBarScreen.AddProduct.route + "/{onChanges}",
+            arguments = listOf(navArgument("onChanges") { type = NavType.BoolType })
+        ) { backStackEntry ->
+            val onChanges = backStackEntry.arguments?.getBoolean("onChanges")
+            if (isAdmin.value) {
+                if (onChanges != null)
+                    AddProductScreen(navController, adminProductViewModel, productsViewModel, onChanges)
+            } else {
+                Log.e("NavigationError", "onChanges is null")
             }
+        }
+
+        composable(route = AdminBottomBarScreen.Reports.route) {
+            if (isAdmin.value)
+                ReportsScreen(reportViewModel)
+        }
+        composable(route = AdminBottomBarScreen.SupportRequest.route) {
+            if (isAdmin.value)
+                SupportRequestScreen(supportRequestViewModel)
+        }
+
+        composable(route = AdminBottomBarScreen.SearchUser.route) {
+            if (isAdmin.value)
+                UserSearchScreen(navController, searchAndBanUsersViewModel, accountInfoViewModel, addressViewModel, cardViewModel)
+        }
 
 
         composable(

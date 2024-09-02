@@ -5,5 +5,5 @@ data class AddressDTO(
     val roadName: String,
     val houseNumber: String,
     val roadType: String,
-    val city: CityDataDTO
+    val city: CityDataDTO?
 )

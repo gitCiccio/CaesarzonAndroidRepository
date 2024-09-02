@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,21 +44,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
 import com.example.caesarzonapplication.model.dto.productDTOS.AvailabilitiesSingle
 import com.example.caesarzonapplication.model.dto.productDTOS.SendAvailabilityDTO
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.viewmodels.adminViewModels.AdminProductViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ProductsViewModel
+import com.example.caesarzonapplication.navigation.AdminBottomBarScreen
+import com.example.caesarzonapplication.navigation.AdminNavigationBottomBar
 import com.example.caesarzonapplication.navigation.DetailsScreen
 import java.io.InputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewModel: ProductsViewModel, onChanges: Boolean) {
+fun AddProductScreen(navController: NavController,adminProductViewModel: AdminProductViewModel, productViewModel: ProductsViewModel, onChanges: Boolean) {
 
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null) }
+    var showSuccessMessage by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -74,7 +78,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
             }
         }
     )
-    val navController = rememberNavController()
+    var id by rememberSaveable { mutableStateOf("") }
 
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
@@ -89,7 +93,8 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
     var selectedSize by rememberSaveable { mutableStateOf("") }
     var quantity by rememberSaveable { mutableStateOf("") }
 
-    if(onChanges){
+    if(!onChanges){
+        id= productViewModel.selectedProduct.value?.product?.id.toString()
        productName = productViewModel.selectedProduct.value?.product?.name.toString()
        description = productViewModel.selectedProduct.value?.product?.description.toString()
         brand = productViewModel.selectedProduct.value?.product?.brand.toString()
@@ -98,7 +103,6 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
         primaryColor = productViewModel.selectedProduct.value?.product?.primaryColor.toString()
         secondaryColor = productViewModel.selectedProduct.value?.product?.secondaryColor.toString()
         isClothing = productViewModel.selectedProduct.value?.product?.is_clothing ?: false
-
 
         productViewModel.selectedProduct.value?.image?.let { bitmap ->
             imageBitmap = bitmap.asImageBitmap()
@@ -111,10 +115,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
             )
         } ?: listOf()
 
-
         selectedSport = productViewModel.selectedProduct.value?.product?.sport.toString()
-
-
     }
 
 
@@ -127,6 +128,14 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
     )
 
     val sizes = listOf("XS", "S", "M", "L", "XL")
+
+    if (showSuccessMessage) {
+        AlertDialog(
+            onDismissRequest = { showSuccessMessage = false },
+            confirmButton = { navController.navigate(AdminBottomBarScreen.Home.route) },
+            title = { Text("Prodotto aggiunto con successo!") }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -276,7 +285,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
                                 label = { Text("Taglia") },
                                 modifier = Modifier
                                     .menuAnchor()
-                                    .width(100.dp), // Riduci la larghezza della TextField "Taglia"
+                                    .width(100.dp),
                                 readOnly = true
                             )
                             ExposedDropdownMenu(
@@ -300,7 +309,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
                         value = quantity,
                         onValueChange = { quantity = it },
                         label = { Text("Quantità") },
-                        modifier = Modifier.width(100.dp) // Imposta una larghezza simile per la TextField "Quantità"
+                        modifier = Modifier.width(100.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -378,10 +387,28 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
             item {
                 Button(
                     onClick = {
-                        if (imageBitmap != null) {
+                        if (imageBitmap != null && onChanges) {
                             adminProductViewModel.addProduct(
                                 SendProductDTO(
-                                    id = "",
+                                    id = id,
+                                    name = productName,
+                                    description = description,
+                                    brand = brand,
+                                    price = price.toDouble(),
+                                    discount = discount.toDouble(),
+                                    primaryColor = primaryColor,
+                                    secondaryColor = secondaryColor,
+                                    is_clothing = isClothing,
+                                    sport = selectedSport,
+                                    availabilities = availability
+                                ),
+                                imageBitmap!!
+                            )
+                            showSuccessMessage = true
+                        }else{
+                            adminProductViewModel.modifyProduct(
+                                SendProductDTO(
+                                    id = id,
                                     name = productName,
                                     description = description,
                                     brand = brand,
@@ -400,6 +427,7 @@ fun AddProductScreen(adminProductViewModel: AdminProductViewModel, productViewMo
                                     navController.navigate("home")
                                 }
                             )
+                            showSuccessMessage = true
                         }
                     }
                 ) {

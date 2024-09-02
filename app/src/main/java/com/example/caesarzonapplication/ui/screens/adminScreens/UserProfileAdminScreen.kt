@@ -1,7 +1,5 @@
-package com.example.caesarzonapplication.ui.components
+package com.example.caesarzonapplication.ui.screens.adminScreens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,50 +7,47 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.logged
-import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel
-import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userData
-import kotlinx.coroutines.launch
+import com.example.caesarzonapplication.model.viewmodels.userViewmodels.AccountInfoViewModel.Companion.userDataForAdmin
+import com.example.caesarzonapplication.ui.components.GenericMessagePopup
 
 @Composable
-fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
+fun UserProfileAdminScreen(accountInfoViewModel: AccountInfoViewModel) {
 
-    var username = userData?.username
-    var firstName = userData?.firstName
-    var lastName = userData?.lastName
-    var email = userData?.email
-    var phoneNumber = userData?.phoneNumber
-    var password by remember { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf(userDataForAdmin?.username ?: "") }
+    var firstName by rememberSaveable { mutableStateOf(userDataForAdmin?.firstName ?: "") }
+    var lastName by rememberSaveable { mutableStateOf(userDataForAdmin?.lastName ?: "") }
+    var email by rememberSaveable { mutableStateOf(userDataForAdmin?.email ?: "") }
+    var phoneNumber by rememberSaveable { mutableStateOf(userDataForAdmin?.phoneNumber ?: "") }
 
-    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        userDataForAdmin?.let {
+            username = it.username
+            firstName = it.firstName
+            lastName = it.lastName
+            email = it.email
+            phoneNumber = it.phoneNumber
+        }
+    }
 
-    var isPasswordTextFieldEnabled by remember { mutableStateOf(false) }
     var isUserInfoTextFieldEnabled by remember { mutableStateOf(false) }
 
     var showPopup by rememberSaveable { mutableStateOf(false) }
@@ -74,38 +69,17 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         verticalArrangement = Arrangement.Top
     ) {
         item {
-            accountInfoViewModel.profileImage.value?.profilePicture?.asImageBitmap()?.let {
-                Image(
-                    bitmap = it,
-                    contentDescription = "User Profile",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .padding(16.dp)
-                        .background(MaterialTheme.colorScheme.primary, CircleShape)
-                        .padding(4.dp)
-                        .background(Color.White, CircleShape)
-                )
-            } ?: Image(
-                imageVector = Icons.Default.Person,
-                contentDescription = "User Profile",
-                modifier = Modifier
-                    .size(120.dp)
-                    .padding(16.dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape)
-                    .padding(4.dp)
-                    .background(Color.White, CircleShape)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Profilo dell'utente $username",
+                style = MaterialTheme.typography.headlineLarge
             )
-            Button(onClick = { /*accountInfoViewModel.updateImageProfile()*/ }) 
-           {
-                Text("Carica Immagine")
-            }
         }
-
         item {
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 enabled = isUserInfoTextFieldEnabled,
-                value = firstName ?: "",
+                value = firstName,
                 onValueChange = {
                     firstName = it
                     firstNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
@@ -127,7 +101,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 enabled = isUserInfoTextFieldEnabled,
-                value = lastName ?: "",
+                value = lastName,
                 onValueChange = {
                     lastName = it
                     lastNameError = if (it.isNotEmpty() && it.first().isLowerCase()) {
@@ -149,7 +123,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 enabled = false,
-                value = username ?: "",
+                value = username,
                 onValueChange = { username = it },
                 label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth()
@@ -160,7 +134,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 enabled = isUserInfoTextFieldEnabled,
-                value = email ?: "",
+                value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
@@ -171,7 +145,7 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 enabled = isUserInfoTextFieldEnabled,
-                value = phoneNumber ?: "",
+                value = phoneNumber,
                 onValueChange = {
                     phoneNumber = it
                     phoneNumberError = if (it.length != 10) {
@@ -195,96 +169,39 @@ fun UserInfoSection(accountInfoViewModel: AccountInfoViewModel) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                enabled = isPasswordTextFieldEnabled,
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        item {
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(
-                    onClick = {
-                        if (isPasswordTextFieldEnabled) {
-                            coroutineScope.launch {
-                                username?.let {
-                                    accountInfoViewModel.changePassword(password, it, 1) { responseCode ->
-                                        if (responseCode == "success") {
-                                            password = ""
-                                            showPopupMessage = "Password modificata con successo"
-                                        } else {
-                                            showPopupMessage = "Errore durante la modifica della password"
-                                        }
-                                        showPopup = true
-                                    }
-                                }
-                            }
-                        }
-                        isPasswordTextFieldEnabled = !isPasswordTextFieldEnabled
-                    }
-                ) {
-                    Text(text = if (isPasswordTextFieldEnabled) "Conferma Password" else "Modifica Password")
-                }
-
                 Button(onClick = {
                     if (isUserInfoTextFieldEnabled) {
-                        accountInfoViewModel.modifyUserData(
-                            firstName ?: "",
-                            lastName ?: "",
-                            username ?: "",
-                            email ?: "",
-                            phoneNumber ?: ""
+                        accountInfoViewModel.modifyUserDataByAdmin(
+                            firstName,
+                            lastName,
+                            username,
+                            email,
+                            phoneNumber
                         ) {
                             if (it == "success") {
                                 showPopupMessage = "Dati modificati con successo"
                                 showPopup = true
-                            } else
+                                userDataForAdmin?.username = username
+                                userDataForAdmin?.firstName = firstName
+                                userDataForAdmin?.lastName = lastName
+                                userDataForAdmin?.email = email
+                                userDataForAdmin?.phoneNumber = phoneNumber
+                            } else {
                                 showPopupMessage = "Errore durante la modifica dei dati"
+                                showPopup = true
+                            }
                         }
                         isUserInfoTextFieldEnabled = false
-                    } else
+                    } else {
                         isUserInfoTextFieldEnabled = true
+                    }
                 }) {
                     Text(text = if (isUserInfoTextFieldEnabled) "Salva" else "Modifica Info")
-                }
-            }
-            Spacer(modifier = Modifier.height(14.dp))
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Button(
-                    enabled = logged.value,
-                    onClick = {accountInfoViewModel.logout()},
-                    modifier = Modifier
-                        .padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White),
-                    )
-                {
-                    Text(text = "Logout")
-                }
-                Button(
-                    enabled = logged.value,
-                    onClick = { accountInfoViewModel.deleteAccount() },
-                    modifier = Modifier
-                        .padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    )
-                ){
-                    Text ( "Elimina account")
                 }
             }
         }
