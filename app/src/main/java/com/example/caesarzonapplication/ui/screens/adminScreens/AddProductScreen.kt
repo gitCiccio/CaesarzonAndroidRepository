@@ -79,6 +79,7 @@ fun AddProductScreen(navController: NavController,adminProductViewModel: AdminPr
         }
     )
     var id by rememberSaveable { mutableStateOf("") }
+
     var productName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var brand by rememberSaveable { mutableStateOf("") }
@@ -419,7 +420,12 @@ fun AddProductScreen(navController: NavController,adminProductViewModel: AdminPr
                                     sport = selectedSport,
                                     availabilities = availability
                                 ),
-                                imageBitmap!!
+                                imageBitmap!!,
+                                context,
+
+                                onContinueShopping ={
+                                    navController.navigate("home")
+                                }
                             )
                             showSuccessMessage = true
                         }

@@ -1,5 +1,7 @@
 package com.example.caesarzonapplication.model.viewmodels.adminViewModels
 
+import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Bitmap
 import com.example.caesarzonapplication.model.dto.productDTOS.SendProductDTO
 import com.example.caesarzonapplication.model.service.KeycloakService.Companion.myToken
@@ -64,7 +66,8 @@ class AdminProductViewModel {
         }
     }
 
-    fun addProduct(productDTO: SendProductDTO, image: ImageBitmap){
+    fun addProduct(productDTO: SendProductDTO, image: ImageBitmap, context: Context,
+                   onContinueShopping: () -> Unit){
         val manageURL = URL("http://25.49.50.144:8090/product-api/product?new=true")
         val JSON = "application/json; charset=utf-8".toMediaType()
         val json = gson.toJson(productDTO)
@@ -86,6 +89,7 @@ class AdminProductViewModel {
                 println("Messaggio di risposta: ${response.message}")
 
                 postProductImage(responseBody.toString(), image)
+
             }
             catch (e: Exception){
                 e.printStackTrace()
@@ -93,7 +97,8 @@ class AdminProductViewModel {
         }
     }
 
-    private suspend fun postProductImage(productId: String, imageBitmap: ImageBitmap): String? {
+    private suspend fun postProductImage(productId: String, imageBitmap: ImageBitmap, context: Context,
+                                         onContinueShopping: () -> Unit): String? {
 
         val id = productId.trim('"')
         return withContext(Dispatchers.IO) {
@@ -123,6 +128,18 @@ class AdminProductViewModel {
                 if (!response.isSuccessful) {
                     println("Problemi nel caricamento dell'immagine: ${response.message} code: ${response.code}")
                     return@withContext null
+                }else{
+                    withContext(Dispatchers.Main) {
+                        AlertDialog.Builder(context)
+                            .setTitle("Errore")
+                            .setMessage("Prodotto aggiunto o modificato con successo!.")
+                            .setPositiveButton("OK") { dialog, _ ->
+                                dialog.dismiss()
+                                onContinueShopping()
+
+                            }
+                            .show()
+                    }
                 }
 
                 response.body?.string()

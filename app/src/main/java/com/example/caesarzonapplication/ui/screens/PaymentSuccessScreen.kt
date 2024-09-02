@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,13 +17,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.NotificationViewModel
 import com.example.caesarzonapplication.model.viewmodels.userViewmodels.ShoppingCartViewModel
+import com.example.caesarzonapplication.navigation.DetailsScreen
 import kotlinx.coroutines.delay
 
 @Composable
 fun PaymentSuccessScreen(redirectUrl: String, shoppingCartViewModel: ShoppingCartViewModel, notificationViewModel: NotificationViewModel) {
     val context = LocalContext.current
+    val navController = rememberNavController()
 
     LaunchedEffect(Unit) {
         notificationViewModel.getNotification()
@@ -47,5 +51,14 @@ fun PaymentSuccessScreen(redirectUrl: String, shoppingCartViewModel: ShoppingCar
             fontSize = 18.sp,
             color = MaterialTheme.colorScheme.onBackground
         )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = {
+                navController.navigate("home")
+            }
+        ) {
+            Text(text = "Continua ad acquistare")
+        }
+
     }
 }

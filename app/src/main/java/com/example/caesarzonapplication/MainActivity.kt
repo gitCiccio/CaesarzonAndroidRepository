@@ -107,6 +107,8 @@ class MainActivity : ComponentActivity() {
         }
         val ordersViewModel: OrdersViewModel by viewModels()
 
+
+
         val shoppingCartViewModel: ShoppingCartViewModel by viewModels()
         setContent{
             CaesarzonApplicationTheme{
